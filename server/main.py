@@ -3,11 +3,10 @@ from fastapi import FastAPI, UploadFile, File
 from dotenv import load_dotenv
 
 from pinecone import Pinecone
-from langchain_google_vertexai import VertexAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_pinecone import PineconeVectorStore
 
 load_dotenv()
 app = FastAPI()
@@ -19,9 +18,10 @@ index_name = os.getenv("PINECONE_INDEX")
 index = pc.Index(index_name)  
 
 
-embeddings = VertexAIEmbeddings(
-model_name='text-embedding-004'
-)
+embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
+
+# vector = embeddings.embed_query("hello world!")
+
 
 @app.get('/')
 def root():
