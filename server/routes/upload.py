@@ -8,11 +8,12 @@ from langchain_pinecone import PineconeVectorStore
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 
 load_dotenv()
 router = APIRouter(
-    prefix='/upload',
-    tags=["upload"]
+    prefix='/context',
+    tags=["context"]
 )
 
 pc = Pinecone(
@@ -32,10 +33,10 @@ index = pc.Index(INDEX_NAME)
 
 embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
 
-# vector = embeddings.embed_query("hello world!")
 
 
-@router.post('/')
+
+@router.post('/upload')
 async def upload_context(file: UploadFile = File(...), userId: str = Form(...)):
 
     extension = file.filename.split('.')[-1].lower()
@@ -77,3 +78,32 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...)):
     return {
         "message": "File uplaoded and indexed",
     }
+
+@router.post('/add-text')
+async def add_text_context(text: str = Form(...), title: str = Form(...), userId: str = Form(...)):
+    # Create document object (no file, no temp file needed)
+    fake_doc = Document(
+        page_content=text,
+        metadata={"source": "user_input"}
+    )
+    
+    # Same splitting as your existing code
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    chunks = splitter.split_documents([fake_doc])
+    
+    # Same metadata update pattern
+    for i, chunk in enumerate(chunks):
+        chunk.metadata.update({
+            "userId": userId,
+            "filename": f"{title}_manual.txt",
+            "chunkId": i
+        })
+    
+    # Same vectorstore creation
+    vectorStore = PineconeVectorStore.from_documents(
+        documents=chunks,
+        embedding=embeddings,
+        index_name=INDEX_NAME
+    )
+    
+    return {"message": "Text added to context"}
