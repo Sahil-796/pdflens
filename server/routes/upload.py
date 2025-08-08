@@ -2,37 +2,18 @@ import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, Form
 from dotenv import load_dotenv
+from main import index, embeddings, INDEX_NAME
 
-from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
-load_dotenv()
+# load_dotenv()
 router = APIRouter(
     prefix='/context',
     tags=["context"]
 )
-
-pc = Pinecone(
-    api_key=os.environ.get("PINECONE_API_KEY"),
-)
-
-INDEX_NAME = os.getenv("PINECONE_INDEX")
-
-if not pc.has_index(INDEX_NAME):
-    pc.create_index(
-        name=INDEX_NAME,
-        dimension=3072,
-        metric="cosine",
-        spec=ServerlessSpec(cloud="aws", region="us-east-1")
-    )
-index = pc.Index(INDEX_NAME)  
-
-embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
-
 
 
 
