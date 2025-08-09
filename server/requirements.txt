@@ -5,5 +5,4 @@ langchain
 langchain-community
 langchain-google-genai
 pinecone
-python-docx
 PyMuPDF  # Required by PyPDFLoader

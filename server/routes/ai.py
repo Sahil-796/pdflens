@@ -27,6 +27,9 @@ router = APIRouter(
     tags=["ai"]
 )
 
+
+
+
 @router.post('/generate')
 async def generate(req: PromptRequest):
 
@@ -40,21 +43,22 @@ async def generate(req: PromptRequest):
 
         context = "\n\n".join([doc.page_content for doc in results])
 
-    print(context)
+    
     prompt = PromptTemplate(
         input_variables=["context","goal"],
         template="""
-            You are an expert report generator.
-            Using following context, generate a detailed, well-structured document based on the user's goal.
+           You are an expert LaTeX document generator.  
+           Generate complete, well-structured LaTeX documents including preamble and document environment, based on user context and goal.
 
-            Context:
-            
+            Context:  
             {context}
 
-            Goal:
+            Goal:  
             {goal}
 
-            Document:
+            Produce the full LaTeX source code for a standalone document fulfilling the user’s goal using the given context.
+            Use appropriate sections, subsections, lists, tables, and include necessary packages
+            Output the LaTeX code as raw text without escapes or string formatting make sure it is ready to compile without errors and dont add anything in the output just pure code.
             """
                 )
         
@@ -63,6 +67,7 @@ async def generate(req: PromptRequest):
             "context": context,
             "goal": req.user_prompt
         })
+
 
 
     return {"document": output} 
