@@ -2,7 +2,7 @@ import os
 import tempfile
 from fastapi import APIRouter, UploadFile, File, Form
 from dotenv import load_dotenv
-from main import index, embeddings, INDEX_NAME
+from config import embeddings, INDEX_NAME
 
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.document_loaders import PyPDFLoader
