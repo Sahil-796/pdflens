@@ -47,36 +47,20 @@ async def generate(req: PromptRequest):
     prompt = PromptTemplate(
         input_variables=["context","goal"],
         template="""
-           You are an expert HTML and PDF layout designer.  
-Generate a complete, professional HTML document that is visually optimized for direct PDF export.  
+           You are an expert HTML document generator optimized for PDF export and frontend editing.
 
-Core Requirements:
-1. Include the full HTML structure:
-   - `<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`.
-   - A `<meta charset="UTF-8">` tag in `<head>`.
-
-2. Styling:
-   - Use inline `<style>` inside the `<head>` (no external CSS or fonts).
-   - Default font: Arial, Helvetica, or a clean sans-serif.
-   - Maintain consistent margins (e.g., 1 inch on all sides), spacing, and line height.
-   - All text should be left-aligned unless specified.
-   - Tables, lists, and headings must be cleanly styled and visually distinct.
-   - ensure theres enough padding/margin for the content to be visible.
-3. PDF-Specific Layout:
-   - Use `page-break-before`, `page-break-after`, or `page-break-inside: avoid;` to control page flow.
-   - Ensure no awkward cuts for headings, images, or tables.
-   - Avoid content overflow by wrapping text.
-
-
-5. Content:
-   - Follow semantic HTML (`<h1>` for title, `<h2>` for subtitles, `<p>` for paragraphs, `<ul>/<ol>` for lists, `<table>` for tabular data).
-   - Support images with `<img>` using inline `max-width: 100%; height: auto;`.
-   - Bold/italic text where appropriate for emphasis.
-   - Ensure all styles and assets are embedded — output must be fully self-contained.
-
-6. Output:
-   - Output only raw HTML, no explanations or comments. dont include the code insoide '''html ''', just give pure ready to run code
-   - The HTML must be production-ready and require no further cleanup for PDF conversion.
+Task:
+Generate a complete, standalone HTML fragment that:
+- Is production-ready and optimized for PDF conversion.
+- Uses Tailwind CSS utility classes for layout and typography (assume Tailwind is available in the frontend).
+- Wrap the entire document in a single root container: <div class="pdf-root ...">...</div>.
+- Wrap every logical block (title, section, paragraph, list, table, image, code block) with a wrapper:
+    <div class="selectable" data-block-id="BLOCK_ID"> ... </div>
+  where BLOCK_ID is a short unique id (e.g., b1, b2). Ensure every selectable wrapper has a unique data-block-id.
+- Use semantic HTML tags inside each selectable wrapper (h1, h2, p, ul, table, etc.).
+- Include inline style attributes only when necessary; rely primarily on Tailwind utility classes for spacing, fonts, borders, and page-friendly layout.
+- Include page-break-friendly classes/styles (e.g., using inline style `page-break-inside: avoid;` on large blocks and tables) so the content converts neatly to multi-page PDF.
+- Do NOT include any external scripts. No explanations before/after the HTML — output only the raw HTML.
 
 Context:
 {context}
@@ -84,7 +68,19 @@ Context:
 Goal:
 {goal}
 
-Now generate the HTML document and dont write anything else just pure usable HTML. dont write any extra info other thanwhats asked like any placeholder info too. ignore it.
+Requirements:
+1. The root element must be:
+   <div class="pdf-root selectable" data-block-id="b_root"> ... </div>
+   Inside it, generate structured content wrapped in additional `.selectable[data-block-id="bX"]` blocks for each paragraph/section.
+2. Each `data-block-id` must be unique and short (b1, b2, ...).
+3. Use Tailwind classes for margins, padding, text size, fonts, borders and colors (e.g., `p-6`, `text-lg`, `font-semibold`, `border`, `bg-white`, `max-w-4xl`, `mx-auto`).
+4. For tables, include `class="w-full border-collapse"` and inline `style="page-break-inside: avoid;"`.
+5. For headings, use `h1` and `h2` inside selectable wrappers and use `page-break-after: avoid` for those wrappers.
+6. Make the content print-friendly: set readable font sizes, consistent margins, and avoid interactive elements. Keep images using `class="max-w-full h-auto"`.
+7. Output only raw HTML — no wrapping code blocks (no ```html), no commentary, nothing else.
+
+Now generate the HTML document according to the above rules and the provided Context and Goal.
+
 
             """
                 )
