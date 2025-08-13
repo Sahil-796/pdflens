@@ -1,5 +1,9 @@
+import AiInput from '../components/AiInput'
+
 export default function Home() {
   return (
-    <div>home</div>
+    <div>
+      <AiInput/>
+    </div>
   );
 }
