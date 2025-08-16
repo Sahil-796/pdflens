@@ -3,16 +3,16 @@ import { pdfs } from "./schema"
 import { eq, lt, gte, ne } from 'drizzle-orm';
 
 
-export const createPdf = async(userId: number, fileName: string, htmlContent: string) => {
+export const createPdf = async(id: string, userId: string, fileName: string, htmlContent: string) => {
     try {
-        const [newPdf] = await db.insert(pdfs).values({userId, fileName, htmlContent}).returning()
+        const [newPdf] = await db.insert(pdfs).values({id, userId, fileName, htmlContent}).returning()
         return newPdf
     } catch (err) {
         throw new Error(`Failed to create pdf : ${err}`)
     }
 }
 
-export const getAllPdfs = async(userId: number) => {
+export const getAllPdfs = async(userId: string) => {
     try {
         const [allPdfs] = await db.select().from(pdfs).where(eq(pdfs.userId, userId))
         return allPdfs
@@ -21,7 +21,7 @@ export const getAllPdfs = async(userId: number) => {
     }
 }
 
-export const getPdf = async(pdfId: number) => {
+export const getPdf = async(pdfId: string) => {
     try {
         const [newPdf] = await db.select().from(pdfs).where(eq(pdfs.id, pdfId))
         return newPdf
