@@ -1,10 +1,12 @@
 
-import { pgTable, uuid, integer, text, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey(),
   fullName: text('full_name'),
-  email: text('email')
+  email: text('email'),
+  pdfIds: text('pdf_ids').array().default([]),
+  pdfNames: text('pdf_names').array().default([]),
 });
 
 export const pdfs = pgTable("pdfs", {

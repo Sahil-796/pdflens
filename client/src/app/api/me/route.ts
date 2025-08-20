@@ -19,6 +19,7 @@ export async function GET() {
 
     // fetching app data using drizzle queries
     const appUser = await getUser(user.id)
+
     return NextResponse.json( { user: appUser })
 
 }
