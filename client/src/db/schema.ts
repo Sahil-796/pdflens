@@ -1,8 +1,9 @@
 
 import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
+import { authUsers } from "drizzle-orm/supabase";
 
 export const users = pgTable('users', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').primaryKey().notNull(),
   fullName: text('full_name'),
   email: text('email'),
   pdfIds: text('pdf_ids').array().default([]),

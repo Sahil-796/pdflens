@@ -5,6 +5,7 @@ import { eq, lt, gte, ne } from 'drizzle-orm';
 export const createUser = async (id: string, fullName: string, email: string) => {
 
     try {
+        console.log("runniing createUser")
     const [newUser] = await db.insert(users).values({id, fullName, email}).returning()
     return newUser
     } catch (err) {
