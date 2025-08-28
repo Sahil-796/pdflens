@@ -1,3 +1,4 @@
+import json
 from fastapi import APIRouter
 from dotenv import load_dotenv
 from config import index, embeddings
@@ -105,43 +106,30 @@ async def generate(req: PromptRequest):
     prompt = PromptTemplate(
         input_variables=["context","goal"],
         template="""
-           You are an expert HTML document generator optimized for PDF export and interactive frontend editing.
+You are an expert HTML generator for PDF export.
 
-            Task:
-            Generate a complete, standalone HTML fragment that:
-            - Is production-ready and optimized for PDF conversion.
-            - Uses Tailwind CSS utility classes for layout, typography, and spacing (assume Tailwind is available in the frontend).
-            - Wrap the entire document in a single root container: <div class="pdf-root ...">...</div>.
-            - Wrap every logical block (title, section, paragraph, list, table, image, code block, header, footer) with:
-                <div class="selectable" data-block-id="BLOCK_ID"> ... </div>
-            where BLOCK_ID is a short unique id (b1, b2, etc.).
-            - Ensure every selectable wrapper has a unique data-block-id.
-            - Use semantic HTML tags inside each selectable wrapper (h1, h2, p, ul, table, etc.).
-            - Include headers and/or footers if explicitly requested in the Goal. Footers should be styled to appear at the bottom of each printed page where possible.
-            - Use page-break-friendly properties (`style="page-break-inside: avoid;"`, `page-break-after: avoid`) on large blocks and tables so the content converts neatly to multi-page PDF.
-            - Avoid external scripts, styles, or fonts — rely solely on Tailwind utility classes.
-            - Output only raw HTML — no wrapping code blocks, no commentary, no placeholders.
+Task:
+Create a full standalone HTML fragment that:
+- Uses Tailwind CSS (assume available).
+- Root: <div class="pdf-root selectable p-8 bg-white text-gray-900 max-w-4xl mx-auto" data-block-id="b_root">...</div>. Do not wrap the code inside html. use this root settings
+- Wrap each section (title, para, list, table, image, header/footer) in <div class="selectable" data-block-id="bX">...</div> with unique IDs.
+- Headings: h1 → text-3xl font-bold mb-4, h2 → text-xl font-semibold mb-2.
+- Paragraphs: text-base leading-relaxed mb-4.
+- Tables: w-full border border-gray-300 border-collapse text-sm, style="page-break-inside: avoid;".
+- Images: max-w-full h-auto rounded-lg mx-auto my-4. Use urls specified in the Goal and if not use sample urls if asked by the goal to use images.
+- Footer: text-sm text-gray-500 text-center mt-8, print-friendly.z (dont add if not told in the goal)
+- Add page-break support where you thing its necessary and page would break atp:
+  @media print curlyBraces
+    @page curclyBraces margin: 2cm; curlyBraces
+    .page-break curclyBraces break-after: page; margin-top: 2cm; curclyBraces
+  curclyBraces
+- No JS, no placeholders, no markdown, ``` before and after the code. Output raw HTML only.
 
-            Context:
-            {context}
+Context:
+{context}
 
-            Goal:
-            {goal}
-
-            Requirements:
-            1. Root element:
-            <div class="pdf-root selectable p-8 bg-white text-gray-900 max-w-4xl mx-auto" data-block-id="b_root"> ... </div>
-            2. Each content section/paragraph/list/table/image must be wrapped in `.selectable[data-block-id="bX"]` where X increments sequentially (b1, b2, b3...).
-            3. Headings: use Tailwind classes like `text-3xl font-bold mb-4` for h1, `text-xl font-semibold mb-2` for h2.
-            4. Paragraphs: use `text-base leading-relaxed mb-4`.
-            5. Tables: use `class="w-full border border-gray-300 border-collapse text-sm"` and `style="page-break-inside: avoid;"`. Include Tailwind table styling for borders and padding.
-            6. Images: use `class="max-w-full h-auto rounded-lg mx-auto my-4"`.
-            7. Maintain consistent margins/paddings so content looks professional when exported to PDF.
-            8. If headers or footers are included, wrap them in `.selectable[data-block-id]` and ensure footer is styled with `text-sm text-gray-500 text-center mt-8` and positioned print-friendly.
-            9. Do not include interactive elements or JavaScript. Output pure HTML.
-
-            Now generate the HTML according to the above rules and the provided Context and Goal.
-
+Goal:
+{goal}
 
             """
                 )
@@ -152,7 +140,13 @@ async def generate(req: PromptRequest):
             "goal": req.user_prompt
         })
 
-    cleaned_html = output['text'].replace('\n', '').replace('\\"', '"')
+    text = output['text']
 
-
+    # cleaned_html = output['text'].replace('\n', '').replace('\\"', '"')
+    try: 
+        cleaned_html = json.loads(f'"{text}"')
+        print("here")
+    except: 
+        cleaned_html = output['text'].replace('\n', '').replace('\"', '"')
+    
     return {"document": cleaned_html} 
