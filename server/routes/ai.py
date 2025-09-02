@@ -111,19 +111,44 @@ You are an expert HTML generator for PDF export.
 Task:
 Create a full standalone HTML fragment that:
 - Uses Tailwind CSS (assume available).
-- Root: <div class="pdf-root selectable p-8 bg-white text-gray-900 max-w-4xl mx-auto" data-block-id="b_root">...</div>. Do not wrap the code inside html. use this root settings
-- Wrap each section (title, para, list, table, image, header/footer) in <div class="selectable" data-block-id="bX">...</div> with unique IDs.
-- Headings: h1 → text-3xl font-bold mb-4, h2 → text-xl font-semibold mb-2.
-- Paragraphs: text-base leading-relaxed mb-4.
-- Tables: w-full border border-gray-300 border-collapse text-sm, style="page-break-inside: avoid;".
-- Images: max-w-full h-auto rounded-lg mx-auto my-4. Use urls specified in the Goal and if not use sample urls if asked by the goal to use images.
-- Footer: text-sm text-gray-500 text-center mt-8, print-friendly.z (dont add if not told in the goal)
-- Add page-break support where you thing its necessary and page would break atp:
-  @media print curlyBraces
-    @page curclyBraces margin: 2cm; curlyBraces
-    .page-break curclyBraces break-after: page; margin-top: 2cm; curclyBraces
-  curclyBraces
-- No JS, no placeholders, no markdown, ``` before and after the code. Output raw HTML only.
+- Root must be:
+  <div class="pdf-root selectable p-8 bg-white text-black max-w-4xl mx-auto" data-block-id="b_root">...</div>
+  (Do not wrap with <html>, <head>, or <body>.)
+- Wrap each section (title, paragraph, list, table, image, header, footer) inside:
+  <div class="selectable" data-block-id="bX">...</div>
+  where each block-id is unique.
+- Headings:
+  • h1 → class="text-3xl font-bold mb-4"
+  • h2 → class="text-xl font-semibold mb-2"
+- Paragraphs: class="text-base leading-relaxed mb-4"
+- Tables:
+  • class="w-full border border-gray-300 border-collapse text-sm"
+  • Always add style="page-break-inside: avoid;"
+- Images:
+  • class="max-w-full h-auto rounded-lg mx-auto my-4"
+  • Use URLs provided in the Goal, otherwise sample URLs if Goal requests sample images.
+- Footer:
+  • class="text-sm text-gray-500 text-center mt-8 print-friendly"
+  • Only include if explicitly requested in the Goal.
+- Header:
+  • class="text-sm text-gray-500 text-center mt-8 print-friendly"
+  • Only include if explicitly requested in the Goal.
+- Page-break support:
+  Include this CSS at the top:
+    <style>
+    @media print {
+      @page { margin: 2cm; }
+      .page-break { break-after: page; margin-top: 2cm; }
+    }
+    </style>
+  By default:
+    • Insert at least one <div class="page-break"></div> after every 2–3 major sections (h1, table, or image) to ensure readability in PDF.
+    • If the Goal specifies custom page-breaks, follow those instructions exactly instead of defaults.
+
+Constraints:
+- Do not generate JavaScript.
+- Do not generate placeholders or markdown formatting.
+- Output raw HTML only (wrapped in ``` for code fencing).
 
 Context:
 {context}
