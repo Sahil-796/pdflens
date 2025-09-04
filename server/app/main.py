@@ -1,7 +1,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from routes.upload import router as upload_router
-from routes.ai import router as ai_router
+from server.app.routes.ai import router as ai_router
 
 
 

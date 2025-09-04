@@ -1,7 +1,7 @@
 import json
 from fastapi import APIRouter
 from dotenv import load_dotenv
-from config import index, embeddings
+from server.app.config import index, embeddings
 from pydantic import BaseModel
 
 from langchain_pinecone import PineconeVectorStore
@@ -86,6 +86,8 @@ async def edit(req: EditRequest):
 
 
     return {"document": cleaned_html} 
+
+
 
 
 @router.post('/generate')
