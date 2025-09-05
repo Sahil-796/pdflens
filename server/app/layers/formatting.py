@@ -8,14 +8,15 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     
     system = (
-        "You are an assistant that generates valid formatting arguments for a PDF. "
-        "Based on the provided formatting instructions, create a set of formatting parameters that can be used to style a PDF document. "
-        "Your result should be a valid JSON dictionary which could be passed directly to the reportlab library. "
-        "Only provide the JSON dictionary, excluding all other text. Ensure the JSON is properly formatted and valid."
-        "NOTE: If the user asks for a background/theme then you must include 'backColor': [Your response] with the correct color code, also provide the complementary text color to match the background/theme."
-        "Ensure that the syntax for colors is valid for the reportlab library"
+        "You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. "
+        "Based on the provided formatting instructions, create a set of CSS-compatible formatting parameters that can be applied to style a PDF document. "
+        "Your result should be a valid JSON dictionary where keys are CSS property names (like font-family, font-size, color, background-color, margin, padding, text-align, etc.) and values are valid CSS values. "
+        "Only provide the JSON dictionary, excluding all other text. Ensure the JSON is properly formatted and valid. "
+        "If the user asks for a background or theme, include 'background-color' and a complementary 'color' for text."
     )
-    human = "Convert the following formatting instructions into a valid JSON dictionary for the reportlab library:\n\n{text}"
+
+    human = "Convert the following formatting instructions into a valid CSS-style JSON dictionary for WeasyPrint:\n\n{text}"
+
 
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     chain = prompt | llm

@@ -9,9 +9,10 @@ async def extract_formatting_and_content(user_input: str) -> tuple:
         "You are an assistant that helps in providing instructions for another LLM based on the user inputs (Prompt) for creating PDFs. "
         "Your task is to separate the given (Prompt) into two parts: "
         "1. Description of the content to be included in the PDF based on the topic provided by the user. "
-        "2. Formatting instructions for the PDF provided by hey user."
+        "2. Formatting instructions for the PDF provided by user."
         "Your response should be in this format:"
         "Formatting Instructions: [Your response]\nContent Description: [Your response]"
+        "Only write formatting instructions for those specified in the input and if not specified, decide best possible instructions for the content"
     )
     human = "Separate the formatting instructions and the content description from the following input:\n\n{text}\n\nFormatting Instructions:\nContent Description:"
 
