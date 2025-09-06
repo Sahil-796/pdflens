@@ -4,7 +4,7 @@ from markdown_it import MarkdownIt
 
 from bs4 import BeautifulSoup
 
-def add_styles(soup: BeautifulSoup, formatting: dict):
+def add_styles(soup: BeautifulSoup, formatting: dict) -> str:
     tag_counters = {}
 
     for tag in soup.find_all(True):
@@ -32,16 +32,17 @@ def add_styles(soup: BeautifulSoup, formatting: dict):
         return str(soup)
     
 
-def create_html(content: str, formatting: str):
+def create_html(content: str, formatting: str) -> str:
 
     # md -> html -> pdf using MarkdownIt and weasyprint
 
     try:
         markdown = MarkdownIt()
         html_content = markdown.render(content)
-        final_html(html_content)
         soup = BeautifulSoup(html_content, 'html.parser')
         final_html = add_styles(soup, formatting)
+
+        return final_html
 
         
     except Exception as e:
