@@ -1,24 +1,49 @@
 import markdown2
+from markdown_it import MarkdownIt
 
-# from weasyprint import HTML
 
-# # Suppose html_content is generated from markdown
-# # and formatting_css is generated from LLM as JSON
-# css_styles = "\n".join([f"{k}: {v};" for k, v in formatting_css.items()])
-# html_with_style = f"<html><head><style>{css_styles}</style></head><body>{html_content}</body></html>"
+from bs4 import BeautifulSoup
 
-# pdf_bytes = HTML(string=html_with_style).write_pdf()
-# # pdf_bytes can now be returned in FastAPI response directly
+def add_styles(soup: BeautifulSoup, formatting: dict):
+    tag_counters = {}
 
+    for tag in soup.find_all(True):
+
+        tagName = tag.name
+        count = tag_counters[tagName] = tag_counters.get(tagName, 0) + 1
+
+        classKey = f"{tagName}-{count}"
+
+        global_style = formatting.get(tagName, {})
+        tag_style = formatting.get(classKey, {})
+
+        def merge_styles(global_styles: dict, elem_styles: dict) -> str:
+            """
+            Merge global and element-specific styles into a CSS string.
+            """
+            merged = {**global_styles, **elem_styles}
+            return "; ".join(f"{k}: {v}" for k, v in merged.items())
+        
+        style_str = merge_styles(global_style, tag_style)
+
+        tag["style"] = style_str
+        tag["id"] = classKey
+        tag["class"] = classKey
+        return str(soup)
+    
 
 def create_html(content: str, formatting: str):
-    
-    # md -> html -> pdf using markdown2.markdown and reportLabs
+
+    # md -> html -> pdf using MarkdownIt and weasyprint
 
     try:
-        html_content = markdown2.markdown(content, extras=['tables', 'fenced-code-blocks'])
+        markdown = MarkdownIt()
+        html_content = markdown.render(content)
+        final_html(html_content)
+        soup = BeautifulSoup(html_content, 'html.parser')
+        final_html = add_styles(soup, formatting)
 
-        pass
+        
     except Exception as e:
         print(f"An error occurred while creating the PDF: {e}")
         return ""
