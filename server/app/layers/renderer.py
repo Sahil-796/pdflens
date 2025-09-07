@@ -1,7 +1,4 @@
-import markdown2
 from markdown_it import MarkdownIt
-
-
 from bs4 import BeautifulSoup
 
 def add_styles(soup: BeautifulSoup, formatting: dict) -> str:
@@ -29,7 +26,7 @@ def add_styles(soup: BeautifulSoup, formatting: dict) -> str:
         tag["style"] = style_str
         tag["id"] = classKey
         tag["class"] = classKey
-        return str(soup)
+    return str(soup)
     
 
 def create_html(content: str, formatting: str) -> str:

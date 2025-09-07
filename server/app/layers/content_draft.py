@@ -1,7 +1,8 @@
+from dotenv import load_dotenv
+load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-
 async def create_draft(content_description: str) -> str: 
     
     # Generates detailed content based on the content description.  
@@ -18,7 +19,7 @@ async def create_draft(content_description: str) -> str:
 
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     chain = prompt | llm 
-    response = chain.invoke({"text": content_description})
+    response = await chain.ainvoke({"text": content_description})
     content = response.content.strip()
     print(f"LLM-Content:\n{content}\n")
     return content

@@ -1,8 +1,9 @@
 import re
+from dotenv import load_dotenv
+load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
-
 # for extracting formatting and content details from the user prompt.
 async def extract_formatting_and_content(user_input: str) -> tuple:
     system = (
@@ -18,7 +19,7 @@ async def extract_formatting_and_content(user_input: str) -> tuple:
 
     prompt = ChatPromptTemplate([("system", system), ("human", human)])
     chain = prompt | llm # take this prompt and pipe it into the llm. | -> is pipe
-    response = chain.invoke({"text": user_input})
+    response = await chain.ainvoke({"text": user_input})
     result = response.content.strip()
 
     # regex for matching required content 
