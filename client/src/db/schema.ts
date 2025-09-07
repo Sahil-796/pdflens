@@ -1,6 +1,7 @@
 import { pgTable, pgEnum, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
 export const planEnum = pgEnum("plan", ["free", "premium"]);
+export const statusEnum = pgEnum("status", ["pending", "completed", "failed"]);
 
 // USERS TABLE 
 export const users = pgTable("users", {
@@ -18,7 +19,7 @@ export const pdfs = pgTable("pdfs", {
     .references(() => users.id),               // FK to users
   fileName: text("file_name").notNull(),       // Name of the PDF file
   htmlContent: text("html_content").notNull(), // HTML content string
-  pdfUrl: text("pdf_url"),                     // link to stored PDF
-  status: text("status").default("completed"), // status of PDF generation
+  pdfUrl: text("pdf_url").default(""),                     // link to stored PDF
+  status: statusEnum("status").default("pending").notNull(), // status of PDF generation
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
