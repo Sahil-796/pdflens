@@ -1,19 +1,24 @@
+import { pgTable, pgEnum, uuid, text, timestamp } from "drizzle-orm/pg-core";
 
-import { pgTable, uuid, text, timestamp } from "drizzle-orm/pg-core";
-import { authUsers } from "drizzle-orm/supabase";
+export const planEnum = pgEnum("plan", ["free", "premium"]);
 
-export const users = pgTable('users', {
-  id: uuid('id').primaryKey().notNull(),
-  fullName: text('full_name'),
-  email: text('email'),
-  pdfIds: text('pdf_ids').array().default([]),
-  pdfNames: text('pdf_names').array().default([]),
+// USERS TABLE 
+export const users = pgTable("users", {
+  id: uuid("id").primaryKey().notNull(),        // Unique user ID
+  fullName: text("full_name").notNull(),        // User's full name
+  email: text("email").notNull().unique(),
+  plan: planEnum("plan").default("free").notNull(),      
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
+// PDFS TABLE
 export const pdfs = pgTable("pdfs", {
-    id: uuid("id").primaryKey(),
-    userId: uuid("user_id").references(()=> users.id).notNull(),
-    fileName: text("file_name").notNull(),
-    htmlContent: text("html_content").notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true}).defaultNow(),
-})
+  id: uuid("id").primaryKey().notNull(),        // Unique PDF ID
+  userId: uuid("user_id").notNull()
+    .references(() => users.id),               // FK to users
+  fileName: text("file_name").notNull(),       // Name of the PDF file
+  htmlContent: text("html_content").notNull(), // HTML content string
+  pdfUrl: text("pdf_url"),                     // link to stored PDF
+  status: text("status").default("completed"), // status of PDF generation
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});

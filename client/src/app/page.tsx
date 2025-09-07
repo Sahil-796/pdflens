@@ -1,24 +1,14 @@
 "use client"
 
-import { createClient } from "@supabase/supabase-js";
+import axios from "axios"
+import { useEffect, useState } from "react";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+
 
 const handleLogin: any = async () => {
   try {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-            redirectTo: `http://localhost:3000/api/callback`
-            }
-         });
 
-        if (error) {
-            console.error('Login error:', error.message);
-          }
+
         } catch (err) {
             
         }
@@ -26,13 +16,34 @@ const handleLogin: any = async () => {
 
 export default function Page() {
 
+  const [resp, setResp] = useState<any>("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.post('http://localhost:8000/ai/generate', {
+          user_id: "sahil",
+          iscontext: true,
+          user_prompt: `write a document which has a project definition exactly like this - Many regions face water scarcity and unmonitored consumption. Reservoir levels, rainfall, crop demand, and population usage data are not integrated, leading to shortages and inefficient water allocation. use the db schema from context they are all like Table and such use all that schema exactly like it they are water related tables. and keep a sample image for er diagram section. use url https://i.ibb.co/W4q9rT33/er-krish.png`
+        });
+        setResp(response.data);
+      } catch (err) {
+        setResp("Error fetching data");
+      }
+    };
+
+    fetchData();
+  }, []);
   return (
     <div>
-      <button
-        onClick={handleLogin}
-      >
-        Login with Google
-      </button>
+    {/*  //   <button
+    //     onClick={handleLogin}
+    //   > 
+    //     Login with Google
+    //   </button> */}
+
+    {resp.document}
+    
     </div>
   );
 }
