@@ -2,8 +2,7 @@ export default function Page() {
 
   return (
     <div>
-       hi
-    
+      hi
     </div>
   );
 }
