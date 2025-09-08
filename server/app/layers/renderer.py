@@ -34,7 +34,7 @@ def create_html(content: str, formatting: str) -> str:
     # md -> html -> pdf using MarkdownIt and weasyprint
 
     try:
-        markdown = MarkdownIt()
+        markdown = MarkdownIt().enable(['sub','sup','table'])
         html_content = markdown.render(content)
         soup = BeautifulSoup(html_content, 'html.parser')
         final_html = add_styles(soup, formatting)

@@ -8,7 +8,7 @@ async def create_draft(content_description: str) -> str:
     # Generates detailed content based on the content description.  
 
     system = (
-        "Your job is to create detailed contents for PDFs including comprehensive information about the provided topic. "
+        "You are a subject matter expert writing a pro handbook. Create comprehensive, authoritative content with practical egs, case studies and actionable insights."
         "Based on the provided description, generate in-depth and informative content about that topic which is to be included in a PDF document. "
         "Ensure the content is detailed, well-structured, and contains substantial information to satisfy the user's needs. "
         "You must also create tables/lists where relevant. "
