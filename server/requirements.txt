@@ -4,5 +4,10 @@ python-dotenv
 langchain
 langchain-community
 langchain-google-genai
+langchain-core
+langchain-pinecone
 pinecone
-PyMuPDF  # Required by PyPDFLoader
+PyMuPDF  
+bs4
+markdown-it-py
+pydantic
