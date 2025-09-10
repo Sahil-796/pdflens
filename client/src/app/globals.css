@@ -181,10 +181,13 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
     letter-spacing: var(--tracking-normal);
   }
 }
