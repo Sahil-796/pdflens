@@ -11,7 +11,7 @@ import { ThemeToggle } from './ThemeButton'
 
 const Navbar = () => {
     return (
-        <nav className='fixed top-0 left-0 w-full z-50 flex items-center justify-between px-10 shadow-md'>
+        <nav className='bg-background fixed top-0 left-0 w-full z-50 flex items-center justify-between px-10 shadow-md'>
             <Link href='/' className='font-bold'>
                 PDF Lens
             </Link>

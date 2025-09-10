@@ -1,6 +1,6 @@
 'use client'
+import { generateHTML } from '@/app/api/generateHTML/route'
 import React, { useState } from 'react'
-import { generateHTML } from '../api/generateHTML/route'
 
 const Generation = () => {
   const [input, setInput] = useState('')
@@ -9,7 +9,9 @@ const Generation = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return
+    console.log('in handleSend')
     const generated = await generateHTML(input)
+    console.log(generated)
     setHtml(generated)
   }
 
@@ -19,7 +21,7 @@ const Generation = () => {
   }
 
   return (
-    <div className="flex p-6 text-foreground gap-6 bg-background min-h-screen">
+    <div className="flex p-6 pt-22 text-foreground gap-6 bg-background h-screen">
       {/* Left Side: Inputs */}
       <div className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border">
         <h2 className="text-xl font-semibold">Generate PDF</h2>
@@ -66,10 +68,10 @@ const Generation = () => {
       </div>
 
       {/* Right Side: Output */}
-      <div className="flex-1 bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
+      <div className="flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
         <h2 className="text-xl font-semibold mb-4">PDF Preview</h2>
         <div
-          className="mx-auto w-full min-h-[1000px] bg-background border border-border rounded-md text-foreground p-6"
+          className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6"
           dangerouslySetInnerHTML={{ __html: html }}
         />
       </div>
