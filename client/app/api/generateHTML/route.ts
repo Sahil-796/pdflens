@@ -1,6 +1,6 @@
 export async function generateHTML(input: string) {
-    const BASE_URL = process.env.BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`http://localhost:8000/ai/generate`, {
+    const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/ai/generate'
+    const res = await fetch(BASE_URL, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
