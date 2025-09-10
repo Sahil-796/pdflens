@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 async def refine_structure(content_description: str, initial_content: str) -> str:
 
     system = (

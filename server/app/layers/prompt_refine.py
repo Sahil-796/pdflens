@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
+llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 # for extracting formatting and content details from the user prompt.
 async def extract_formatting_and_content(user_input: str) -> tuple:
     system = (
