@@ -8,6 +8,7 @@ import {
 } from '@clerk/nextjs'
 import Link from 'next/link'
 import { ThemeToggle } from './ThemeButton'
+import ClientThemeToggle from './ClientThemeButton'
 
 const Navbar = () => {
     return (
@@ -36,6 +37,7 @@ const Navbar = () => {
                     <UserButton />
                 </SignedIn>
             </header>
+            <ClientThemeToggle />
             <ThemeToggle />
         </nav>
     )

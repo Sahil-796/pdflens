@@ -37,7 +37,7 @@ const Generation = () => {
 
         <button
           onClick={handleSend}
-          className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition"
+          className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer"
         >
           Generate
         </button>
