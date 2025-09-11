@@ -1,5 +1,5 @@
 'use client'
-import { generateHTML } from '@/app/api/generateHTML/route'
+// import { generateHTML } from '@/app/api/generateHTML/route'
 import React, { useState } from 'react'
 
 const Generation = () => {
@@ -10,9 +10,9 @@ const Generation = () => {
   const handleSend = async () => {
     if (!input.trim()) return
     console.log('in handleSend')
-    const generated = await generateHTML(input)
-    console.log(generated)
-    setHtml(generated)
+    // const generated = await generateHTML(input)
+    // console.log(generated)
+    // setHtml(generated)
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
