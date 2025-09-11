@@ -185,10 +185,23 @@
     padding: 0;
     box-sizing: border-box;
   }
+
   body {
     background-color: var(--primary);
     color: var(--primary-foreground);
     letter-spacing: var(--tracking-normal);
+  }
+
+  [id]:hover {
+    outline: 2px solid blue;
+    /* blue border on hover */
+    cursor: pointer;
+  }
+
+  .selected {
+    outline: 2px solid blue;
+    background-color: rgba(0, 0, 255, 0.1);
+    /* subtle background highlight */
   }
 }
 
@@ -196,6 +209,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }

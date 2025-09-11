@@ -71,6 +71,20 @@ const Generation = () => {
       <div className="flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
         <h2 className="text-xl font-semibold mb-4">PDF Preview</h2>
         <div
+          onClick={(e) => {
+            const target = e.target as HTMLElement
+            if (target.id) {
+              console.log("Clicked ID:", target.id)
+
+              // remove old highlights
+              document.querySelectorAll(".selected").forEach(el => {
+                el.classList.remove("selected")
+              })
+
+              // add new highlight
+              target.classList.add("selected")
+            }
+          }}
           className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6"
           dangerouslySetInnerHTML={{ __html: html }}
         />
