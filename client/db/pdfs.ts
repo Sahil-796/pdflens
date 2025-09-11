@@ -1,5 +1,5 @@
 import { db } from "./client"
-import { users, pdfs } from "./schema"
+import { users, pdf } from "./schema"
 import { eq, lt, gte, ne, sql } from 'drizzle-orm';
 
 
@@ -7,11 +7,10 @@ export const createPdfPending = async (
   id: string,
   userId: string,
   fileName: string,
-  htmlContent: string
 ) => {
   try {
     const [newPdf] = await db
-      .insert(pdfs)
+      .insert(pdf)
       .values({
         id,
         userId,
@@ -28,7 +27,7 @@ export const createPdfPending = async (
     }
 }
 
-export const updatePdfStatus = async (
+export const updatepdftatus = async (
   id: string,
   status: "completed" | "failed",
   htmlContent?: string,
@@ -36,13 +35,13 @@ export const updatePdfStatus = async (
 ) => {
   try {
     const [updatedPdf] = await db
-      .update(pdfs)
+      .update(pdf)
       .set({
         status,
         htmlContent: htmlContent ?? "",
         pdfUrl: pdfUrl ?? null
       })
-      .where(eq(pdfs.id, id))
+      .where(eq(pdf.id, id))
       .returning();
 
     return updatedPdf;
@@ -52,19 +51,19 @@ export const updatePdfStatus = async (
 };
 
 
-export const getAllPdfs = async(userId: string) => {
+export const getAllpdf = async(userId: string) => {
     try {
-        const [allPdfs] = await db.select().from(pdfs).where(eq(pdfs.userId, userId))
-        return [allPdfs]
+        const [allpdf] = await db.select().from(pdf).where(eq(pdf.userId, userId))
+        return [allpdf]
     } catch (err) {
-        throw new Error(`Failed to get pdfs: ${err}`)
+        throw new Error(`Failed to get pdf: ${err}`)
     }
 }
 
 export const getPdf = async(pdfId: string) => {
     try {
-        const [pdf] = await db.select().from(pdfs).where(eq(pdfs.id, pdfId))
-        return pdf
+        const [currPdf] = await db.select().from(pdf).where(eq(pdf.id, pdfId))
+        return currPdf
     } catch (err) {
         throw new Error(`Failed to get pdf : ${err}`)
     }

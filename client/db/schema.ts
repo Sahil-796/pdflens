@@ -13,7 +13,7 @@ export const users = pgTable("users", {
 });
 
 // PDFS TABLE
-export const pdfs = pgTable("pdfs", {
+export const pdf = pgTable("pdf", {
   id: uuid("id").primaryKey().notNull(),        // Unique PDF ID
   userId: uuid("user_id").notNull()
     .references(() => users.id),               // FK to users
@@ -23,3 +23,9 @@ export const pdfs = pgTable("pdfs", {
   status: statusEnum("status").default("pending").notNull(), // status of PDF generation
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
+
+export const context = pgTable("context", {
+  id: uuid("id").primaryKey().notNull(),
+  pdfId: uuid("pdf_id").notNull().references(()=> pdf.id),
+  files: text('files').array(),
+})
