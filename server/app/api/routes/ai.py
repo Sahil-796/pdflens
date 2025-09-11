@@ -1,6 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Header, HTTPException
 from pydantic import BaseModel
 from app.layers import workflow
+from dotenv import load_dotenv
+load_dotenv()
+import os
+secret = os.getenv("secret")
+
 # from langchain_pinecone import PineconeVectorStore
 
 
@@ -26,7 +31,10 @@ router = APIRouter(
 )
 
 @router.post('/generate')
-async def generate(req: PromptRequest):
+async def generate(req: PromptRequest, x_api_key: str = Header(...)):
+
+    if x_api_key != secret:
+        raise HTTPException(status_code=401, detail="Unauthorized")
 
     try:
         html = await workflow(req.user_prompt)
@@ -34,7 +42,7 @@ async def generate(req: PromptRequest):
     except Exception as e:
         return f"Error : {e}"
 
-    pass
+    
 
 
 # @router.post('/edit')
