@@ -10,6 +10,7 @@ const Generation = () => {
   const handleSend = async () => {
     if (!input.trim()) return
     console.log('in handleSend')
+    // const generated = await 
     // const generated = await generateHTML(input)
     // console.log(generated)
     // setHtml(generated)
