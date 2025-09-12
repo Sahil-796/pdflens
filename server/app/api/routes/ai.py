@@ -11,8 +11,9 @@ secret = os.getenv("X_API_KEY")
 
 class PromptRequest(BaseModel):
     user_prompt: str
-    # iscontext: bool
+    pdfname: str
     user_id: str
+    isContext: bool
 
 # class EditRequest(BaseModel):
 #     user_prompt: str
@@ -37,7 +38,7 @@ async def generate(req: PromptRequest, x_api_key: str = Header(...)):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     try:
-        html = await workflow(req.user_prompt)
+        html = await workflow(req)
         return html
     except Exception as e:
         return f"Error : {e}"
