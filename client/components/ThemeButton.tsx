@@ -16,20 +16,24 @@ const darkThemes = ["verceldark", "t3chatdark", "doom64dark"]
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme()
-  const [themeIndex, setThemeIndex] = useState(0)
+  const [themeIndex, setThemeIndex] = useState<number | null>(null) // null until mounted
 
   // Load saved theme index on mount
   useEffect(() => {
     const saved = localStorage.getItem("themeIndex")
-    if (saved) setThemeIndex(Number(saved))
+    setThemeIndex(saved ? Number(saved) : 0)
   }, [])
 
-  // Update body class whenever theme or index changes
+  // Update body class + persist selection
   useEffect(() => {
+    if (themeIndex === null) return
     localStorage.setItem("themeIndex", themeIndex.toString())
     const currentThemes = theme === "dark" ? darkThemes : lightThemes
     document.body.className = currentThemes[themeIndex]
   }, [theme, themeIndex])
+
+  // Don’t render until hydration is done
+  if (themeIndex === null) return null
 
   return (
     <div className="flex items-center gap-2">

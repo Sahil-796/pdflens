@@ -1,5 +1,4 @@
 'use client'
-// import { generateHTML } from '@/app/api/generateHTML/route'
 import React, { useState } from 'react'
 
 const Generation = () => {
@@ -9,11 +8,32 @@ const Generation = () => {
 
   const handleSend = async () => {
     if (!input.trim()) return
-    console.log('in handleSend')
-    // const generated = await 
-    // const generated = await generateHTML(input)
-    // console.log(generated)
-    // setHtml(generated)
+
+    console.log("in handleSend")
+    try {
+      const res = await fetch("/api/generateHTML", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: "shail7", // get from auth/session ideally
+          user_prompt: input,
+        }),
+      })
+
+      if (!res.ok) {
+        throw new Error("Failed to generate HTML")
+      }
+
+      const data = await res.json()
+      console.log("Generated:", data)
+
+      // If your Python API returns { html: "<p>…</p>" }
+      setHtml(data ?? "setHTML not happening")
+    } catch (err) {
+      console.error("Error in handleSend:", err)
+      setHtml("Error occurred while generating HTML")
+    }
+    console.log("completed")
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +89,7 @@ const Generation = () => {
       </div>
 
       {/* Right Side: Output */}
-      <div className="flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
+      <div className="preview flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
         <h2 className="text-xl font-semibold mb-4">PDF Preview</h2>
         <div
           onClick={(e) => {

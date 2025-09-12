@@ -630,14 +630,19 @@ body.doom64 {
     letter-spacing: var(--tracking-normal);
   }
 
-  [id]:hover {
-    outline: 2px solid blue;
-    /* blue border on hover */
+  .preview [id]:hover {
+    outline: 2px solid var(--primary);
+    border-radius: var(--radius);
     cursor: pointer;
   }
 
-  .selected {
-    outline: 2px solid blue;
+  .preview .selected {
+    padding: 2px;
+    margin: 2px;
+    outline: 2px solid var(--primary);
+    border-radius: var(--radius);
     background-color: rgba(0, 0, 255, 0.1);
+    color: var(--card);
+    background-color: var(--card-foreground);
   }
 }
