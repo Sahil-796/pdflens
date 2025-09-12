@@ -33,7 +33,7 @@ router = APIRouter(
 @router.post('/generate')
 async def generate(req: PromptRequest, x_api_key: str = Header(...)):
 
-    if x_api_key != 'any random key here':
+    if x_api_key != secret:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     try:
