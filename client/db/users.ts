@@ -1,5 +1,6 @@
+import { use } from "react";
 import { db } from "./client"
-import { users } from "./schema"
+import { users, pdf } from "./schema"
 import { eq, lt, gte, ne } from 'drizzle-orm';
 
 export const createUser = async (id: string, fullName: string, email: string) => {
@@ -17,7 +18,8 @@ export const createUser = async (id: string, fullName: string, email: string) =>
 export const getUser = async (id: string) => {
     try {
         const [user] = await db.select().from(users).where(eq(users.id, id))
-        return user
+        const pdfs = await db.select().from(pdf).where(eq(pdf.userId, user.id))
+        return {user, pdfs}
     } catch (err) {
         throw new Error(`Failed to get user : ${err}`)
     }
