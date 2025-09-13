@@ -3,16 +3,13 @@ import { useUser } from '@clerk/nextjs'
 import React, { useState } from 'react'
 import DownloadPDF from './functionalities/DownloadPDF'
 import SavePDF from './functionalities/SavePDF'
-import dynamic from 'next/dynamic'
 
 const Generate = () => {
   const [input, setInput] = useState('')
   const [html, setHtml] = useState('')
   const [files, setFiles] = useState<File[]>([])
-  const [pdfName, setPdfName] = useState('MyPDF')
+  const [pdfName, setPdfName] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const DownloadWin = dynamic(() => import('./functionalities/DownloadPDF'), { ssr: false })
 
   const handleSend = async () => {
     if (!input.trim()) return
@@ -47,7 +44,7 @@ const Generate = () => {
   }
 
   return (
-    <div className="flex p-6 pt-22 text-foreground gap-6 bg-background h-screen">
+    <div className="flex p-6 text-foreground gap-6 bg-background h-screen">
       {/* Left Side: Inputs */}
       <div className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border">
         <h2 className="text-xl font-semibold">Generate PDF</h2>
@@ -83,7 +80,7 @@ const Generate = () => {
 
         <div className="flex gap-2">
 
-          <DownloadWin html={html} pdfName={pdfName} />
+          <DownloadPDF html={html} pdfName={pdfName} />
 
           <SavePDF html={html} pdfName={pdfName} />
 

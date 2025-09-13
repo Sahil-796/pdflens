@@ -1,16 +1,34 @@
-'use client'
-import html2pdf from 'html2pdf.js'
-import React from 'react'
+"use client";
+import React from "react";
 
-const DownloadPDF = ({ html, pdfName }: { html: string, pdfName: string }) => {
-    const handleDownload = () => {
-        if (!html) return
-        const element = document.createElement("div")
-        element.innerHTML = html
-        element.style.color = "black"; // override problematic styles
-        element.style.backgroundColor = 'white'
-        html2pdf().from(element).toPdf().save(`${pdfName || "document"}.pdf`)
+const DownloadPDF = ({ html, pdfName }: { html: string; pdfName: string }) => {
+    async function handleDownload() {
+        if (!html) return;
+
+        // ✅ Wrap HTML in a div with padding
+        const wrapper = document.createElement("div");
+        wrapper.style.padding = "16px";
+        wrapper.innerHTML = html;
+
+        // Send wrapped HTML
+        const res = await fetch("/api/downloadPDF", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ html: wrapper.outerHTML }),
+        });
+
+        if (res.ok) {
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${pdfName || "document"}.pdf`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
     }
+
     return (
         <button
             onClick={handleDownload}
@@ -18,7 +36,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string, pdfName: string }) => {
         >
             Download
         </button>
-    )
-}
+    );
+};
 
-export default DownloadPDF
+export default DownloadPDF;

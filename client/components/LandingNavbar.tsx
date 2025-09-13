@@ -186,7 +186,7 @@ const LandingNavbar = () => {
             {/* Clerk Authentication Buttons */}
             <div className="hidden md:flex items-center gap-4">
                 <SignedOut>
-                    <SignInButton forceRedirectUrl='/dashboard'>
+                    <SignInButton forceRedirectUrl='/mypdf'>
                         <button
                             className="px-4 py-2 rounded-lg font-semibold transition-all duration-150 hover:scale-105"
                             style={{
@@ -198,7 +198,7 @@ const LandingNavbar = () => {
                             Sign In
                         </button>
                     </SignInButton>
-                    <SignUpButton forceRedirectUrl='/dashboard'>
+                    <SignUpButton forceRedirectUrl='/mypdf'>
                         <button
                             className="px-4 py-2 rounded-lg font-semibold transition-all duration-150 hover:scale-105"
                             style={{
@@ -246,7 +246,7 @@ const LandingNavbar = () => {
                         <div className="pt-4 border-t" style={{ borderColor: "var(--border, #e5e7eb)" }}>
                             <SignedOut>
                                 <div className="space-y-2">
-                                    <SignInButton forceRedirectUrl='/dashboard'>
+                                    <SignInButton forceRedirectUrl='/mypdf'>
                                         <button
                                             className="w-full px-4 py-2 rounded-lg font-semibold"
                                             style={{
@@ -258,7 +258,7 @@ const LandingNavbar = () => {
                                             Sign In
                                         </button>
                                     </SignInButton>
-                                    <SignUpButton forceRedirectUrl='/dashboard'>
+                                    <SignUpButton forceRedirectUrl='/mypdf'>
                                         <button
                                             className="w-full px-4 py-2 rounded-lg font-semibold"
                                             style={{
