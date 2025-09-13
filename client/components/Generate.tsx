@@ -1,6 +1,9 @@
 'use client'
+import { useUser } from '@clerk/nextjs'
 import React, { useState } from 'react'
-import html2pdf from 'html2pdf.js'
+import DownloadPDF from './functionalities/DownloadPDF'
+import SavePDF from './functionalities/SavePDF'
+import dynamic from 'next/dynamic'
 
 const Generate = () => {
   const [input, setInput] = useState('')
@@ -9,18 +12,18 @@ const Generate = () => {
   const [pdfName, setPdfName] = useState('MyPDF')
   const [loading, setLoading] = useState(false)
 
+  const DownloadWin = dynamic(() => import('./functionalities/DownloadPDF'), { ssr: false })
+
   const handleSend = async () => {
     if (!input.trim()) return
-
     setLoading(true)
     try {
       const res = await fetch("/api/generateHTML", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: "shail7", // later from Clerk
+          user_id: 'sahil7',
           user_prompt: input,
-          pdf_name: pdfName,
         }),
       })
 
@@ -41,24 +44,6 @@ const Generate = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return
     setFiles(Array.from(e.target.files))
-  }
-
-  const handleDownload = () => {
-    if (!html) return
-    const element = document.createElement("div")
-    element.innerHTML = html
-    html2pdf().from(element).save(`${pdfName || "document"}.pdf`)
-  }
-
-  const handleSave = () => {
-    // Later: save to DB with Clerk user_id
-    alert(`Saved "${pdfName}"! (mock action)`)
-  }
-
-  const handleShare = () => {
-    const shareLink = `${window.location.origin}/pdf/${encodeURIComponent(pdfName)}`
-    navigator.clipboard.writeText(shareLink)
-    alert("Share link copied to clipboard!")
   }
 
   return (
@@ -97,24 +82,11 @@ const Generate = () => {
         </button>
 
         <div className="flex gap-2">
-          <button
-            onClick={handleDownload}
-            className="bg-secondary text-secondary-foreground rounded-md py-2 px-4 hover:bg-secondary/90 transition cursor-pointer"
-          >
-            Download
-          </button>
-          <button
-            onClick={handleSave}
-            className="bg-accent text-accent-foreground rounded-md py-2 px-4 hover:bg-accent/90 transition cursor-pointer"
-          >
-            Save
-          </button>
-          <button
-            onClick={handleShare}
-            className="bg-muted text-muted-foreground rounded-md py-2 px-4 hover:bg-muted/90 transition cursor-pointer"
-          >
-            Share
-          </button>
+
+          <DownloadWin html={html} pdfName={pdfName} />
+
+          <SavePDF html={html} pdfName={pdfName} />
+
         </div>
 
         {/* File Upload */}
@@ -154,13 +126,15 @@ const Generate = () => {
             onClick={(e) => {
               const target = e.target as HTMLElement
               if (target.id) {
+                console.log("Clicked ID:", target.id)
+
                 document.querySelectorAll(".selected").forEach(el => {
                   el.classList.remove("selected")
                 })
                 target.classList.add("selected")
               }
             }}
-            className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6"
+            className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6 "
             dangerouslySetInnerHTML={{ __html: html }}
           />
         )}

@@ -619,7 +619,6 @@ body.doom64 {
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -634,15 +633,16 @@ body.doom64 {
     outline: 2px solid var(--primary);
     border-radius: var(--radius);
     cursor: pointer;
+    background-color: rgba(0, 123, 255, 0.1);
+    transition: all 0.2s ease;
   }
 
   .preview .selected {
-    padding: 2px;
-    margin: 2px;
     outline: 2px solid var(--primary);
     border-radius: var(--radius);
-    background-color: rgba(0, 0, 255, 0.1);
-    color: var(--card);
-    background-color: var(--card-foreground);
+    background-color: rgba(0, 123, 255, 0.2);
+    color: var(--foreground);
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+    transition: all 0.2s ease;
   }
 }
