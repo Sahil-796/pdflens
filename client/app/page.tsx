@@ -1,8 +1,6 @@
-import { redirect } from "next/navigation"
 
-export default function Page() {
+export default function page() {
 
-  redirect('/generate')
   return (
     <div className="min-h-screen w-full">
       Landing

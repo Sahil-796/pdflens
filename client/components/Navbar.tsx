@@ -7,7 +7,7 @@ import {
     UserButton,
 } from '@clerk/nextjs'
 import Link from 'next/link'
-import ThemeToggle from './ThemeButton'
+import ThemeToggle from './ThemeStyle'
 
 const Navbar = () => {
     return (
@@ -15,10 +15,6 @@ const Navbar = () => {
             <Link href='/' className='font-bold'>
                 PDF Lens
             </Link>
-            <div className='flex items-center gap-6'>
-                <Link href='/generate'>Generate PDF</Link>
-                <Link href='/edit'>Edit your PDF</Link>
-            </div>
             <header className="flex justify-end items-center p-4 gap-4 h-16">
                 <SignedOut>
                     <SignInButton>
@@ -36,7 +32,6 @@ const Navbar = () => {
                     <UserButton />
                 </SignedIn>
             </header>
-            <ThemeToggle />
         </nav>
     )
 }

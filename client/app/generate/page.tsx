@@ -1,5 +1,5 @@
+import Generation from '@/components/Generation'
 import React from 'react'
-import Generation from '../../components/Generation'
 
 const page = () => {
   return (

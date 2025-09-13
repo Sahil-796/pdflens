@@ -14,33 +14,15 @@ function page() {
   ])
 
   return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] p-6 pt-22 ">
-      {/* Top Section: Profile + Subscription */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="col-span-2 p-4 border rounded-lg bg-[var(--card)] border-[var(--border)]">
-          <h2 className="text-lg font-semibold text-[var(--primary)] mb-2">Welcome back 👋</h2>
-          <p className="text-sm">shail7@example.com</p>
-          <p className="text-sm mt-1">Total PDFs: {pdfs.length}</p>
-        </div>
-
-        <div className="p-4 border rounded-lg bg-[var(--card)] border-[var(--border)]">
-          <h2 className="text-lg font-semibold text-[var(--secondary)] mb-2">Subscription</h2>
-          <p className="text-sm">Plan: <span className="font-semibold">Pro</span></p>
-          <p className="text-sm">Renewal: 15 Oct 2025</p>
-          <button className="mt-2 px-3 py-1 rounded bg-[var(--primary)] text-white text-sm">
-            Upgrade
-          </button>
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground p-6 pt-22 ">
       {/* Quick Tools */}
-      <div className="p-4 border rounded-lg bg-[var(--card)] border-[var(--border)] mb-6">
-        <h2 className="text-lg font-semibold text-[var(--primary)] mb-3">Quick Tools</h2>
+      <div className="p-4 border rounded-lg bg-card border-border mb-6">
+        <h2 className="text-lg font-semibold text-primary mb-3">Quick Tools</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {["Upload PDF", "Merge PDF", "Split PDF", "Compress PDF"].map((tool) => (
             <button
               key={tool}
-              className="p-3 rounded-lg border border-[var(--border)] bg-[var(--muted)] hover:bg-[var(--secondary)] hover:text-white transition"
+              className="p-3 rounded-lg border border-border bg-muted hover:bg-secondary hover:text-white transition"
             >
               {tool}
             </button>
@@ -51,19 +33,19 @@ function page() {
       {/* Main Section: PDFs + Favorites + Shared */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* PDF Management */}
-        <div className="col-span-2 p-4 border rounded-lg bg-[var(--card)] border-[var(--border)]">
-          <h2 className="text-lg font-semibold text-[var(--primary)] mb-3">Recent PDFs</h2>
+        <div className="col-span-2 p-4 border rounded-lg bg-card border-border">
+          <h2 className="text-lg font-semibold text-primary mb-3">Recent PDFs</h2>
           <ul className="space-y-2">
             {pdfs.map((pdf) => (
               <li
                 key={pdf.id}
-                className="flex justify-between items-center p-2 border rounded bg-[var(--muted)] border-[var(--border)]"
+                className="flex justify-between items-center p-2 border rounded bg-muted border-border"
               >
                 <div>
                   <p className="font-medium">{pdf.name}</p>
-                  <p className="text-xs text-[var(--secondary)]">{pdf.date} • {pdf.size}</p>
+                  <p className="text-xs text-secondary">{pdf.date} • {pdf.size}</p>
                 </div>
-                <button className="text-sm px-2 py-1 rounded bg-[var(--primary)] text-white">Open</button>
+                <button className="text-sm px-2 py-1 rounded bg-primary text-white">Open</button>
               </li>
             ))}
           </ul>
@@ -72,25 +54,25 @@ function page() {
         {/* Right Sidebar */}
         <div className="space-y-6">
           {/* Favorites */}
-          <div className="p-4 border rounded-lg bg-[var(--card)] border-[var(--border)]">
-            <h2 className="text-lg font-semibold text-[var(--primary)] mb-3">Favorites ⭐</h2>
+          <div className="p-4 border rounded-lg bg-card border-border">
+            <h2 className="text-lg font-semibold text-primary mb-3">Favorites ⭐</h2>
             <ul className="space-y-2">
               {favorites.map((fav) => (
                 <li
                   key={fav.id}
-                  className="flex justify-between items-center p-2 border rounded bg-[var(--muted)] border-[var(--border)]"
+                  className="flex justify-between items-center p-2 border rounded bg-muted border-border"
                 >
                   <p>{fav.name}</p>
-                  <button className="text-sm px-2 py-1 rounded bg-[var(--secondary)] text-white">Open</button>
+                  <button className="text-sm px-2 py-1 rounded bg-secondary text-white">Open</button>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Shared PDFs */}
-          <div className="p-4 border rounded-lg bg-[var(--card)] border-[var(--border)]">
-            <h2 className="text-lg font-semibold text-[var(--primary)] mb-3">Shared With Me</h2>
-            <p className="text-sm text-[var(--secondary)]">No shared PDFs yet</p>
+          <div className="p-4 border rounded-lg bg-card border-border">
+            <h2 className="text-lg font-semibold text-primary mb-3">Shared With Me</h2>
+            <p className="text-sm text-secondary">No shared PDFs yet</p>
           </div>
         </div>
       </div>
