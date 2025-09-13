@@ -12,9 +12,12 @@ import {
 import { ChevronDown } from "lucide-react";
 import ThemeStyle from "@/components/ThemeStyle";
 import { Button } from "./ui/button";
+import { redirect } from "next/navigation";
 
 export default function CurrentUser() {
   const { user } = useUser();
+
+  // if(!user) redirect('/')
 
   return (
     <>

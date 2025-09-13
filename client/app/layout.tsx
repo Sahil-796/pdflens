@@ -36,17 +36,10 @@ export default function RootLayout({
                         attribute="class"
                         defaultTheme="dark"
                         enableSystem
-                    disableTransitionOnChange
+                        disableTransitionOnChange
                     >
                         <ThemeStyleProvider>
-                            <div className="flex h-screen w-screen">
-                                {/* Sidebar */}
-                                <Sidebar />
-                                {/* Main Content */}
-                                <main className="flex-1 overflow-auto bg-background text-foreground">
-                                    {children}
-                                </main>
-                            </div>
+                            {children}
                         </ThemeStyleProvider>
                     </ThemeProvider>
                 </body>
