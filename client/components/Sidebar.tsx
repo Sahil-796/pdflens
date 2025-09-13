@@ -1,6 +1,7 @@
 import React from "react"
 import CurrentUser from "./CurrentUser"
 import ThemeToggle from "./ThemeToggle"
+import Link from "next/link"
 
 const Sidebar = () => {
     return (
@@ -27,9 +28,9 @@ const Sidebar = () => {
                 <button className="px-3 py-2 rounded-md hover:bg-accent text-left transition">
                     Trash
                 </button>
-                <button className="px-3 py-2 rounded-md hover:bg-accent text-left transition">
+                <Link href={'/generate'} className="px-3 py-2 rounded-md hover:bg-accent text-left transition">
                     Create PDF
-                </button>
+                </Link>
                 <button className="px-3 py-2 rounded-md hover:bg-accent text-left transition">
                     Edit PDF
                 </button>

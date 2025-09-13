@@ -1,10 +1,10 @@
-import Generation from '@/components/Generation'
+import Generate from '@/components/Generate'
 import React from 'react'
 
 const page = () => {
   return (
     <div>
-        <Generation />
+      <Generate />
     </div>
   )
 }
