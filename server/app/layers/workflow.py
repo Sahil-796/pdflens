@@ -31,13 +31,15 @@ async def workflow(req = PromptRequest) -> str:
             context = ""
             results = vector_store.similarity_search(
                 req.user_prompt,
-                k=5,
-                filter={"userId": req.user_id}
+                k=10,
+                filter={"userId": user_id, "pdfname": pdfname}
             )
             context = "\n\n".join([doc.page_content for doc in results])
+
         extractor = await extract_formatting_and_content(user_input)
-        formatting = await generate_formatting_kwargs(extractor[1])
         draft = await create_draft(extractor[0])
+        # tags = extract_tags_from_md(draft)/
+        formatting = await generate_formatting_kwargs(extractor[1])
         content = await refine_structure(extractor[0], draft)
 
         html = create_html(content, formatting)
