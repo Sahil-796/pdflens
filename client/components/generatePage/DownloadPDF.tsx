@@ -20,6 +20,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName: string }) => {
         if (res.ok) {
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
+            console.log(url)
 
             const a = document.createElement("a");
             a.href = url;

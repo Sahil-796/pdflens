@@ -1,8 +1,9 @@
 'use client'
 import { useUser } from '@clerk/nextjs'
 import React, { useState } from 'react'
-import DownloadPDF from './functionalities/DownloadPDF'
-import SavePDF from './functionalities/SavePDF'
+import DownloadPDF from './generatePage/DownloadPDF'
+import SavePDF from './generatePage/SavePDF'
+import PDFPreview from './generatePage/PDFPreview'
 
 const Generate = () => {
   const [input, setInput] = useState('')
@@ -112,30 +113,7 @@ const Generate = () => {
       </div>
 
       {/* Right Side: Output */}
-      <div className="preview flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
-        <h2 className="text-xl font-semibold mb-4">PDF Preview</h2>
-        {loading ? (
-          <div className="flex-1 flex items-center justify-center text-muted-foreground">
-            ⏳ Generating...
-          </div>
-        ) : (
-          <div
-            onClick={(e) => {
-              const target = e.target as HTMLElement
-              if (target.id) {
-                console.log("Clicked ID:", target.id)
-
-                document.querySelectorAll(".selected").forEach(el => {
-                  el.classList.remove("selected")
-                })
-                target.classList.add("selected")
-              }
-            }}
-            className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6 "
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
-        )}
-      </div>
+      <PDFPreview loading={loading} html={html} />
     </div>
   )
 }
