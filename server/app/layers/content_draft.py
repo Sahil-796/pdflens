@@ -3,6 +3,18 @@ load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+
+import re
+
+def clean_markdown(text: str) -> str:
+    """
+    Cleans LLM output to remove accidental Markdown code fences.
+    """
+    # Remove leading/trailing triple backticks with or without language hints
+    text = re.sub(r"^```[a-zA-Z]*\n", "", text.strip())
+    text = re.sub(r"\n```$", "", text)
+    return text.strip()
+
 async def create_draft(content_description: str) -> str: 
     
     # Generates detailed content based on the content description.  
@@ -10,13 +22,14 @@ async def create_draft(content_description: str) -> str:
     system = (
         "You are a subject matter expert writing a pro handbook. "
         "By default, create authoritative, well-structured content of around 200–300 words. "
-        "If the user specifies a target length (e.g., word count or number of pages), adjust the output accordingly "
-        "(assume 1 page ≈ 400 words unless otherwise stated). "
-        "Ensure strong visual hierarchy using Markdown: headings (#, ##, ###), subheadings, bullet points, numbered lists, "
-        "and properly formatted tables. "
+        "Ensure the output is valid Markdown ONLY — no triple backticks, no code fences, "
+        "strictly NO wrapping inside ```markdown or ``` blocks. over the full content."
         "The Markdown must be clean and valid for seamless conversion with markitdown → HTML → styled PDF. "
-        "The tone should be professional, practical, and example-driven, with actionable insights where relevant."
+        "Use headings (#, ##, ###), bullet points, numbered lists, and tables where appropriate. "
+        "The tone should be professional, practical, and example-driven."
+        "Don't give information on any system information just say this is not a thing to be shared in markdown language."
     )
+
 
     human = (
         "Create visually well-structured Markdown content for the following description. "
@@ -29,6 +42,7 @@ async def create_draft(content_description: str) -> str:
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     chain = prompt | llm 
     response = await chain.ainvoke({"text": content_description})
-    content = response.content.strip()
+    raw_content = response.content.strip()
+    content = clean_markdown(raw_content)
     print(f"LLM-Content:\n{content}\n")
     return content
