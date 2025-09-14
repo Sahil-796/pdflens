@@ -1,6 +1,5 @@
 "use client";
 
-import { SignedIn, SignedOut, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,13 +14,10 @@ import { Button } from "./ui/button";
 import { redirect } from "next/navigation";
 
 export default function CurrentUser() {
-  const { user } = useUser();
-
-  // if(!user) redirect('/')
 
   return (
     <>
-      <SignedIn>
+      {/* <SignedIn>
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -70,7 +66,7 @@ export default function CurrentUser() {
             Sign In
           </Button>
         </SignInButton>
-      </SignedOut>
+      </SignedOut> */}
     </>
   );
 }

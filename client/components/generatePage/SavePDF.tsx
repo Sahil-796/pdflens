@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const SavePDF = ({html, pdfName}: {html:string, pdfName: string}) => {
     const handleSave = () => {
-        // Later: save to DB with Clerk user_id
         alert(`Saved "${pdfName}"! (mock action)`)
     }
     return (

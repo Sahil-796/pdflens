@@ -3,6 +3,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db/client";
 import { nextCookies } from "better-auth/next-js";
+import { schema } from "@/db/schema";
 
 export const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,6 +13,7 @@ export const supabase = createClient(
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
         provider: "pg",
+        schema,
     }),
     emailAndPassword: {
         enabled: true,

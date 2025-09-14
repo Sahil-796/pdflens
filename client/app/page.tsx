@@ -2,13 +2,12 @@
 
 import LandingNavbar from "@/components/LandingNavbar";
 import Sidebar from "@/components/Sidebar";
-import { useUser } from "@clerk/nextjs";
 import React, { useState, useEffect } from "react";
 
 const LandingPage = () => {
   const [isVisible, setIsVisible] = useState({});
 
-  const user = useUser()
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -166,7 +165,7 @@ const LandingPage = () => {
       {/* Navbar */}
       <LandingNavbar />
 
-      {user? <Sidebar/> : ""}
+      {/* {user? <Sidebar/> : ""} */}
 
       {/* Hero Section */}
       <section

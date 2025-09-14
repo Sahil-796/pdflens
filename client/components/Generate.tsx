@@ -1,5 +1,4 @@
 'use client'
-import { useUser } from '@clerk/nextjs'
 import React, { useState } from 'react'
 import DownloadPDF from './generatePage/DownloadPDF'
 import SavePDF from './generatePage/SavePDF'
