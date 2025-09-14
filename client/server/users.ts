@@ -2,13 +2,25 @@
 
 import { auth } from "@/lib/auth";
 
-export const signIn = async () => {
-    await auth.api.signInEmail({
-        body: {
-            email: 'rudra@gmail.com',
-            password: "Rfvbhu8768"
+export const signIn = async (email: string, password: string) => {
+    try {
+        await auth.api.signInEmail({
+            body: {
+                email,
+                password,
+            }
+        })
+        return {
+            success: true,
+            messsage: "Signed in successfully."
         }
-    })
+    } catch (err) {
+        const e = err as Error
+        return {
+            success: false,
+            message: e.message || 'An unknown error occured'
+        }
+    }
 }
 
 export const signUp = async () => {
