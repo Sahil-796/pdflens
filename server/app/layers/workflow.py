@@ -38,7 +38,6 @@ async def workflow(req = PromptRequest) -> str:
 
         extractor = await extract_formatting_and_content(user_input)
         draft = await create_draft(extractor[0])
-        # tags = extract_tags_from_md(draft)/
         formatting = await generate_formatting_kwargs(extractor[1])
         content = await refine_structure(extractor[0], draft)
 

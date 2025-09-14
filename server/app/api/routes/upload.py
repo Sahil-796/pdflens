@@ -7,7 +7,6 @@ from server.app.config import embeddings, INDEX_NAME
 from langchain_pinecone import PineconeVectorStore
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_core.documents import Document
 
 load_dotenv()
 router = APIRouter(
@@ -31,8 +30,8 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
 
         if extension == 'pdf':
             loader = PyPDFLoader(tmp_path)
-        elif (extension == 'doc') or (extension == 'docx'):
-            return {"message":"doc or docx"}
+        # elif (extension == 'doc') or (extension == 'docx'):
+        #     return {"message":"doc or docx"}
         else:
             return {"error":"Unsupported file type"}
         
