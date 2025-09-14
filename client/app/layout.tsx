@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { ThemeStyleProvider } from "@/components/ThemeStyleProvider";
 import { Toaster } from "sonner";
+import Navbar from "@/components/LandingNavbar";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -37,8 +38,9 @@ export default function RootLayout({
                     disableTransitionOnChange
                 >
                     <ThemeStyleProvider>
+                        <Navbar />
                         {children}
-                         <Toaster />
+                        <Toaster />
                     </ThemeStyleProvider>
                 </ThemeProvider>
             </body>

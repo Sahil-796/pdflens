@@ -8,15 +8,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LogOut } from "lucide-react";
 import ThemeStyle from "@/components/ThemeStyle";
 import { Button } from "./ui/button";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function CurrentUser() {
+  const router = useRouter()
+
+  
 
   return (
     <>
+    
       {/* <SignedIn>
         {user && (
           <DropdownMenu>
