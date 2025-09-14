@@ -1,5 +1,4 @@
 import React from "react";
-import CurrentUser from "./CurrentUser";
 import ThemeToggle from "./ThemeToggle";
 import ThemeStyle from "./ThemeStyle";
 import LogoutButton from "./logout-button";
@@ -23,10 +22,10 @@ const Sidebar = () => {
                 {/* Navigation */}
                 <nav className="flex flex-col gap-2 mt-4">
                     <Link
-                        href="#"
+                        href="/dashboard"
                         className="px-3 py-2 rounded-md hover:bg-accent transition text-left"
                     >
-                        My PDFs
+                        Dashboard
                     </Link>
                     <Link
                         href="#"

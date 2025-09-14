@@ -1,5 +1,6 @@
 'use client';
 
+import Navbar from "@/components/LandingNavbar";
 import React from "react";
 
 type Feature = {
@@ -57,6 +58,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <>
+    <Navbar />
       {/* Hero */}
       <section className="min-h-screen flex flex-col justify-center items-center text-center px-6 bg-gradient-to-r from-primary to-accent text-primary-foreground">
         <h1 className="text-5xl md:text-7xl font-bold mb-6">
