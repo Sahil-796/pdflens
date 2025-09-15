@@ -1,7 +1,5 @@
 'use client'
 import React, { useState } from 'react'
-import DownloadPDF from './generatePage/DownloadPDF'
-import SavePDF from './generatePage/SavePDF'
 import PDFPreview from './generatePage/PDFPreview'
 import {createPdfPending} from '../db/pdfs'
 import { createContextFile, addContextFile } from '../db/context'
@@ -44,49 +42,49 @@ const Generate = () => {
 
 
 // handles uploading files to py server on change
-const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (!e.target.files || e.target.files.length === 0) return;
+// const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+//   if (!e.target.files || e.target.files.length === 0) return;
 
-  const file = e.target.files[0]; // only one file per selection
+//   const file = e.target.files[0]; // only one file per selection
 
-  try {
-    let newPdf = null
-    if (files.length === 0) {
-        const id = uuidv4()
-        newPdf = await createPdfPending(id, userId, pdfName)  
-    }
-    // 1. Upload to Python server
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("userId", userId); // replace with your current user
-    formData.append("pdfId", pdfId);   // replace with your current PDF
+//   try {
+//     let newPdf = null
+//     if (files.length === 0) {
+//         const id = uuidv4()
+//         newPdf = await createPdfPending(id, userId, pdfName)  
+//     }
+//     // 1. Upload to Python server
+//     const formData = new FormData();
+//     formData.append("file", file);
+//     formData.append("userId", userId); // replace with your current user
+//     formData.append("pdfId", pdfId);   // replace with your current PDF
 
-    const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/upload`, {
-      method: "POST",
-      body: formData,
-    });
+//     const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/upload`, {
+//       method: "POST",
+//       body: formData,
+//     });
 
-    if (!res.ok) {
-      console.error("Upload failed for", file.name);
-      return;
-    }
+//     if (!res.ok) {
+//       console.error("Upload failed for", file.name);
+//       return;
+//     }
 
-    // 2. Update SQL context row
-    if (files.length === 0) {
-      await createContextFile(pdfId, userId, file.name); // first file → create row
-    } else {
-      await addContextFile(pdfId, userId, file.name);    // subsequent files → append
-    }
+//     // 2. Update SQL context row
+//     if (files.length === 0) {
+//       await createContextFile(pdfId, userId, file.name); // first file → create row
+//     } else {
+//       await addContextFile(pdfId, userId, file.name);    // subsequent files → append
+//     }
 
-    // 3. Update UI state
-    setFiles((prev) => [...prev, file]);
-  } catch (err) {
-    console.error("Error uploading file:", file.name, err);
-  }
+//     // 3. Update UI state
+//     setFiles((prev) => [...prev, file]);
+//   } catch (err) {
+//     console.error("Error uploading file:", file.name, err);
+//   }
 
-  // 4. Reset the input so user can select the same file again if needed
-  e.target.value = "";
-};
+//   // 4. Reset the input so user can select the same file again if needed
+//   e.target.value = "";
+// };
 
 
   return (
@@ -96,14 +94,14 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         <h2 className="text-xl font-semibold">Generate PDF</h2>
 
         {/* PDF Name */}
-        <input
+        {/* <input
           type="text"
           value={pdfName}
           onChange={(e) => setPdfName(e.target.value)}
           placeholder="Enter PDF name"
           className="bg-muted border border-border rounded-md p-2 w-full
                      focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+        /> */}
 
         {/* Prompt */}
         <textarea
@@ -124,21 +122,13 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
           {loading ? "Generating..." : "Generate"}
         </button>
 
-        <div className="flex gap-2">
-
-          <DownloadPDF html={html} pdfName={pdfName} />
-
-          <SavePDF html={html} pdfName={pdfName} />
-
-        </div>
-
         {/* File Upload */}
         <div>
           <label className="block font-medium mb-2">Upload Files</label>
           <input
             type="file"
             multiple
-            onChange={handleFileChange}
+            // onChange={handleFileChange}
             className="block w-full text-sm text-muted-foreground
                        file:mr-4 file:py-2 file:px-4
                        file:rounded-md file:border-0
