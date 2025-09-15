@@ -90,7 +90,7 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 
 
   return (
-    <div className="flex p-6 text-foreground gap-6 bg-background h-screen">
+    <div className="flex p-4 text-foreground gap-6 bg-background h-full">
       {/* Left Side: Inputs */}
       <div className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border">
         <h2 className="text-xl font-semibold">Generate PDF</h2>

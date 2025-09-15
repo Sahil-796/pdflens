@@ -72,7 +72,7 @@ export function NavUser({
             sideOffset={4}
           >
             {/* User Info */}
-            <DropdownMenuLabel className="p-0 font-normal">
+            {/* <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
@@ -87,7 +87,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
 
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator /> */}
 
             {/* Upgrade */}
             <DropdownMenuGroup>
@@ -114,22 +114,14 @@ export function NavUser({
             <DropdownMenuSeparator />
 
             {/* Theme Options */}
-            <DropdownMenuGroup className="flex items-center justify-between ">
-              <DropdownMenuItem asChild>
-                <ThemeToggle />
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
+            <DropdownMenuGroup className="flex items-center justify-between " asChild>
+
+              <div>
+                <span className="text-sm ml-3">Style:</span> 
                 <ThemeStyle />
-              </DropdownMenuItem>
+              </div>
             </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
-
-            {/* Logout */}
-            <DropdownMenuItem>
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

@@ -11,13 +11,9 @@ export default async function AppLayout({
 }) {
     return (
         <nav className="flex h-screen w-screen">
-            {/* Sidebar is always visible for (app) routes */}
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
-                    {/* <Sidebar /> */}
-
-                    {/* Main content area */}
                     <main className="flex-1 overflow-auto bg-background text-foreground">
                         {children}
                     </main>
