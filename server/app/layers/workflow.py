@@ -22,13 +22,14 @@ vector_store = PineconeVectorStore(
 
 async def workflow(req = PromptRequest) -> str:
 
+    print(req)
     try:
         user_id = req.user_id
         user_input = req.user_prompt
         pdfname = req.pdfname
 
+        context = ""
         if req.isContext:
-            context = ""
             results = vector_store.similarity_search(
                 req.user_prompt,
                 k=10,
@@ -37,7 +38,7 @@ async def workflow(req = PromptRequest) -> str:
             context = "\n\n".join([doc.page_content for doc in results])
 
         extractor = await extract_formatting_and_content(user_input)
-        draft = await create_draft(extractor[0])
+        draft = await create_draft(extractor[0], context)
         formatting = await generate_formatting_kwargs(extractor[1])
         content = await refine_structure(extractor[0], draft)
 

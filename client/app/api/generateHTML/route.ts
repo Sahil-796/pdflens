@@ -10,11 +10,13 @@ export async function POST(req: Request) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": process.env.X_API_KEY as string
+                "secret1": process.env.secret as string
             },
             body: JSON.stringify({
                 user_id,
-                user_prompt
+                user_prompt,
+                pdfname:"pdfname",
+                isContext:false
             })
         })
         if (!res.ok) {

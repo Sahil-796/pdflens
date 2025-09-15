@@ -1,5 +1,5 @@
 import { db } from "./client"
-import { users, pdf } from "./schema"
+import { user, pdf } from "./schema"
 import { eq, lt, gte, ne, sql } from 'drizzle-orm';
 
 

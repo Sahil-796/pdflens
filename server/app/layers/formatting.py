@@ -21,6 +21,9 @@ async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     "   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).\n\n"
     "Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. "
     "Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'."
+    "Your output must be a valid JSON object of CSS-compatible formatting parameters. "
+    "Keys must use double quotes. Do not output Python dict syntax."
+
 )
 
     human = (
@@ -28,7 +31,7 @@ async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     "Rules:\n"
     "- Always include global defaults for 'body', 'p', 'h1', etc.\n"
     "- If the user says 'all h1 tags blue', apply that under 'h1'.\n"
-    "- If the user says 'make only the 3rd paragraph red', add 'p-3': {'color': 'red'}.\n"
+    "- If the user says 'make only the 3rd paragraph red', add 'p-3': {{'color': 'red'}}.\n"
     "- Use plain keys only, no '.' or '#' prefixes."
     )
 

@@ -69,7 +69,7 @@ export const verification = pgTable("verification", {
 export const pdf = pgTable("pdf", {
   id: text("id").primaryKey().notNull(),        // Unique PDF ID
   userId: text("user_id").notNull()
-    .references(() => user.id),               // FK to users
+    .references(() => user.id),               // FK to user
   fileName: text("file_name").notNull().default("Untitled"),       // Name of the PDF file
   htmlContent: text("html_content").notNull(), // HTML content string
   pdfUrl: text("pdf_url").default(""),                     // link to stored PDF

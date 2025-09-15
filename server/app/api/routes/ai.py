@@ -4,7 +4,7 @@ from app.layers import workflow
 from dotenv import load_dotenv
 load_dotenv()
 import os
-secret = os.getenv("X_API_KEY")
+secret = os.getenv("secret")
 
 # from langchain_pinecone import PineconeVectorStore
 
@@ -32,9 +32,11 @@ router = APIRouter(
 )
 
 @router.post('/generate')
-async def generate(req: PromptRequest, x_api_key: str = Header(...)):
+async def generate(req: PromptRequest, secret1: str = Header(...)):
 
-    if x_api_key != secret:
+    print(req, secret1, secret)
+    print("here")
+    if secret1 != secret:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
     try:
