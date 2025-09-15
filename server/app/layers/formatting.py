@@ -10,26 +10,27 @@ async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     
     system = (
     "You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. "
-    "Based on the provided formatting instructions, create a set of CSS-compatible formatting parameters "
-    "that can be applied to style a PDF document. "
-    "Your result should be a valid JSON dictionary where keys are CSS selectors "
-    "(like 'body', 'p', 'h1', 'blockquote', etc. for global styles) OR numbered selectors "
-    "(like 'p-1', 'h2-3') to represent element-specific styles. "
-    "If the user omits any style, you must include reasonable defaults: "
-    "white background, black text, Helvetica as the default font, normal line-height (1.5), "
-    "and standard margins (1in). "
-    "Only provide the JSON dictionary, excluding all other text. "
-    "Ensure the JSON is properly formatted and valid. "
-    "If the user asks for a background or theme, include 'background-color' and a complementary 'color' for text."
-    )
-
+    "Your output must be a valid Python dictionary of CSS-compatible formatting parameters. "
+    "Keys must be plain strings (no '.' or '#').\n\n"
+    "Follow this process:\n"
+    "1. Always establish global styles for standard tags (at minimum: 'body', 'p', 'h1', 'h2', 'blockquote').\n"
+    "   - Include reasonable defaults unless overridden:\n"
+    "     background-color: 'white', color: 'black', font-family: 'Helvetica', line-height: '1.5', margin: '1in'.\n"
+    "   - If the user provides broad instructions like 'all h1 tags blue', put that under the global key 'h1'.\n\n"
+    "2. Then, add element-specific overrides only if the user explicitly targets a single element. "
+    "   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).\n\n"
+    "Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. "
+    "Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'."
+)
 
     human = (
-    "Convert the following formatting instructions into a valid CSS-style JSON dictionary for WeasyPrint:\n\n{text}\n\n"
-    "Use global selectors (e.g., 'body', 'p', 'h1') for general styles. "
-    "For element-specific styles, use '{{tag}}-{{n}}' (e.g., 'p-2' means the 2nd paragraph)."
+    "Convert the following formatting instructions into a valid Python dictionary for WeasyPrint:\n\n{text}\n\n"
+    "Rules:\n"
+    "- Always include global defaults for 'body', 'p', 'h1', etc.\n"
+    "- If the user says 'all h1 tags blue', apply that under 'h1'.\n"
+    "- If the user says 'make only the 3rd paragraph red', add 'p-3': {'color': 'red'}.\n"
+    "- Use plain keys only, no '.' or '#' prefixes."
     )
-
 
 
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
