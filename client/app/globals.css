@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-body.t3\ Chat {
+body.t3Chat {
   /* :root { */
   --background: oklch(0.9754 0.0084 325.6414);
   --foreground: oklch(0.3257 0.1161 325.0372);
@@ -107,7 +107,7 @@ body.t3\ Chat {
   }
 }
 
-body.t3\ Dark {
+body.t3Dark {
   --background: oklch(0.2409 0.0201 307.5346);
   --foreground: oklch(0.8398 0.0387 309.5391);
   --card: oklch(0.2803 0.0232 307.5413);
@@ -311,7 +311,7 @@ body.Vercel {
   }
 }
 
-body.Dark\ Vercel {
+body.DarkVercel {
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);
   --card: oklch(0.1400 0 0);
