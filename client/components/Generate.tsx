@@ -4,6 +4,7 @@ import PDFPreview from './generatePage/PDFPreview'
 import {createPdfPending} from '../db/pdfs'
 import { createContextFile, addContextFile } from '../db/context'
 import { v4 as uuidv4 } from 'uuid'
+import DownloadPDF from './generatePage/DownloadPDF'
 
 
 const Generate = () => {
@@ -121,6 +122,8 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         >
           {loading ? "Generating..." : "Generate"}
         </button>
+
+          <DownloadPDF html={html} />
 
         {/* File Upload */}
         <div>

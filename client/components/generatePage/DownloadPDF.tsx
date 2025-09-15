@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 
-const DownloadPDF = ({ html, pdfName }: { html: string; pdfName: string }) => {
+const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
     async function handleDownload() {
         if (!html) return;
 
