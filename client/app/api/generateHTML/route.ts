@@ -10,7 +10,7 @@ export async function POST(req: Request) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "x-api-key": "any random key here"
+                "x-api-key": process.env.X_API_KEY as string
             },
             body: JSON.stringify({
                 user_id,

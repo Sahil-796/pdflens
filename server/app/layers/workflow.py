@@ -4,7 +4,7 @@ from .content_draft import create_draft
 from .refine_structure import refine_structure
 from .renderer import create_html
 from pydantic import BaseModel
-from config import index, embeddings, INDEX_NAME
+from app.config import index, embeddings, INDEX_NAME
 
 class PromptRequest(BaseModel):
     user_prompt: str
