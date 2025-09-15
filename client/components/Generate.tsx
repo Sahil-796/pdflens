@@ -1,7 +1,5 @@
 'use client'
 import React, { useState } from 'react'
-import DownloadPDF from './generatePage/DownloadPDF'
-import SavePDF from './generatePage/SavePDF'
 import PDFPreview from './generatePage/PDFPreview'
 import {createPdfPending} from '../db/pdfs'
 import { createContextFile, addContextFile } from '../db/context'
@@ -96,14 +94,14 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         <h2 className="text-xl font-semibold">Generate PDF</h2>
 
         {/* PDF Name */}
-        <input
+        {/* <input
           type="text"
           value={pdfName}
           onChange={(e) => setPdfName(e.target.value)}
           placeholder="Enter PDF name"
           className="bg-muted border border-border rounded-md p-2 w-full
                      focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+        /> */}
 
         {/* Prompt */}
         <textarea
@@ -124,21 +122,13 @@ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
           {loading ? "Generating..." : "Generate"}
         </button>
 
-        <div className="flex gap-2">
-
-          <DownloadPDF html={html} pdfName={pdfName} />
-
-          <SavePDF html={html} pdfName={pdfName} />
-
-        </div>
-
         {/* File Upload */}
         <div>
           <label className="block font-medium mb-2">Upload Files</label>
           <input
             type="file"
             multiple
-            onChange={handleFileChange}
+            // onChange={handleFileChange}
             className="block w-full text-sm text-muted-foreground
                        file:mr-4 file:py-2 file:px-4
                        file:rounded-md file:border-0

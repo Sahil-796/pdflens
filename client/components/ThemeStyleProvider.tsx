@@ -3,8 +3,8 @@
 import { useEffect, useState, createContext, useContext } from "react"
 import { useTheme } from "next-themes"
 
-const lightThemes = ["vercel", "t3chat", "doom64"]
-const darkThemes = ["verceldark", "t3chatdark", "doom64dark"]
+const lightThemes = ["Vercel", "t3\ Chat", "Twitter"]
+const darkThemes = ["Dark \Vercel", "t3\Dark", "X"]
 
 type ThemeStyleContextType = {
     themeIndex: number
