@@ -24,18 +24,18 @@ export function NavProjects({
 }) {
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+ <SidebarGroup>
       <SidebarGroupLabel>Superpowers</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <Link href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+            <SidebarMenuItem key={item.name}>
+              <SidebarMenuButton asChild>
+                <Link href={item.url}>
+                  <item.icon />
+                  <span>{item.name}</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
         ))}
       </SidebarMenu>
     </SidebarGroup>
