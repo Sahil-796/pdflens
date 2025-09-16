@@ -3,10 +3,11 @@ import { user, pdf } from "./schema"
 import { eq, lt, gte, ne, sql } from 'drizzle-orm';
 
 
-export const createPdfPending = async (
+export const createPdf = async (
   id: string,
   userId: string,
   fileName: string,
+  html_content: string
 ) => {
   try {
     const [newPdf] = await db
@@ -15,10 +16,8 @@ export const createPdfPending = async (
         id,
         userId,
         fileName,
-        htmlContent: "",
-        status: "pending",   // always pending on creation
-        pdfUrl: null         // null until PDF is generated
-      })
+        htmlContent: html_content   
+            })
       .returning();
     return newPdf
 
@@ -27,19 +26,15 @@ export const createPdfPending = async (
     }
 }
 
-export const updatepdftatus = async (
+export const updatePdf = async (
   id: string,
-  status: "completed" | "failed",
   htmlContent?: string,
-  pdfUrl?: string
 ) => {
   try {
     const [updatedPdf] = await db
       .update(pdf)
       .set({
-        status,
         htmlContent: htmlContent ?? "",
-        pdfUrl: pdfUrl ?? null
       })
       .where(eq(pdf.id, id))
       .returning();

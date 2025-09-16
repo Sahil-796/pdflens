@@ -8,44 +8,53 @@ llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
 async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     
-    system = (
-    "You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. "
-    "Your output must be a valid Python dictionary of CSS-compatible formatting parameters. "
-    "Keys must be plain strings (no '.' or '#').\n\n"
-    "Follow this process:\n"
-    "1. Always establish global styles for standard tags (at minimum: 'body', 'p', 'h1', 'h2', 'blockquote').\n"
-    "   - Include reasonable defaults unless overridden:\n"
-    "     background-color: 'white', color: 'black', font-family: 'Helvetica', line-height: '1.5', margin: '1in'.\n"
-    "   - If the user provides broad instructions like 'all h1 tags blue', put that under the global key 'h1'.\n\n"
-    "2. Then, add element-specific overrides only if the user explicitly targets a single element. "
-    "   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).\n\n"
-    "Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. "
-    "Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'."
-    "use proper css keywords with hyphens dont use underscore"
-    "Use perfect styles, and sizes for heading tags maintaining visual heirarchy, dont give colors other than black and white except the user says so. you can make it bold and light colored for good visuals."
-    "Your output must be a valid JSON object of CSS-compatible formatting parameters. "
-    "Keys must use double quotes. Do not output Python dict syntax."
+    system = ("""
+You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. 
+Your output must be a valid Python dictionary of CSS-compatible formatting parameters. 
+Keys must be plain strings (no '.' or '#').
 
+Follow this process:
+1. Always establish global styles for standard tags (at minimum: 'body', 'p', 'h1', 'h2', 'blockquote').
+   - Include reasonable defaults unless overridden:
+     background-color: 'white', color: 'black', font-family: 'Helvetica', line-height: '1.5', margin: '1in'.
+   - If the user provides broad instructions like 'all h1 tags blue', put that under the global key 'h1'.
+
+2. Then, add element-specific overrides only if the user explicitly targets a single element. 
+   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).
+
+Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. 
+Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'.
+Use proper CSS keywords with hyphens; don't use underscores.
+Use perfect styles and sizes for heading tags, maintaining visual hierarchy; don't give colors other than black and white unless the user specifies so. You can make it bold and light-colored for good visuals.
+Your output must be a valid JSON object (not Python dict). 
+Keys must use double quotes. 
+Maintain required spacing between each elements
+"""
 )
 
     human = (
-    "Convert the following formatting instructions into a valid Python dictionary for WeasyPrint:\n\n{text}\n\n"
-    "Rules:\n"
-    "- Always include global defaults for 'body', 'p', 'h1', etc.\n"
-    "- If the user says 'all h1 tags blue', apply that under 'h1'.\n"
-    "- If the user says 'make only the 3rd paragraph red', add 'p-3': {{'color': 'red'}}.\n"
-    "- Use plain keys only, no '.' or '#' prefixes."
+    """
+    Convert the following formatting instructions into a valid Python dictionary for WeasyPrint:\n\n{text}\n\n
+    Rules:\n
+    - Always include global defaults for 'body', 'p', 'h1', etc.\n
+    - If the user says 'all h1 tags blue', apply that under 'h1'.\n
+    - If the user says 'make only the 3rd paragraph red', add 'p-3': {{'color': 'red'}}.\n
+    - Use plain keys only, no '.' or '#' prefixes.
+    """
     )
 
 
-    prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system),
+        ("human", human)
+        ])
     chain = prompt | llm
     response = await chain.ainvoke({"text": formatting_instructions})
+
     kwargs_json = response.content.strip()
 
-
     try:
-        match = re.search(r"\{.*\}", kwargs_json, re.DOTALL) #regex to search {} in the response
+        match = re.search(r"\{.*\}", kwargs_json, re.DOTALL) #regex to search {} in the match
         if match:
             kwargs_dict = match.group(0)
             formatting_kwargs = json.loads(kwargs_dict) #basically json.parse()

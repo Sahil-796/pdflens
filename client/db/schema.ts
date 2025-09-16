@@ -72,8 +72,6 @@ export const pdf = pgTable("pdf", {
     .references(() => user.id),               // FK to user
   fileName: text("file_name").notNull().default("Untitled"),       // Name of the PDF file
   htmlContent: text("html_content").notNull(), // HTML content string
-  pdfUrl: text("pdf_url").default(""),                     // link to stored PDF
-  status: statusEnum("status").default("pending").notNull(), // status of PDF generation
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
