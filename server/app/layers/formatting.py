@@ -21,6 +21,8 @@ async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     "   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).\n\n"
     "Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. "
     "Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'."
+    "use proper css keywords with hyphens dont use underscore"
+    "Use perfect styles, and sizes for heading tags maintaining visual heirarchy, dont give colors other than black and white except the user says so. you can make it bold and light colored for good visuals."
     "Your output must be a valid JSON object of CSS-compatible formatting parameters. "
     "Keys must use double quotes. Do not output Python dict syntax."
 
