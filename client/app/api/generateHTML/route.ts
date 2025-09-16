@@ -1,9 +1,23 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
+
+const GenerateSchema = z.object({
+    user_id: z.string().min(1),
+    user_prompt: z.string().min(1),
+})
 
 export async function POST(req: Request) {
     try {
-        const { user_id, user_prompt } = await req.json()
-        console.log(user_id, user_prompt)
+        const body = await req.json().catch(() => ({}))
+        const parsed = GenerateSchema.safeParse(body)
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: "Invalid request", issues: parsed.error.flatten() },
+                { status: 400 }
+            )
+        }
+
+        const { user_id, user_prompt } = parsed.data
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000/ai/generate'
 
         const res = await fetch(PYTHON_URL, {
@@ -15,15 +29,14 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 user_id,
                 user_prompt,
-                pdfname:"pdfname",
-                isContext:false
+                pdfname: "pdfname",
+                isContext: false
             })
         })
         if (!res.ok) {
             return NextResponse.json({ error: "Python API failed" }, { status: res.status })
         }
         const data = await res.json()
-        console.log(data)
         return NextResponse.json(data)
     } catch (err) {
         console.log("API Error:", err)

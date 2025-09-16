@@ -1,38 +1,42 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 
+const AddContextSchema = z.object({
+    file: z.instanceof(File, { message: "file must be a File" }),
+    userId: z.string().min(1),
+    pdfname: z.string().min(1),
+})
 
 export async function POST(req: Request) {
-
     try {
-        const formData = await req.formData();
+        const formData = await req.formData()
 
-        // Extract fields
-        const file = formData.get("file") as File | null;
-        const userId = formData.get("userId") as string | null;
-        const pdfname = formData.get("pdfname") as string | null;
+        const file = formData.get("file") as File | null
+        const userId = formData.get("userId") as string | null
+        const pdfname = formData.get("pdfname") as string | null
 
-        if (!file || !userId || !pdfname) {
-        return NextResponse.json({ error: "Missing file, userId, or name" }, { status: 400 });
+        const parsed = AddContextSchema.safeParse({ file, userId, pdfname })
+        if (!parsed.success) {
+            return NextResponse.json(
+                { error: "Invalid request", issues: parsed.error.flatten() },
+                { status: 400 }
+            )
         }
 
-        // Build new FormData to send to Python server
-        const forwardData = new FormData();
-        forwardData.append("file", file); // File object goes directly
-        forwardData.append("userId", userId);
-        forwardData.append("pdfname", pdfname);
+        const forwardData = new FormData()
+        forwardData.append("file", parsed.data.file)
+        forwardData.append("userId", parsed.data.userId)
+        forwardData.append("pdfname", parsed.data.pdfname)
 
-        // Forward to Python API
         const response = await fetch("http://localhost:8000/upload", {
-        method: "POST",
-        body: forwardData,
-        });
+            method: "POST",
+            body: forwardData,
+        })
 
-        
-        const result = await response.json();
-
-        return NextResponse.json(result);
+        const result = await response.json()
+        return NextResponse.json(result)
     } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: "Proxy upload failed" }, { status: 500 });
-  }
+        console.error(err)
+        return NextResponse.json({ error: "Proxy upload failed" }, { status: 500 })
+    }
 }
