@@ -1,3 +1,4 @@
+import { addContextFile } from "@/db/context"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
         const parsed = AddContextSchema.safeParse({ file, userId, pdfname })
         if (!parsed.success) {
             return NextResponse.json(
-                { error: "Invalid request", issues: parsed.error.flatten() },
+                { error: "Invalid request" },
                 { status: 400 }
             )
         }
@@ -34,7 +35,8 @@ export async function POST(req: Request) {
         })
 
         const result = await response.json()
-        return NextResponse.json(result)
+        const newContext = await addContextFile(parsed.data.pdfname, parsed.data.userId, parsed.data.file.name)
+        return NextResponse.json({result, newContext})
     } catch (err) {
         console.error(err)
         return NextResponse.json({ error: "Proxy upload failed" }, { status: 500 })
