@@ -10,10 +10,9 @@ export async function middleware(request: NextRequest) {
 	if (!sessionCookie) {
 		return NextResponse.redirect(new URL("/", request.url));
 	}
-
 	return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/dashboard"], // Specify the routes the middleware applies to
+	matcher: ["/dashboard", '/generate', '/tools', '/edit'],
 };

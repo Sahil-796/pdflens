@@ -1,5 +1,6 @@
-import { BookOpenIcon, InfoIcon, LifeBuoyIcon } from "lucide-react"
+"use client"
 
+import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,251 +16,132 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import Link from "next/link"
 
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-    { href: "#", label: "Home" },
+// Tools dropdown structure
+const tools = [
     {
-        label: "Features",
-        submenu: true,
-        type: "description",
+        title: "Convert",
         items: [
-            {
-                href: "#",
-                label: "Components",
-                description: "Browse all components in the library.",
-            },
-            {
-                href: "#",
-                label: "Documentation",
-                description: "Learn how to use the library.",
-            },
-            {
-                href: "#",
-                label: "Templates",
-                description: "Pre-built layouts for common use cases.",
-            },
+            { title: "PDF to Word", url: "/tools/pdf-to-word" },
+            { title: "PDF to PPT", url: "/tools/pdf-to-ppt" },
+            { title: "PDF to Excel", url: "/tools/pdf-to-excel" },
+            { title: "PDF to JPG", url: "/tools/pdf-to-jpg" },
+            { title: "JPG to PDF", url: "/tools/jpg-to-pdf" },
+            { title: "Word to PDF", url: "/tools/word-to-pdf" },
+            { title: "PPT to PDF", url: "/tools/ppt-to-pdf" },
+            { title: "Excel to PDF", url: "/tools/excel-to-pdf" },
+            { title: "HTML to PDF", url: "/tools/html-to-pdf" },
         ],
     },
     {
-        label: "Pricing",
-        submenu: true,
-        type: "simple",
+        title: "Organize",
         items: [
-            { href: "#", label: "Product A" },
-            { href: "#", label: "Product B" },
-            { href: "#", label: "Product C" },
-            { href: "#", label: "Product D" },
+            { title: "Merge PDF", url: "/tools/merge-pdf" },
+            { title: "Split PDF", url: "/tools/split-pdf" },
+            { title: "Organize Pages", url: "/tools/organize-pdf" },
+            { title: "Compress PDF", url: "/tools/compress-pdf" },
         ],
     },
     {
-        label: "About",
-        submenu: true,
-        type: "icon",
+        title: "Edit",
         items: [
-            { href: "#", label: "Getting Started", icon: "BookOpenIcon" },
-            { href: "#", label: "Tutorials", icon: "LifeBuoyIcon" },
-            { href: "#", label: "About Us", icon: "InfoIcon" },
+            { title: "Edit PDF", url: "/tools/edit-pdf" },
+            { title: "Add Text", url: "/tools/add-text" },
+            { title: "Add Image", url: "/tools/add-image" },
+            { title: "Fill & Sign", url: "/tools/fill-sign" },
+            { title: "Annotate PDF", url: "/tools/annotate" },
+        ],
+    },
+    {
+        title: "Security",
+        items: [
+            { title: "Protect PDF (Password)", url: "/tools/protect-pdf" },
+            { title: "Unlock PDF", url: "/tools/unlock-pdf" },
+            { title: "Watermark PDF", url: "/tools/watermark-pdf" },
+            { title: "E-signature", url: "/tools/esign-pdf" },
+        ],
+    },
+    {
+        title: "View & Utilities",
+        items: [
+            { title: "PDF Reader", url: "/tools/pdf-reader" },
+            { title: "Rotate PDF", url: "/tools/rotate-pdf" },
+            { title: "Extract Images", url: "/tools/extract-images" },
+            { title: "Extract Text", url: "/tools/extract-text" },
+            { title: "Compare PDFs", url: "/tools/compare-pdfs" },
         ],
     },
 ]
 
-export default function Component() {
+export default function Navbar() {
     return (
-        <header className="border-b px-4 md:px-6">
-            <div className="flex h-16 items-center justify-between gap-4">
-                {/* Left side */}
-                <div className="flex items-center gap-2">
-                    {/* Mobile menu trigger */}
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                className="group size-8 md:hidden"
-                                variant="ghost"
-                                size="icon"
-                            >
-                                <svg
-                                    className="pointer-events-none"
-                                    width={16}
-                                    height={16}
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                >
-                                    <path
-                                        d="M4 12L20 12"
-                                        className="origin-center -translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-x-0 group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[315deg]"
-                                    />
-                                    <path
-                                        d="M4 12H20"
-                                        className="origin-center transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.8)] group-aria-expanded:rotate-45"
-                                    />
-                                    <path
-                                        d="M4 12H20"
-                                        className="origin-center translate-y-[7px] transition-all duration-300 ease-[cubic-bezier(.5,.85,.25,1.1)] group-aria-expanded:translate-y-0 group-aria-expanded:rotate-[135deg]"
-                                    />
-                                </svg>
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent align="start" className="w-64 p-1 md:hidden">
-                            <NavigationMenu className="max-w-none *:w-full">
-                                <NavigationMenuList className="flex-col items-start gap-0 md:gap-2">
-                                    {navigationLinks.map((link, index) => (
-                                        <NavigationMenuItem key={index} className="w-full">
-                                            {link.submenu ? (
-                                                <>
-                                                    <div className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
-                                                        {link.label}
-                                                    </div>
-                                                    <ul>
-                                                        {link.items.map((item, itemIndex) => (
-                                                            <li key={itemIndex}>
-                                                                <NavigationMenuLink
-                                                                    href={item.href}
-                                                                    className="py-1.5"
-                                                                >
-                                                                    {item.label}
-                                                                </NavigationMenuLink>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </>
-                                            ) : (
-                                                <NavigationMenuLink href={link.href} className="py-1.5">
-                                                    {link.label}
-                                                </NavigationMenuLink>
-                                            )}
-                                            {/* Add separator between different types of items */}
-                                            {index < navigationLinks.length - 1 &&
-                                                // Show separator if:
-                                                // 1. One is submenu and one is simple link OR
-                                                // 2. Both are submenus but with different types
-                                                ((!link.submenu &&
-                                                    navigationLinks[index + 1].submenu) ||
-                                                    (link.submenu &&
-                                                        !navigationLinks[index + 1].submenu) ||
-                                                    (link.submenu &&
-                                                        navigationLinks[index + 1].submenu &&
-                                                        link.type !== navigationLinks[index + 1].type)) && (
-                                                    <div
-                                                        role="separator"
-                                                        aria-orientation="horizontal"
-                                                        className="bg-border -mx-1 my-1 h-px w-full"
-                                                    />
-                                                )}
-                                        </NavigationMenuItem>
-                                    ))}
-                                </NavigationMenuList>
-                            </NavigationMenu>
-                        </PopoverContent>
-                    </Popover>
-                    {/* Main nav */}
-                    <div className="flex items-center gap-6">
-                        <Link href="/" className="text-primary hover:text-primary/90">
-                            PDF Lens
-                        </Link>
-                        {/* Navigation menu */}
-                        <NavigationMenu viewport={false} className="max-md:hidden">
-                            <NavigationMenuList className="gap-2">
-                                {navigationLinks.map((link, index) => (
-                                    <NavigationMenuItem key={index}>
-                                        {link.submenu ? (
-                                            <>
-                                                <NavigationMenuTrigger className="text-muted-foreground hover:text-primary bg-transparent px-2 py-1.5 font-medium *:[svg]:-me-0.5 *:[svg]:size-3.5">
-                                                    {link.label}
-                                                </NavigationMenuTrigger>
-                                                <NavigationMenuContent className="data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
-                                                    <ul
-                                                        className={cn(
-                                                            link.type === "description"
-                                                                ? "min-w-64"
-                                                                : "min-w-48"
-                                                        )}
-                                                    >
-                                                        {link.items.map((item, itemIndex) => (
-                                                            <li key={itemIndex}>
-                                                                <NavigationMenuLink
-                                                                    href={item.href}
-                                                                    className="py-1.5"
-                                                                >
-                                                                    {/* Display icon if present */}
-                                                                    {link.type === "icon" && "icon" in item && (
-                                                                        <div className="flex items-center gap-2">
-                                                                            {item.icon === "BookOpenIcon" && (
-                                                                                <BookOpenIcon
-                                                                                    size={16}
-                                                                                    className="text-foreground opacity-60"
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            )}
-                                                                            {item.icon === "LifeBuoyIcon" && (
-                                                                                <LifeBuoyIcon
-                                                                                    size={16}
-                                                                                    className="text-foreground opacity-60"
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            )}
-                                                                            {item.icon === "InfoIcon" && (
-                                                                                <InfoIcon
-                                                                                    size={16}
-                                                                                    className="text-foreground opacity-60"
-                                                                                    aria-hidden="true"
-                                                                                />
-                                                                            )}
-                                                                            <span>{item.label}</span>
-                                                                        </div>
-                                                                    )}
+        <header className="sticky top-0 z-50 border-b bg-background/70 backdrop-blur-md">
+            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8">
+                {/* Logo + Left Nav */}
+                <div className="flex items-center gap-6">
+                    <Link href="/" className="text-xl font-bold text-primary">
+                        PDF Lens
+                    </Link>
+                    <NavigationMenu className="hidden md:flex">
+                        <NavigationMenuList className="gap-6">
+                            <NavigationMenuItem>
+                                <NavigationMenuLink href="/" className="font-medium hover:text-primary">
+                                    Home
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
+                            <NavigationMenuItem>
+                                <NavigationMenuLink href="#features" className="font-medium hover:text-primary">
+                                    Features
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
+                            <NavigationMenuItem>
+                                <NavigationMenuLink href="#step" className="font-medium hover:text-primary">
+                                    Working
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
+                            <NavigationMenuItem>
+                                <NavigationMenuLink href="#pricing" className="font-medium hover:text-primary">
+                                    Pricing
+                                </NavigationMenuLink>
+                            </NavigationMenuItem>
 
-                                                                    {/* Display label with description if present */}
-                                                                    {link.type === "description" &&
-                                                                        "description" in item ? (
-                                                                        <div className="space-y-1">
-                                                                            <div className="font-medium">
-                                                                                {item.label}
-                                                                            </div>
-                                                                            <p className="text-muted-foreground line-clamp-2 text-xs">
-                                                                                {item.description}
-                                                                            </p>
-                                                                        </div>
-                                                                    ) : (
-                                                                        // Display simple label if not icon or description type
-                                                                        !link.type ||
-                                                                        (link.type !== "icon" &&
-                                                                            link.type !== "description" && (
-                                                                                <span>{item.label}</span>
-                                                                            ))
-                                                                    )}
-                                                                </NavigationMenuLink>
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </NavigationMenuContent>
-                                            </>
-                                        ) : (
-                                            <NavigationMenuLink
-                                                href={link.href}
-                                                className="text-muted-foreground hover:text-primary py-1.5 font-medium"
-                                            >
-                                                {link.label}
-                                            </NavigationMenuLink>
-                                        )}
-                                    </NavigationMenuItem>
-                                ))}
-                            </NavigationMenuList>
-                        </NavigationMenu>
-                    </div>
+                            {/* Tools Dropdown */}
+                            <NavigationMenuItem>
+                                <NavigationMenuTrigger className="font-medium hover:text-primary bg-transparent">
+                                    Tools
+                                </NavigationMenuTrigger>
+                                <NavigationMenuContent className="grid grid-cols-2 gap-6 p-6 min-w-[600px]">
+                                    {tools.map((category, i) => (
+                                        <div key={i} className="space-y-2">
+                                            <p className="text-sm font-semibold text-foreground">
+                                                {category.title}
+                                            </p>
+                                            <ul className="space-y-1 text-sm">
+                                                {category.items.map((item, j) => (
+                                                    <li key={j}>
+                                                        <NavigationMenuLink
+                                                            href={item.url}
+                                                            className="block rounded-md px-2 py-1 hover:bg-accent hover:text-accent-foreground"
+                                                        >
+                                                            {item.title}
+                                                        </NavigationMenuLink>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </NavigationMenuContent>
+                            </NavigationMenuItem>
+                        </NavigationMenuList>
+                    </NavigationMenu>
                 </div>
-                {/* Right side */}
-                <div className="flex items-center gap-2">
-                    <Button asChild variant="ghost" size="sm" className="text-sm">
+
+                {/* Right side buttons */}
+                <div className="flex items-center gap-3">
+                    <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
                         <Link href="/login">Sign In</Link>
                     </Button>
-                    <Button asChild size="sm" className="text-sm">
+                    <Button asChild size="sm" className="rounded-full bg-primary px-5 text-white shadow hover:bg-primary/90">
                         <Link href="/signup">Get Started</Link>
                     </Button>
                 </div>

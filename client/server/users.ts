@@ -12,7 +12,7 @@ export const signIn = async (email: string, password: string) => {
         })
         return {
             success: true,
-            messsage: "Signed in successfully."
+            message: "Signed in successfully."
         }
     } catch (err) {
         const e = err as Error
@@ -34,7 +34,7 @@ export const signUp = async (name: string, email: string, password: string) => {
         })
         return {
             success: true,
-            messsage: "Signed up successfully."
+            message: "Signed up successfully."
         }
     } catch (err) {
         const e = err as Error

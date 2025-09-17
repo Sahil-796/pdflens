@@ -71,25 +71,6 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            {/* User Info */}
-            {/* <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name?.[0] ?? "U"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
-
-            <DropdownMenuSeparator /> */}
-
-            {/* Upgrade */}
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <Sparkles className="mr-2 h-4 w-4" />
@@ -117,7 +98,7 @@ export function NavUser({
             <DropdownMenuGroup className="flex items-center justify-between " asChild>
 
               <div>
-                <span className="text-sm ml-3">Style:</span> 
+                <span className="text-sm ml-3">Style:</span>
                 <ThemeStyle />
               </div>
             </DropdownMenuGroup>
