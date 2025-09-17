@@ -101,7 +101,7 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Steps */}
-      <section className="py-20 px-6 bg-background text-foreground">
+      <section id="step" className="py-20 px-6 bg-background text-foreground">
         <div className="max-w-6xl mx-auto text-center mb-12">
           <h2 className="text-4xl font-bold">How It Works</h2>
         </div>
@@ -130,7 +130,7 @@ const LandingPage: React.FC = () => {
             <div key={idx} className="p-6 rounded-xl bg-background border border-border shadow">
               <p className="italic mb-4 text-muted-foreground">"{t.quote}"</p>
               <div className="font-semibold text-foreground">
-                {t.name} – {t.role}, {t.company}
+                {t.name} - {t.role}, {t.company}
               </div>
             </div>
           ))}
