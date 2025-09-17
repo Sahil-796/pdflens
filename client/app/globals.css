@@ -625,7 +625,7 @@ body.X {
     letter-spacing: var(--tracking-normal);
   }
 
-  .preview [id]:hover {
+  .selectable:hover {
     outline: 2px solid var(--primary);
     border-radius: var(--radius);
     cursor: pointer;
@@ -633,7 +633,7 @@ body.X {
     transition: all 0.2s ease;
   }
 
-  .preview .selected {
+  .selectable .selected {
     outline: 2px solid var(--primary);
     border-radius: var(--radius);
     background-color: rgba(0, 123, 255, 0.2);
