@@ -1,9 +1,14 @@
 "use client"
 import TitleNav from "@/components/title-nav"
+import { useSession } from "@/lib/auth-client"
+import { redirect } from "next/navigation"
 import React from "react"
 import { useState } from "react"
 
 function page() {
+
+  const { data: session } = useSession()
+  if (!session) redirect('/')
 
   const [pdfs] = useState([
     { id: 1, name: "ProjectReport.pdf", date: "2025-09-10", size: "2.1 MB" },

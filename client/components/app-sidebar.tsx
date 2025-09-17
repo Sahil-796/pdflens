@@ -25,7 +25,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     user: {
       name: session?.user.name || 'Loading',
       email: session?.user.email || 'Loading',
-      avatar: session?.user.image || '/avatars/shadcn.jpg'
+      avatar: session?.user.image || 'L'
     },
     super: [
       {

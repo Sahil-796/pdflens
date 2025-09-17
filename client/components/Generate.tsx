@@ -94,15 +94,15 @@ const Generate = () => {
 
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
-      <div className={`${html ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
-        <h2 className="text-xl font-semibold">
-          {
-            html ? "Edit PDF" : "Generate PDF"
-          }
-        </h2>
+      <AnimatePresence mode="wait">
+        <div className={`${html ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
+          <h2 className="text-xl font-semibold">
+            {
+              html ? "Edit PDF" : "Generate PDF"
+            }
+          </h2>
 
-        {/* AnimatePresence handles mounting/unmounting animations */}
-        <AnimatePresence mode="wait">
+          {/* AnimatePresence handles mounting/unmounting animations */}
           {!html ? (
             // Initial Stage
             <motion.div
@@ -209,8 +209,8 @@ const Generate = () => {
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
-      </div>
+        </div>
+      </AnimatePresence>
 
       {/* Right Side: Preview */}
       <AnimatePresence>
