@@ -3,12 +3,12 @@ import { context } from "./schema";
 import { v4 as uuid } from "uuid";
 import { sql, eq } from "drizzle-orm";
 
-export const createContextFile = async (pdfId: string, userId: string, filename: string) => {
+export const createContextFile = async (pdfId: string, filename: string) => {
   try {
     const newContext = await db.insert(context).values({
-      id: uuid(),          // unique row id
+      id: uuid(),
       pdfId: pdfId,
-      files: [filename],   // start array with first file
+      files: [filename],   
     }).returning();
 
     return newContext;
@@ -19,12 +19,12 @@ export const createContextFile = async (pdfId: string, userId: string, filename:
 };
 
 
-export const addContextFile = async (pdfId: string, userId: string, filename: string) => {
+export const addContextFile = async (pdfId: string, filename: string) => {
   try {
     const updated = await db.execute(sql`
       UPDATE context
       SET files = array_append(files, ${filename})
-      WHERE pdf_id = ${pdfId} AND user_id = ${userId}
+      WHERE pdf_id = ${pdfId}
       RETURNING *;
     `);
 

@@ -17,7 +17,7 @@ router = APIRouter(
 
 
 @router.post('/upload')
-async def upload_context(file: UploadFile = File(...), userId: str = Form(...), pdfname: str = Form(...)):
+async def upload_context(file: UploadFile = File(...), userId: str = Form(...), pdfId: str = Form(...)):
 
     try:
         extension = file.filename.split('.')[-1].lower()
@@ -30,8 +30,6 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
 
         if extension == 'pdf':
             loader = PyPDFLoader(tmp_path)
-        # elif (extension == 'doc') or (extension == 'docx'):
-        #     return {"message":"doc or docx"}
         else:
             return {"error":"Unsupported file type"}
         
@@ -43,7 +41,7 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
 
         for i, chunk in enumerate(chunks):
             chunk.metadata.update({
-                "pdfname": pdfname,
+                "pdfId": pdfId,
                 "userId": userId,
                 "filename": file.filename,
                 "chunkId": i
@@ -55,7 +53,6 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
             index_name=INDEX_NAME
         )
         
-
 
         return {
             "message": "File uplaoded and indexed",

@@ -13,7 +13,7 @@ export async function POST(req: Request) {
         const parsed = UpdatePdfSchema.safeParse(body)
         if (!parsed.success) {
             return NextResponse.json(
-                { error: 'Invalid request', issues: parsed.error.flatten() },
+                { error: 'Invalid request' },
                 { status: 400 }
             )
         }

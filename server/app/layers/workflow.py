@@ -8,7 +8,7 @@ from app.config import index, embeddings, INDEX_NAME
 
 class PromptRequest(BaseModel):
     user_prompt: str
-    pdfname: str
+    pdfId: str
     user_id: str
 
 from langchain_pinecone import PineconeVectorStore
@@ -22,18 +22,17 @@ vector_store = PineconeVectorStore(
 
 async def workflow(req = PromptRequest) -> str:
 
-    print(req)
     try:
         user_id = req.user_id
         user_input = req.user_prompt
-        pdfname = req.pdfname
+        pdfId = req.pdfId
 
         context = ""
         if req.isContext:
             results = vector_store.similarity_search(
                 req.user_prompt,
                 k=10,
-                filter={"userId": user_id, "pdfname": pdfname}
+                filter={"userId": user_id, "pdfId": pdfId}
             )
             context = "\n\n".join([doc.page_content for doc in results])
 

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import { createPdf } from '@/db/pdfs'
 import { z } from 'zod'
+import {v4 as uuidv4} from 'uuid'
 
 const CreatePdfSchema = z.object({
-    id: z.string().min(1),
     userId: z.string().min(1),
-    pdfName: z.string().min(1),
+    pdfName: z.string().min(1).optional(),
     html: z.string().nullable().optional(),
 })
 
@@ -20,9 +20,10 @@ export async function POST(req: Request) {
             )
         }
         
-        const { id, userId, pdfName, html } = parsed.data
+        const { userId, pdfName, html } = parsed.data
+        const id = uuidv4()
         const html_content = html ?? ''
-        const newPdf = createPdf(id, userId, pdfName, html_content)
+        const newPdf = createPdf(id, userId, pdfName ?? "untitled", html_content)
 
         return NextResponse.json(newPdf)
     } catch (err) {
