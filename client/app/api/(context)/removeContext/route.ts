@@ -1,4 +1,5 @@
 import { removeContextFile } from "@/db/context"
+import { user } from "@/db/schema"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -20,6 +21,26 @@ export async function POST(req: Request) {
         }
         
         const { userId, pdfId, filename } = parsed.data
+
+            const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
+
+                const response = await fetch(`${PYTHON_URL}/remove`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "secret1": process.env.secret as string
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    filename,
+                    pdfId,
+                    userId
+                })
+        })
+    
+
+        if (!response.ok) {
+            return NextResponse.json({ error: "Python API failed" }, { status: response.status })
+        }
         const updated = removeContextFile(pdfId, userId, filename)
 
         return NextResponse.json(updated)

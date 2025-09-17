@@ -18,9 +18,9 @@ export async function POST(req: Request) {
         }
 
         const { user_id, user_prompt } = parsed.data
-        const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000/ai/generate'
+        const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
-        const res = await fetch(PYTHON_URL, {
+        const res = await fetch(`${PYTHON_URL}/ai/generate`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 user_id,
                 user_prompt,
-                pdfname: "pdfname",
+                pdfname: "pdfname", //hardcoded for now
                 isContext: false
             })
         })

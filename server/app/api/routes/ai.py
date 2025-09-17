@@ -15,16 +15,6 @@ class PromptRequest(BaseModel):
     user_id: str
     isContext: bool
 
-# class EditRequest(BaseModel):
-#     user_prompt: str
-#     text_to_edit: str
-#     iscontext: bool
-#     user_id: str
-
-# vector_store = PineconeVectorStore(
-#     embedding=embeddings,
-#     index=index
-# )
 
 router = APIRouter(
     prefix='/ai',

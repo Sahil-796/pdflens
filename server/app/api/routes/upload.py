@@ -8,6 +8,12 @@ from langchain_pinecone import PineconeVectorStore
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+# schema for metadata 
+                # "pdfId": 
+                # "userId": 
+                # "filename": 
+                # "chunkId": 
+
 load_dotenv()
 router = APIRouter(
     prefix='/context',
@@ -53,9 +59,8 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
             index_name=INDEX_NAME
         )
         
-
         return {
-            "message": "File uplaoded and indexed",
+            "message": "File uploaded and indexed",
         }
     
     except Exception as e:
