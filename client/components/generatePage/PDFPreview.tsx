@@ -2,7 +2,7 @@ import React from 'react'
 
 const PDFPreview = ({loading, html}: {loading: boolean, html: string}) => {
     return (
-        <div className="preview flex-1 flex flex-col bg-card rounded-xl shadow-lg p-6 overflow-auto border border-border">
+        <div className="preview flex-1 flex flex-col bg-card rounded-xl p-6 overflow-auto border border-border">
             <h2 className="text-xl font-semibold mb-4">PDF Preview</h2>
             {loading ? (
                 <div className="flex-1 flex items-center justify-center text-muted-foreground">
