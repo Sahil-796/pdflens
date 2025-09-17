@@ -4,7 +4,6 @@ import { z } from 'zod'
 import {v4 as uuidv4} from 'uuid'
 
 const CreatePdfSchema = z.object({
-    userId: z.string().min(1),
     pdfName: z.string().min(1).optional(),
     html: z.string().nullable().optional(),
 })
@@ -20,7 +19,12 @@ export async function POST(req: Request) {
             )
         }
         
-        const { userId, pdfName, html } = parsed.data
+        const { pdfName, html } = parsed.data
+        const userId = req.headers.get("x-user-id")
+
+        if (!userId || typeof userId !== "string") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
         const id = uuidv4()
         const html_content = html ?? ''
         const newPdf = createPdf(id, userId, pdfName ?? "untitled", html_content)

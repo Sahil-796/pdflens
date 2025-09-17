@@ -4,7 +4,6 @@ import { z } from "zod"
 
 const AddContextSchema = z.object({
   file: z.instanceof(File),
-  userId: z.string().min(1),
   pdfId: z.string().min(1),
 })
 
@@ -14,8 +13,12 @@ export async function POST(req: Request) {
     const formData = await req.formData()
 
     const file = formData.get("file")
-    const userId = formData.get("userId")
     const pdfId = formData.get("pdfId")
+    const userId = req.headers.get("x-user-id")
+
+    if (!userId || typeof userId !== "string") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
     const parsed = AddContextSchema.safeParse({ file, userId, pdfId })
     if (!parsed.success) {
@@ -27,7 +30,7 @@ export async function POST(req: Request) {
     // Forward to FastAPI
     const forwardData = new FormData()
     forwardData.append("file", parsed.data.file)
-    forwardData.append("userId", parsed.data.userId)
+    forwardData.append("userId", userId)
     forwardData.append("pdfId", parsed.data.pdfId)
 
     const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'

@@ -1,11 +1,9 @@
 import { removeContextFile } from "@/db/context"
-import { user } from "@/db/schema"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
 const RemoveContextSchema = z.object({
     filename: z.string().min(1),
-    userId: z.string().min(1),
     pdfId: z.string().min(1),
 })
 
@@ -20,21 +18,26 @@ export async function POST(req: Request) {
             )
         }
         
-        const { userId, pdfId, filename } = parsed.data
+        const { pdfId, filename } = parsed.data
+        const userId = req.headers.get("x-user-id")
 
-            const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
+        if (!userId || typeof userId !== "string") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
 
-                const response = await fetch(`${PYTHON_URL}/remove`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    "secret1": process.env.secret as string
-                },
-                method: "POST",
-                body: JSON.stringify({
-                    filename,
-                    pdfId,
-                    userId
-                })
+        const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
+
+        const response = await fetch(`${PYTHON_URL}/remove`, {
+            headers: {
+                "Content-Type": "application/json",
+                "secret1": process.env.secret as string
+            },
+            method: "POST",
+            body: JSON.stringify({
+                filename,
+                pdfId,
+                userId
+            })
         })
     
 
