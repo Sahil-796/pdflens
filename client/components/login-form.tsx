@@ -52,10 +52,13 @@ export function LoginForm({
   })
 
   const signInWithGoogle = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-      callbackURL: '/dashboard'
-    });
+   await authClient.signIn.social({
+            provider: "google",
+            callbackURL: "/dashboard",
+            errorCallbackURL: "/",
+            // errorCallbackURL: "/error",
+            disableRedirect: true,
+        });
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
