@@ -22,7 +22,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { useUserStore } from "@/app/store/useUserStore"
@@ -45,17 +45,18 @@ export function SignupForm({
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
+    const { data: session, isPending } = authClient.useSession()
+
     const { setUser } = useUserStore()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
+            name: "",
             email: "",
             password: "",
         },
     })
-
-
 
     const signInWithGoogle = async () => {
         await authClient.signIn.social({
@@ -91,6 +92,14 @@ export function SignupForm({
         }
         setIsLoading(false)
     }
+
+    useEffect(() => {
+        if (!isPending && session?.user) {
+            toast.info(`You are already logged in as ${session.user.email}`)
+            router.push('/dashboard')
+        }
+    }, [isPending, session])
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
