@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getAllpdf } from '@/db/pdfs'
+import { auth } from '@/lib/auth'
 
 
 
 export async function GET(req: Request) {
     try {
 
-        const userId = req.headers.get("userId")
-
+        const session = await auth.api.getSession({ headers: req.headers })
+        const userId = session!.user.id
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }

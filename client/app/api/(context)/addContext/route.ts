@@ -1,4 +1,5 @@
 import { createContextFile } from "@/db/context"
+import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -14,8 +15,8 @@ export async function POST(req: Request) {
 
     const file = formData.get("file")
     const pdfId = formData.get("pdfId")
-    const userId = req.headers.get("userId")
-
+    const session = await auth.api.getSession({ headers: req.headers })
+    const userId = session!.user.id
     if (!userId || typeof userId !== "string") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }

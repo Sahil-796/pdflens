@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createPdf } from '@/db/pdfs'
 import { z } from 'zod'
 import {v4 as uuidv4} from 'uuid'
+import { auth } from '@/lib/auth'
 
 const CreatePdfSchema = z.object({
     pdfName: z.string().min(1).optional(),
@@ -20,8 +21,8 @@ export async function POST(req: Request) {
         }
         
         const { pdfName, html } = parsed.data
-        const userId = req.headers.get("userId")
-
+        const session = await auth.api.getSession({ headers: req.headers })
+        const userId = session!.user.id
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }

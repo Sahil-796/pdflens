@@ -1,3 +1,4 @@
+import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
@@ -19,7 +20,8 @@ export async function POST(req: Request) {
         }
 
         const { user_prompt, pdfId, isContext } = parsed.data
-        const userId = req.headers.get("userId")
+        const session = await auth.api.getSession({ headers: req.headers })
+        const userId = session!.user.id
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
         const res = await fetch(`${PYTHON_URL}/ai/generate`, {
