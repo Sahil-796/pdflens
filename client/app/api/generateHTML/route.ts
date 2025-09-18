@@ -10,7 +10,7 @@ const GenerateSchema = z.object({
 
 export async function POST(req: Request) {
     try {
-        const body = await req.json().catch(() => ({}))
+        const body = await req.json()
         const parsed = GenerateSchema.safeParse(body)
         if (!parsed.success) {
             return NextResponse.json(
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
             )
         }
 
-        const { user_id, user_prompt } = parsed.data
+        const { user_id, user_prompt, pdfId, isContext } = parsed.data
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
         const res = await fetch(`${PYTHON_URL}/ai/generate`, {
@@ -31,8 +31,8 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 user_id,
                 user_prompt,
-                pdfId: 'pdfId',
-                isContext: false
+                pdfId, 
+                isContext
             })
         })
         if (!res.ok) {

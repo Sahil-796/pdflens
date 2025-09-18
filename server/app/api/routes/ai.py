@@ -11,7 +11,7 @@ secret = os.getenv("secret")
 
 class PromptRequest(BaseModel):
     user_prompt: str
-    pdfname: str
+    pdfId: str
     user_id: str
     isContext: bool
 

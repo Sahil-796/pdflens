@@ -31,6 +31,8 @@ const Generate = () => {
         body: JSON.stringify({
           user_id: userId,
           user_prompt: input,
+          isContext: false,
+          pdfId: 'pdfId'
         }),
       })
 
