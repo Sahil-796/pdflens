@@ -4,8 +4,8 @@ import PDFPreview from './generatePage/PDFPreview'
 import { createContextFile, addContextFile } from '../db/context'
 import DownloadPDF from './generatePage/DownloadPDF'
 import { toast } from 'sonner'
-import { authClient } from '@/lib/auth-client'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useUserStore } from '@/app/store/useUserStore'
 
 const Generate = () => {
   const [input, setInput] = useState('')
@@ -15,8 +15,7 @@ const Generate = () => {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
-  const {data: session} = authClient.useSession()
-  const userId = session?.user.id
+  const { userId } = useUserStore()
 
   const handleSend = async () => {
     if (!input.trim()) {

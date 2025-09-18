@@ -77,11 +77,12 @@ export function SignupForm({
             callbackURL: "/dashboard",
         });
         if (!error && data?.user) {
-            const { id, name, email } = data.user
+            const { id, name, email, image } = data.user
             setUser({
                 userId: id,
                 userName: name,
-                userEmail: email
+                userEmail: email,
+                userAvatar: image
             })
             toast.success("Signed Up Successfully")
             router.push('/dashboard')

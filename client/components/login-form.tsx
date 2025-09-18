@@ -74,11 +74,12 @@ export function LoginForm({
     })
 
     if (!error && data?.user) {
-      const { id, name, email } = data.user
+      const { id, name, email, image } = data.user
       setUser({
         userId: id,
         userName: name,
-        userEmail: email
+        userEmail: email,
+        userAvatar: image
       })
       toast.success("Signed In Successfully")
       router.push('/dashboard')

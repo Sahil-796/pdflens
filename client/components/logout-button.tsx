@@ -6,11 +6,13 @@ import { Loader2, LogOut } from 'lucide-react'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
 import { useSidebar } from './ui/sidebar'
+import { useUserStore } from '@/app/store/useUserStore'
 
 const LogoutButton = () => {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const { state } = useSidebar()
+    const {clearUser} = useUserStore()
 
     const handleLogout = async () => {
         try {
@@ -22,6 +24,7 @@ const LogoutButton = () => {
                     },
                 },
             });
+            clearUser()
         } finally {
             setIsLoading(false)
         }

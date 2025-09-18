@@ -17,15 +17,15 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import LogoutButton from "./logout-button"
-import { useSession } from "@/lib/auth-client"
+import { useUserStore } from "@/app/store/useUserStore"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession()
+  const { userName, userEmail, userAvatar} = useUserStore()
   const data = {
     user: {
-      name: session?.user.name || 'Loading',
-      email: session?.user.email || 'Loading',
-      avatar: session?.user.image || 'L'
+      name: userName || 'Loading',
+      email: userEmail || 'Loading',
+      avatar: userAvatar || 'L'
     },
     super: [
       {
