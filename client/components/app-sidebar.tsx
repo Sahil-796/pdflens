@@ -27,7 +27,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     user: {
       name: userName || 'Loading',
       email: userEmail || 'Loading',
-      avatar: userAvatar || 'L'
+      avatar: userAvatar || ''
     },
     super: [
       {
