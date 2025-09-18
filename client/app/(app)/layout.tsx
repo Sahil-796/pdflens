@@ -1,6 +1,4 @@
-import Sidebar from "@/components/Sidebar";
 import "@/app/globals.css";
-import { redirect } from "next/navigation";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 

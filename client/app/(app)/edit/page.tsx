@@ -5,7 +5,6 @@ import React from 'react'
 const page = () => {
 
     const { data: session } = useSession()
-    if (!session) redirect('/')
     return (
         <div>page</div>
     )

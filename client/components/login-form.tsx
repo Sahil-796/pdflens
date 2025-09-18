@@ -60,13 +60,12 @@ export function LoginForm({
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true)
-    // const { success, message } = await signIn(values.email, values.password)
+
     const { data, error } = await authClient.signIn.email({
-      email :values.email,
+      email: values.email,
       password: values.password,
+      rememberMe: true,
       callbackURL: "/dashboard",
-      rememberMe: true
-    }, {
     })
 
     if (!error) {

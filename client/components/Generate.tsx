@@ -2,7 +2,6 @@
 import React, { useState } from 'react'
 import PDFPreview from './generatePage/PDFPreview'
 import { createContextFile, addContextFile } from '../db/context'
-import { v4 as uuidv4 } from 'uuid'
 import DownloadPDF from './generatePage/DownloadPDF'
 import { toast } from 'sonner'
 import { useSession } from '@/lib/auth-client'
@@ -16,7 +15,6 @@ const Generate = () => {
   const [loading, setLoading] = useState(false)
 
   const { data: session } = useSession()
-  const userId = session?.user.id
 
   const handleSend = async () => {
     if (!input.trim()) {
