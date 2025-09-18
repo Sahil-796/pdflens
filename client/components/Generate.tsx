@@ -39,6 +39,7 @@ const Generate = () => {
       if (!res.ok) throw new Error("Failed to generate HTML")
 
       const data = await res.json()
+      setSuccess(true)
       setHtml(data ?? "<p>Failed to generate HTML</p>")
     } catch (err) {
       console.error("Error in handleSend:", err)
