@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth"; // server-side BetterAuth
+import { headers } from "next/headers";
 
 export async function middleware(req: NextRequest) {
   // Validate session using BetterAuth
-  const session = await auth.api.getSession({ headers: req.headers });
+  // const session = await auth.api.getSession({ headers: req.headers });
+      const session = await auth.api.getSession({
+        headers: await headers()
+    })
 
   // If no valid session
   if (!session) {
