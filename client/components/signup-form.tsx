@@ -25,6 +25,7 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
+import { useUserStore } from "@/app/store/useUserStore"
 
 const formSchema = z.object({
     name: z.string().min(3, {
@@ -43,6 +44,8 @@ export function SignupForm({
 
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+
+    const { setUser } = useUserStore()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -73,11 +76,17 @@ export function SignupForm({
             password: values.password,
             callbackURL: "/dashboard",
         });
-        if (!error) {
+        if (!error && data?.user) {
+            const { id, name, email } = data.user
+            setUser({
+                userId: id,
+                userName: name,
+                userEmail: email
+            })
             toast.success("Signed Up Successfully")
             router.push('/dashboard')
         } else {
-            toast.error(error.message)
+            toast.error(error?.message || "Failed to sign up.")
         }
         setIsLoading(false)
     }

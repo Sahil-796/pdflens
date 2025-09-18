@@ -27,6 +27,7 @@ import { useState } from "react"
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import Link from "next/link"
+import { useUserStore } from "@/app/store/useUserStore"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -43,6 +44,8 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
 
+  const { setUser } = useUserStore()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,13 +55,12 @@ export function LoginForm({
   })
 
   const signInWithGoogle = async () => {
-   await authClient.signIn.social({
-            provider: "google",
-            callbackURL: "/dashboard",
-            errorCallbackURL: "/",
-            // errorCallbackURL: "/error",
-            disableRedirect: true,
-        });
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard",
+      errorCallbackURL: "/",
+      disableRedirect: true,
+    });
   };
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
@@ -71,11 +73,17 @@ export function LoginForm({
       callbackURL: "/dashboard",
     })
 
-    if (!error) {
+    if (!error && data?.user) {
+      const { id, name, email } = data.user
+      setUser({
+        userId: id,
+        userName: name,
+        userEmail: email
+      })
       toast.success("Signed In Successfully")
       router.push('/dashboard')
     } else {
-      toast.error(error.message)
+      toast.error(error?.message || "Failed to sign in.")
     }
     setIsLoading(false)
   }
@@ -134,12 +142,6 @@ export function LoginForm({
                         </FormItem>
                       )}
                     />
-                    {/* <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a> */}
                   </div>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Login"}

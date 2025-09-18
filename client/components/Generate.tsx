@@ -4,7 +4,7 @@ import PDFPreview from './generatePage/PDFPreview'
 import { createContextFile, addContextFile } from '../db/context'
 import DownloadPDF from './generatePage/DownloadPDF'
 import { toast } from 'sonner'
-import { authClient, useSession } from '@/lib/auth-client'
+import { authClient } from '@/lib/auth-client'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Generate = () => {
