@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         }
         
         const { pdfId, filename } = parsed.data
-        const userId = req.headers.get("x-user-id")
+        const userId = req.headers.get("userId")
 
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

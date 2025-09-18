@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 
 const GenerateSchema = z.object({
-    user_id: z.string().min(1),
     user_prompt: z.string().min(1),
     pdfId: z.string(),
     isContext: z.boolean(),
@@ -19,7 +18,8 @@ export async function POST(req: Request) {
             )
         }
 
-        const { user_id, user_prompt, pdfId, isContext } = parsed.data
+        const { user_prompt, pdfId, isContext } = parsed.data
+        const userId = req.headers.get("userId")
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
         const res = await fetch(`${PYTHON_URL}/ai/generate`, {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
                 "secret1": process.env.secret as string
             },
             body: JSON.stringify({
-                user_id,
+                userId,
                 user_prompt,
                 pdfId, 
                 isContext

@@ -6,7 +6,7 @@ import { getAllpdf } from '@/db/pdfs'
 export async function GET(req: Request) {
     try {
 
-        const userId = req.headers.get("x-user-id")
+        const userId = req.headers.get("userId")
 
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })

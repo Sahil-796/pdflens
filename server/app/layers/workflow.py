@@ -10,6 +10,8 @@ class PromptRequest(BaseModel):
     user_prompt: str
     pdfId: str
     user_id: str
+    isContext: bool
+
 
 from langchain_pinecone import PineconeVectorStore
 vector_store = PineconeVectorStore(
