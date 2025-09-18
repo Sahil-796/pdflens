@@ -4,7 +4,7 @@ import PDFPreview from './generatePage/PDFPreview'
 import { createContextFile, addContextFile } from '../db/context'
 import DownloadPDF from './generatePage/DownloadPDF'
 import { toast } from 'sonner'
-import { useSession } from '@/lib/auth-client'
+import { authClient, useSession } from '@/lib/auth-client'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Generate = () => {
@@ -13,7 +13,10 @@ const Generate = () => {
   const [files, setFiles] = useState<File[]>([])
   const [pdfName, setPdfName] = useState('')
   const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
 
+  const {data: session} = authClient.useSession()
+  const userId = session?.user.id
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -36,7 +39,7 @@ const Generate = () => {
       setHtml(data ?? "<p>Failed to generate HTML</p>")
     } catch (err) {
       console.error("Error in handleSend:", err)
-      setHtml("<p>Error occurred while generating HTML</p>")
+      toast.error('Error occurred while generating HTML')
     } finally {
       setLoading(false)
     }
@@ -92,15 +95,15 @@ const Generate = () => {
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
       <AnimatePresence mode="wait">
-        <div className={`${html ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
+        <div className={`${!success ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
           <h2 className="text-xl font-semibold">
             {
-              html ? "Edit PDF" : "Generate PDF"
+              !success ? "Edit PDF" : "Generate PDF"
             }
           </h2>
 
           {/* AnimatePresence handles mounting/unmounting animations */}
-          {!html ? (
+          {success ? (
             // Initial Stage
             <motion.div
               key="initial"
@@ -120,7 +123,7 @@ const Generate = () => {
               />
 
               <button
-                onClick={() => handleSend('generate')}
+                onClick={handleSend}
                 disabled={loading}
                 className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
               >
@@ -170,7 +173,7 @@ const Generate = () => {
               />
 
               <div className="flex flex-wrap gap-2">
-                <button
+                {/* <button
                   onClick={() => handleSend('edit')}
                   disabled={loading}
                   className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
@@ -200,7 +203,7 @@ const Generate = () => {
                   className="bg-muted text-foreground rounded-md py-2 px-4 hover:bg-muted/70 transition cursor-pointer disabled:opacity-50"
                 >
                   Similar
-                </button>
+                </button> */}
 
                 <DownloadPDF html={html} />
               </div>
@@ -211,7 +214,7 @@ const Generate = () => {
 
       {/* Right Side: Preview */}
       <AnimatePresence>
-        {html && (
+        {!success && (
           <motion.div
             key="preview"
             initial={{ opacity: 0, x: 30 }}

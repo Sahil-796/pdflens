@@ -4,6 +4,8 @@ import { z } from "zod"
 const GenerateSchema = z.object({
     user_id: z.string().min(1),
     user_prompt: z.string().min(1),
+    pdfId: z.string(),
+    isContext: z.boolean(),
 })
 
 export async function POST(req: Request) {
@@ -29,7 +31,7 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 user_id,
                 user_prompt,
-                pdfname: "pdfname",
+                pdfId: 'pdfId',
                 isContext: false
             })
         })
