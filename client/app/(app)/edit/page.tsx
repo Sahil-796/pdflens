@@ -4,7 +4,6 @@ import React from 'react'
 
 const page = () => {
 
-    const { data: session } = useSession()
     return (
         <div>page</div>
     )

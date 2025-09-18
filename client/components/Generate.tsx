@@ -14,7 +14,6 @@ const Generate = () => {
   const [pdfName, setPdfName] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { data: session } = useSession()
 
   const handleSend = async () => {
     if (!input.trim()) {

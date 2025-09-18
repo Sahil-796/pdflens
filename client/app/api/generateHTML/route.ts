@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 user_id,
                 user_prompt,
-                pdfname: "pdfname", //hardcoded for now
+                pdfname: "pdfname",
                 isContext: false
             })
         })

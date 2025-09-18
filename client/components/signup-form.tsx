@@ -17,7 +17,6 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { signUp } from "@/server/users"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -62,12 +61,17 @@ export function SignupForm({
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setIsLoading(true)
-        const { success, message } = await signUp(values.name, values.email, values.password)
-        if (success) {
-            toast.success(message)
+        const { data, error } = await authClient.signUp.email({
+            email: values.email,
+            name: values.name,
+            password: values.password,
+            callbackURL: "/dashboard",
+        });
+        if (!error) {
+            toast.success("Signed Up Successfully")
             router.push('/dashboard')
         } else {
-            toast.error(message)
+            toast.error(error.message)
         }
         setIsLoading(false)
     }
@@ -144,7 +148,7 @@ export function SignupForm({
                                         {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Sign Up"}
                                     </Button>
                                 </div>
-                                
+
                             </div>
                         </form>
                     </Form>

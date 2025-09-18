@@ -6,8 +6,6 @@ import { useState } from "react"
 
 function page() {
 
-  const { data: session } = useSession()
-
   const [pdfs] = useState([
     { id: 1, name: "ProjectReport.pdf", date: "2025-09-10", size: "2.1 MB" },
     { id: 2, name: "Invoice2025.pdf", date: "2025-09-09", size: "1.2 MB" },
