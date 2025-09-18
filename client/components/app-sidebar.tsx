@@ -18,9 +18,11 @@ import {
 } from "@/components/ui/sidebar"
 import LogoutButton from "./logout-button"
 import { useUserStore } from "@/app/store/useUserStore"
+import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { userName, userEmail, userAvatar} = useUserStore()
+  useAuthRehydrate()
+  const { userName, userEmail, userAvatar } = useUserStore()
   const data = {
     user: {
       name: userName || 'Loading',

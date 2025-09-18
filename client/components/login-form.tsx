@@ -79,7 +79,7 @@ export function LoginForm({
         userId: id,
         userName: name,
         userEmail: email,
-        userAvatar: image
+        userAvatar: image || null
       })
       toast.success("Signed In Successfully")
       router.push('/dashboard')

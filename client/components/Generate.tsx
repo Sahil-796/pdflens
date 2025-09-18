@@ -6,8 +6,10 @@ import DownloadPDF from './generatePage/DownloadPDF'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/app/store/useUserStore'
+import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 
 const Generate = () => {
+  useAuthRehydrate()
   const [input, setInput] = useState('')
   const [html, setHtml] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -94,15 +96,15 @@ const Generate = () => {
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
       <AnimatePresence mode="wait">
-        <div className={`${!success ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
+        <div className={`${success ? 'w-1/3' : 'w-full'} bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
           <h2 className="text-xl font-semibold">
             {
-              !success ? "Edit PDF" : "Generate PDF"
+              success ? "Edit PDF" : "Generate PDF"
             }
           </h2>
 
           {/* AnimatePresence handles mounting/unmounting animations */}
-          {success ? (
+          {!success ? (
             // Initial Stage
             <motion.div
               key="initial"
@@ -213,7 +215,7 @@ const Generate = () => {
 
       {/* Right Side: Preview */}
       <AnimatePresence>
-        {!success && (
+        {success && (
           <motion.div
             key="preview"
             initial={{ opacity: 0, x: 30 }}
