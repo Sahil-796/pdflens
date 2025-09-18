@@ -10,9 +10,9 @@ secret = os.getenv("secret")
 
 
 class PromptRequest(BaseModel):
-    user_prompt: str
+    userPrompt: str
     pdfId: str
-    user_id: str
+    userId: str
     isContext: bool
 
 
@@ -44,9 +44,9 @@ async def generate(req: PromptRequest, secret1: str = Header(...)):
 #     context = ""
 #     if req.iscontext:
 #         results = vector_store.similarity_search(
-#             req.user_prompt,
+#             req.userPrompt,
 #             k=5,
-#             filter={"userId": req.user_id}
+#             filter={"userId": req.userId}
 #         )
 
 #         context = "\n\n".join([doc.page_content for doc in results])
@@ -82,7 +82,7 @@ async def generate(req: PromptRequest, secret1: str = Header(...)):
 #     chain = LLMChain(llm=llm, prompt=prompt)
 #     output = await chain.ainvoke({
 #             "context": context,
-#             "goal": req.user_prompt
+#             "goal": req.userPrompt
 #         })
 
 #     cleaned_html = output['text'].replace('\n', '').replace('\\"', '"')

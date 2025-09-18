@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from app.config import index, embeddings, INDEX_NAME
 
 class PromptRequest(BaseModel):
-    user_prompt: str
+    usePrompt: str
     pdfId: str
-    user_id: str
+    useId: str
     isContext: bool
 
 
@@ -25,16 +25,16 @@ vector_store = PineconeVectorStore(
 async def workflow(req = PromptRequest) -> str:
 
     try:
-        user_id = req.user_id
-        user_input = req.user_prompt
+        userId = req.userId
+        user_input = req.userPrompt
         pdfId = req.pdfId
 
         context = ""
         if req.isContext:
             results = vector_store.similarity_search(
-                req.user_prompt,
+                req.userPrompt,
                 k=10,
-                filter={"userId": user_id, "pdfId": pdfId}
+                filter={"userId": userId, "pdfId": pdfId}
             )
             context = "\n\n".join([doc.page_content for doc in results])
 

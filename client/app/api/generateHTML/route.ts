@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 
 const GenerateSchema = z.object({
-    user_prompt: z.string().min(1),
+    userPrompt: z.string().min(1),
     pdfId: z.string(),
     isContext: z.boolean(),
 })
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
             )
         }
 
-        const { user_prompt, pdfId, isContext } = parsed.data
+        const { userPrompt, pdfId, isContext } = parsed.data
         const session = await auth.api.getSession({ headers: req.headers })
         const userId = session!.user.id
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
@@ -32,7 +32,7 @@ export async function POST(req: Request) {
             },
             body: JSON.stringify({
                 userId,
-                user_prompt,
+                userPrompt,
                 pdfId, 
                 isContext
             })

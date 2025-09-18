@@ -29,8 +29,8 @@ const Generate = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: userId,
-          user_prompt: input,
+          userId,
+          userPrompt: input,
           isContext: false,
           pdfId: 'pdfId'
         }),
