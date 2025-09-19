@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         }
         const id = uuidv4()
         const html_content = html ?? ''
-        const newPdf = createPdf(id, userId, pdfName ?? "untitled", html_content)
+        const newPdf = createPdf(id, userId, pdfName ?? "Untitled", html_content)
 
         return NextResponse.json(newPdf)
     } catch (err) {

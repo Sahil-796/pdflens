@@ -14,6 +14,7 @@ const PDFPreview = ({loading, html}: {loading: boolean, html: string}) => {
                         const target = e.target as HTMLElement
                         if (target.id) {
                             console.log("Clicked ID:", target.id)
+                            console.log(target.innerText)
 
                             document.querySelectorAll(".selected").forEach(el => {
                                 el.classList.remove("selected")

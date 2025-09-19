@@ -8,22 +8,25 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { v4 as uuidv4 } from 'uuid'
+import { usePdfStore } from '@/app/store/usePdfStore'
 
 const Generate = () => {
   useAuthRehydrate()
   const [input, setInput] = useState('')
   const [html, setHtml] = useState('')
   const [files, setFiles] = useState<File[]>([])
-  const [pdfName, setPdfName] = useState('')
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
+  const { pdfId, fileName, htmlContent, setPdf } = usePdfStore()
 
   const handleSend = async () => {
     if (!input.trim()) {
       toast.error("Prompt is empty dumbass.")
+      return
     }
+
     setLoading(true)
     try {
       const res = await fetch("/api/generateHTML", {
@@ -33,18 +36,39 @@ const Generate = () => {
           userId,
           userPrompt: input,
           isContext: false,
-          pdfId: 'pdfId'
+          pdfId: pdfId ?? uuidv4(),
         }),
       })
 
       if (!res.ok) throw new Error("Failed to generate HTML")
 
       const data = await res.json()
-      setSuccess(true)
-      setHtml(data ?? "<p>Failed to generate HTML</p>")
+
+      if (typeof data === "string" && /<\/?[a-z][\s\S]*>/i.test(data)) {
+        setSuccess(true)
+        setHtml(data)
+        const storeRes = await fetch("/api/createPdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            pdfName: fileName || "Untitled",
+            html: data
+          }),
+        })
+        if (!storeRes.ok) throw new Error("Failed to store PDF in DB")
+        const storeData = await storeRes.json()
+        setPdf({
+          pdfId: storeData.id,
+          htmlContent: data,
+          fileName: fileName || "Untitled"
+        })
+      } else {
+        toast.error("Response is not valid HTML")
+        console.warn("Non-HTML response:", data)
+      }
     } catch (err) {
       console.error("Error in handleSend:", err)
-      toast.error('Error occurred while generating HTML')
+      toast.error("Error occurred while generating HTML")
     } finally {
       setLoading(false)
     }
@@ -106,6 +130,7 @@ const Generate = () => {
 
           {/* AnimatePresence handles mounting/unmounting animations */}
           {!success ? (
+
             // Initial Stage
             <motion.div
               key="initial"
@@ -115,6 +140,14 @@ const Generate = () => {
               transition={{ duration: 0.3 }}
               className="flex flex-col gap-4"
             >
+              <input
+                type="text"
+                value={fileName}
+                onChange={(e) => setPdf({ fileName: e.target.value || "Untitled" })}
+                placeholder="Enter filename"
+                className="bg-muted border border-border rounded-md p-2 w-full 
+             focus:outline-none focus:ring-2 focus:ring-ring"
+              />
               <textarea
                 id="inputMessage"
                 value={input}

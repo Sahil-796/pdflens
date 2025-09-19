@@ -26,7 +26,7 @@ def add_styles(soup: BeautifulSoup, formatting: dict) -> str:
         tag["style"] = style_str
         tag["id"] = classKey
         classes = [classKey]
-        if tagName in ["p", "h1", "h2", "h3", "code", "table", "pre", "ol", "ul", "blockquote"]:
+        if tagName in ["p", "h1", "h2", "h3", "table", "pre", "ol", "ul", "blockquote"]:
             classes.append("selectable")
         tag["class"] = " ".join(classes)
     return str(soup)
