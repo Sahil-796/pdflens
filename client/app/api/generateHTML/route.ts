@@ -41,7 +41,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Python API failed" }, { status: res.status })
         }
         const data = await res.json()
-        return NextResponse.json(data)
+        return NextResponse.json({data, status: 200})
     } catch (err) {
         console.log("API Error:", err)
         return NextResponse.json({ error: "Server error" }, { status: 500 })

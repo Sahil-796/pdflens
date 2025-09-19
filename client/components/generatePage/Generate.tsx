@@ -26,97 +26,62 @@ const Generate = () => {
       toast.error("Prompt is empty dumbass.")
       return
     }
-
     setLoading(true)
     try {
-      const res = await fetch("/api/generateHTML", {
+      const createRes = await fetch('/api/createPdf', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
-          userPrompt: input,
-          isContext: false,
-          pdfId: pdfId ?? uuidv4(),
-        }),
+          html: '',
+          pdfName: fileName,
+        })
       })
+      if (!createRes.ok) throw new Error("Failed to create PDF")
+      const createData = await createRes.json()
+    toast.success("PDF Created")
+      setPdf({ pdfId: createData.id })
 
-      if (!res.ok) throw new Error("Failed to generate HTML")
-
-      const data = await res.json()
-
-      if (typeof data === "string" && /<\/?[a-z][\s\S]*>/i.test(data)) {
-        setSuccess(true)
-        setHtml(data)
-        const storeRes = await fetch("/api/createPdf", {
+      if (createData.status === 200) {
+        const generateRes = await fetch('/api/generateHTML', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            pdfName: fileName || "Untitled",
-            html: data
-          }),
+            userId: userId,
+            userPrompt: input,
+            pdfId: pdfId,
+            isContext: false
+          })
         })
-        if (!storeRes.ok) throw new Error("Failed to store PDF in DB")
-        const storeData = await storeRes.json()
-        setPdf({
-          pdfId: storeData.id,
-          htmlContent: data,
-          fileName: fileName || "Untitled"
-        })
-      } else {
-        toast.error("Response is not valid HTML")
-        console.warn("Non-HTML response:", data)
+        if (!generateRes.ok) throw new Error("Failed to create PDF")
+
+        const generateData = await generateRes.json()
+        toast.success("HTML Generated")
+        setPdf({ htmlContent: generateData.data })
+        if (generateData.response === 200) {
+          const updateRes = await fetch('/api/updatePdf', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              html: generateData.data,
+              id: pdfId
+            })
+          })
+          if (!updateRes.ok) throw new Error("Failed to create PDF")
+          const updateData = await updateRes.json()
+          if (updateData.status === 200) {
+            setSuccess(true)
+            toast.success(updateData.message)
+          }
+        }
       }
-    } catch (err) {
+    }
+    catch (err) {
       console.error("Error in handleSend:", err)
       toast.error("Error occurred while generating HTML")
     } finally {
       setLoading(false)
     }
   }
-
-  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   if (!e.target.files || e.target.files.length === 0) return;
-
-  //   const file = e.target.files[0]; // only one file per selection
-
-  //   try {
-  //     let newPdf = null
-  //     if (files.length === 0) {
-  //       const pdfId = uuidv4()
-  //       newPdf = await createPdfPending(pdfId, userId, pdfName)
-  //     }
-  //     // 1. Upload to Python server
-  //     const formData = new FormData();
-  //     formData.append("file", file);
-  //     formData.append("userId", userId); // replace with your current user
-  //     formData.append("pdfId", pdfId);   // replace with your current PDF
-
-  //     const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/upload`, {
-  //       method: "POST",
-  //       body: formData,
-  //     });
-
-  //     if (!res.ok) {
-  //       console.error("Upload failed for", file.name);
-  //       return;
-  //     }
-
-  //     // 2. Update SQL context row
-  //     if (files.length === 0) {
-  //       await createContextFile(pdfId, userId, file.name); // first file → create row
-  //     } else {
-  //       await addContextFile(pdfId, userId, file.name);    // subsequent files → append
-  //     }
-
-  //     // 3. Update UI state
-  //     setFiles((prev) => [...prev, file]);
-  //   } catch (err) {
-  //     console.error("Error uploading file:", file.name, err);
-  //   }
-
-  //   // 4. Reset the input so user can select the same file again if needed
-  //   e.target.value = "";
-  // };
 
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
@@ -206,42 +171,6 @@ const Generate = () => {
                 className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
                          focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
               />
-
-              <div className="flex flex-wrap gap-2">
-                {/* <button
-                  onClick={() => handleSend('edit')}
-                  disabled={loading}
-                  className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
-                >
-                  {loading ? 'Updating...' : 'Apply Changes'}
-                </button>
-
-                <button
-                  onClick={() => handleSend('rewrite')}
-                  disabled={loading}
-                  className="bg-accent text-accent-foreground rounded-md py-2 px-4 hover:bg-accent/90 transition cursor-pointer disabled:opacity-50"
-                >
-                  Rewrite
-                </button>
-
-                <button
-                  onClick={() => handleSend('concise')}
-                  disabled={loading}
-                  className="bg-secondary text-secondary-foreground rounded-md py-2 px-4 hover:bg-secondary/90 transition cursor-pointer disabled:opacity-50"
-                >
-                  Make Concise
-                </button>
-
-                <button
-                  onClick={() => handleSend('similar')}
-                  disabled={loading}
-                  className="bg-muted text-foreground rounded-md py-2 px-4 hover:bg-muted/70 transition cursor-pointer disabled:opacity-50"
-                >
-                  Similar
-                </button> */}
-
-                <DownloadPDF html={html} />
-              </div>
             </motion.div>
           )}
         </div>

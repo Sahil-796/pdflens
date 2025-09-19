@@ -30,7 +30,7 @@ export async function POST(req: Request) {
         const html_content = html ?? ''
         const newPdf = createPdf(id, userId, pdfName ?? "Untitled", html_content)
 
-        return NextResponse.json(newPdf)
+        return NextResponse.json({id, status: 200})
     } catch (err) {
         return NextResponse.json({ error: `Pdf not created : ${err}` }, { status: 500 })
     }

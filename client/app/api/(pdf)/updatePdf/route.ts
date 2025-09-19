@@ -19,10 +19,16 @@ export async function POST(req: Request) {
         }
 
         const { id, html } = parsed.data
-        const html_content = html ?? ''
-        const updatedPdf = updatePdf(id, html_content)
+        const html_content = html ?? ""
+        const updatedPdf = await updatePdf(id, html_content)
+        if (!updatedPdf) {
+            return NextResponse.json(
+                { status: 404, message: "PDF not found" },
+                { status: 404 }
+            )
+        }
 
-        return NextResponse.json(updatedPdf)
+        return NextResponse.json({ status: 200, message: "PDF generated successfully!" })
     } catch (err) {
         return NextResponse.json({ error: `Pdf not updated : ${err}` }, { status: 500 })
     }
