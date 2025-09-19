@@ -13,8 +13,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const allPdfs = getAllpdf(userId)
-
+        const allPdfs = await getAllpdf(userId)
         return NextResponse.json(allPdfs)
     } catch (err) {
         return NextResponse.json({ error: `Pdfs not found : ${err}` }, { status: 404 })

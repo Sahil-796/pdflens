@@ -40,11 +40,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: '/generate',
         icon: Plus
       },
-      {
-        name: 'Edit',
-        url: '/edit',
-        icon: Pen
-      },
     ],
     tools: [
       {

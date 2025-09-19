@@ -1,88 +1,78 @@
-"use client"
-import TitleNav from "@/components/bars/title-nav"
-import { useSession } from "@/lib/auth-client"
 import React from "react"
-import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import TitleNav from "@/components/bars/title-nav"
+import Recents from "@/components/dashboardPage/Recents"
 
-function page() {
-
-  const [pdfs] = useState([
-    { id: 1, name: "ProjectReport.pdf", date: "2025-09-10", size: "2.1 MB" },
-    { id: 2, name: "Invoice2025.pdf", date: "2025-09-09", size: "1.2 MB" },
-  ])
-
-  const [favorites] = useState([
-    { id: 3, name: "Resume.pdf", size: "800 KB" },
-  ])
-
+export default function Dashboard() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <TitleNav text='Dashboard' />
-      <div className="p-4">
-        {/* Quick Tools */}
-        <div className="p-4 border rounded-lg bg-card border-border">
-          <h2 className="text-lg font-semibold text-primary mb-3">Quick Tools</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {["Upload PDF", "Merge PDF", "Split PDF", "Compress PDF"].map((tool) => (
-              <button
-                key={tool}
-                className="p-3 rounded-lg border border-border bg-muted hover:bg-secondary hover:text-white transition"
-              >
-                {tool}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Main Section: PDFs + Favorites + Shared */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* PDF Management */}
-          <div className="col-span-2 p-4 border rounded-lg bg-card border-border">
-            <h2 className="text-lg font-semibold text-primary mb-3">Recent PDFs</h2>
-            <ul className="space-y-2">
-              {pdfs.map((pdf) => (
-                <li
-                  key={pdf.id}
-                  className="flex justify-between items-center p-2 border rounded bg-muted border-border"
-                >
-                  <div>
-                    <p className="font-medium">{pdf.name}</p>
-                    <p className="text-xs text-secondary">{pdf.date} • {pdf.size}</p>
-                  </div>
-                  <button className="text-sm px-2 py-1 rounded bg-primary text-white">Open</button>
-                </li>
-              ))}
-            </ul>
+    <div className='h-screen flex flex-col overflow-auto'>
+      <TitleNav text="Dashboard" />
+      <div className='flex-1 overflow-hidden'>
+        <div className="flex flex-col gap-6 p-4 text-foreground bg-background h-full">
+          {/* Search Section */}
+          <div className="flex items-center justify-between">
+            <Input
+              type="text"
+              placeholder="Search PDFs..."
+              className="w-1/3 border-border text-primary bg-card"
+            />
+            <Button className="bg-card text-primary border border-border">
+              + Create New PDF
+            </Button>
           </div>
 
-          {/* Right Sidebar */}
-          <div className="space-y-6">
-            {/* Favorites */}
-            <div className="p-4 border rounded-lg bg-card border-border">
-              <h2 className="text-lg font-semibold text-primary mb-3">Favorites ⭐</h2>
-              <ul className="space-y-2">
-                {favorites.map((fav) => (
-                  <li
-                    key={fav.id}
-                    className="flex justify-between items-center p-2 border rounded bg-muted border-border"
+          {/* Recent PDFs */}
+          <Card className="bg-card border border-border">
+            <CardHeader>
+              <CardTitle className="text-primary">Recent PDFs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Recents />
+            </CardContent>
+          </Card>
+
+          {/* Favourites */}
+          <Card className="bg-card border border-border">
+            <CardHeader>
+              <CardTitle className="text-primary">Favourites</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                {[1, 2].map((fav) => (
+                  <div
+                    key={fav}
+                    className="p-4 rounded-lg border border-border bg-card text-primary"
                   >
-                    <p>{fav.name}</p>
-                    <button className="text-sm px-2 py-1 rounded bg-secondary text-white">Open</button>
-                  </li>
+                    Favourite {fav}
+                  </div>
                 ))}
-              </ul>
-            </div>
+              </div>
+            </CardContent>
+          </Card>
 
-            {/* Shared PDFs */}
-            <div className="p-4 border rounded-lg bg-card border-border">
-              <h2 className="text-lg font-semibold text-primary mb-3">Shared With Me</h2>
-              <p className="text-sm text-secondary">No shared PDFs yet</p>
-            </div>
-          </div>
+          {/* Templates */}
+          <Card className="bg-card border border-border">
+            <CardHeader>
+              <CardTitle className="text-primary">Templates</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4">
+                {["Resume", "Invoice", "Certificate"].map((template) => (
+                  <div
+                    key={template}
+                    className="p-4 rounded-lg border border-border bg-card text-primary cursor-pointer hover:opacity-80"
+                  >
+                    {template}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
       </div>
     </div>
   )
 }
-
-export default page
