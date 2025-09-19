@@ -16,8 +16,8 @@ vector_store = PineconeVectorStore(
 )
 
 router = APIRouter(
-    prefix='/removeContext',
-    tags=["removeContext"]
+    prefix='/context',
+    tags=["context"]
 )
 
 
@@ -26,7 +26,7 @@ class RemoveRequest(BaseModel):
     pdfId: str
     userId: str
 
-@router.post('/generate')
+@router.post('/remove')
 async def generate(req: RemoveRequest, secret1: str = Header(...)):
     if secret1 != secret:
         raise HTTPException(status_code=401, detail="Unauthorized")
