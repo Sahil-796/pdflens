@@ -28,8 +28,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import ThemeToggle from "./ThemeToggle"
-import ThemeStyle from "./ThemeStyle"
+import ThemeToggle from "../theme/ThemeToggle"
+import ThemeStyle from "../theme/ThemeStyle"
 
 
 export function NavUser({

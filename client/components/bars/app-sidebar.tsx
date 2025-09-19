@@ -7,16 +7,16 @@ import {
   Plus,
 } from "lucide-react"
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
+import { NavMain } from "@/components/bars/nav-main"
+import { NavProjects } from "@/components/bars/nav-projects"
+import { NavUser } from "@/components/bars/nav-user"
 import {
   Sidebar,
   SidebarContent,
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import LogoutButton from "./logout-button"
+import LogoutButton from "../auth/logout-button"
 import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 

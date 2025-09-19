@@ -1,5 +1,5 @@
-import Generate from '@/components/Generate'
-import TitleNav from '@/components/title-nav'
+import Generate from '@/components/generatePage/Generate'
+import TitleNav from '@/components/bars/title-nav'
 import React from 'react'
 
 const page = () => {

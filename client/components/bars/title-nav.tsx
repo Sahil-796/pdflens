@@ -1,7 +1,7 @@
 import React from 'react'
-import { SidebarTrigger } from './ui/sidebar'
-import { Separator } from './ui/separator'
-import ThemeToggle from './ThemeToggle'
+import { SidebarTrigger } from '../ui/sidebar'
+import { Separator } from '../ui/separator'
+import ThemeToggle from '../theme/ThemeToggle'
 
 const TitleNav = ({ text }: { text: string }) => {
     return (

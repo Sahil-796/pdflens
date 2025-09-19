@@ -1,5 +1,5 @@
 "use client"
-import TitleNav from "@/components/title-nav"
+import TitleNav from "@/components/bars/title-nav"
 import { useSession } from "@/lib/auth-client"
 import React from "react"
 import { useState } from "react"

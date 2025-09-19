@@ -1,12 +1,13 @@
 'use client'
 import React, { useState } from 'react'
-import PDFPreview from './generatePage/PDFPreview'
-import { createContextFile, addContextFile } from '../db/context'
-import DownloadPDF from './generatePage/DownloadPDF'
+import PDFPreview from './PDFPreview'
+import { createContextFile, addContextFile } from '../../db/context'
+import DownloadPDF from './DownloadPDF'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
+import { v4 as uuidv4 } from 'uuid'
 
 const Generate = () => {
   useAuthRehydrate()
@@ -49,52 +50,49 @@ const Generate = () => {
     }
   }
 
+  // const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   if (!e.target.files || e.target.files.length === 0) return;
 
-  // handles uploading files to py server on change
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // if (!e.target.files || e.target.files.length === 0) return;
+  //   const file = e.target.files[0]; // only one file per selection
 
-    // const file = e.target.files[0]; // only one file per selection
+  //   try {
+  //     let newPdf = null
+  //     if (files.length === 0) {
+  //       const pdfId = uuidv4()
+  //       newPdf = await createPdfPending(pdfId, userId, pdfName)
+  //     }
+  //     // 1. Upload to Python server
+  //     const formData = new FormData();
+  //     formData.append("file", file);
+  //     formData.append("userId", userId); // replace with your current user
+  //     formData.append("pdfId", pdfId);   // replace with your current PDF
 
-    // try {
-    //   let newPdf = null
-    //   if (files.length === 0) {
-    //       const id = uuidv4()
-    //       newPdf = await createPdfPending(id, userId, pdfName)  
-    //   }
-    //   // 1. Upload to Python server
-    //   const formData = new FormData();
-    //   formData.append("file", file);
-    //   formData.append("userId", userId); // replace with your current user
-    //   formData.append("pdfId", pdfId);   // replace with your current PDF
+  //     const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/upload`, {
+  //       method: "POST",
+  //       body: formData,
+  //     });
 
-    //   const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/upload`, {
-    //     method: "POST",
-    //     body: formData,
-    //   });
+  //     if (!res.ok) {
+  //       console.error("Upload failed for", file.name);
+  //       return;
+  //     }
 
-    //   if (!res.ok) {
-    //     console.error("Upload failed for", file.name);
-    //     return;
-    //   }
+  //     // 2. Update SQL context row
+  //     if (files.length === 0) {
+  //       await createContextFile(pdfId, userId, file.name); // first file → create row
+  //     } else {
+  //       await addContextFile(pdfId, userId, file.name);    // subsequent files → append
+  //     }
 
-    //   // 2. Update SQL context row
-    //   if (files.length === 0) {
-    //     await createContextFile(pdfId, userId, file.name); // first file → create row
-    //   } else {
-    //     await addContextFile(pdfId, userId, file.name);    // subsequent files → append
-    //   }
+  //     // 3. Update UI state
+  //     setFiles((prev) => [...prev, file]);
+  //   } catch (err) {
+  //     console.error("Error uploading file:", file.name, err);
+  //   }
 
-    //   // 3. Update UI state
-    //   setFiles((prev) => [...prev, file]);
-    // } catch (err) {
-    //   console.error("Error uploading file:", file.name, err);
-    // }
-
-    // // 4. Reset the input so user can select the same file again if needed
-    // e.target.value = "";
-  };
-
+  //   // 4. Reset the input so user can select the same file again if needed
+  //   e.target.value = "";
+  // };
 
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">

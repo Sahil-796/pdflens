@@ -11,13 +11,9 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
+import { useUserStore } from "@/app/store/useUserStore"
 
-// Tools dropdown structure
 const tools = [
     {
         title: "Convert",
@@ -74,6 +70,8 @@ const tools = [
 ]
 
 export default function Navbar() {
+    useAuthRehydrate()
+    const { userName } = useUserStore()
     return (
         <header className="sticky top-0 z-50 border-b bg-background/70 backdrop-blur-md">
             <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8">
@@ -137,14 +135,26 @@ export default function Navbar() {
                 </div>
 
                 {/* Right side buttons */}
-                <div className="flex items-center gap-3">
-                    <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
-                        <Link href="/login">Sign In</Link>
-                    </Button>
-                    <Button asChild size="sm" className="rounded-full bg-primary px-5 text-white shadow hover:bg-primary/90">
-                        <Link href="/signup">Get Started</Link>
-                    </Button>
-                </div>
+                {
+                    !userName ?
+                        <div className="flex items-center gap-3">
+                            <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
+                                <Link href="/login">Sign In</Link>
+                            </Button>
+                            <Button asChild size="sm" className="rounded-full bg-primary px-5 text-white shadow hover:bg-primary/90">
+                                <Link href="/signup">Get Started</Link>
+                            </Button>
+                        </div>
+                        :
+                        <div className="flex items-center gap-3">
+                            <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
+                                <Link href="/dashboard">Dashboard</Link>
+                            </Button>
+                            <div>
+                                Welcome back {userName}
+                            </div>
+                        </div>
+                }
             </div>
         </header>
     )

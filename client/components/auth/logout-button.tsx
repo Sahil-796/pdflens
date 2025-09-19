@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Button } from './ui/button'
+import { Button } from '../ui/button'
 import { Loader2, LogOut } from 'lucide-react'
 import { authClient } from '@/lib/auth-client'
 import { useRouter } from 'next/navigation'
-import { useSidebar } from './ui/sidebar'
+import { useSidebar } from '../ui/sidebar'
 import { useUserStore } from '@/app/store/useUserStore'
 
 const LogoutButton = () => {

@@ -1,6 +1,6 @@
 import "@/app/globals.css";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/bars/app-sidebar";
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate";
 
 export default async function AppLayout({

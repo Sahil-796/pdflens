@@ -1,6 +1,6 @@
 'use client';
 
-import Navbar from "@/components/LandingNavbar";
+import Navbar from "@/components/bars/LandingNavbar";
 import React from "react";
 
 type Feature = {
