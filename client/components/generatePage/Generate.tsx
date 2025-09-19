@@ -2,18 +2,15 @@
 import React, { useState } from 'react'
 import PDFPreview from './PDFPreview'
 import { createContextFile, addContextFile } from '../../db/context'
-import DownloadPDF from './DownloadPDF'
 import { toast } from 'sonner'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
-import { v4 as uuidv4 } from 'uuid'
 import { usePdfStore } from '@/app/store/usePdfStore'
 
 const Generate = () => {
   useAuthRehydrate()
   const [input, setInput] = useState('')
-  const [html, setHtml] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -38,7 +35,7 @@ const Generate = () => {
       })
       if (!createRes.ok) throw new Error("Failed to create PDF")
       const createData = await createRes.json()
-    toast.success("PDF Created")
+      toast.success("PDF Created")
       setPdf({ pdfId: createData.id })
 
       if (createData.status === 200) {
@@ -48,7 +45,7 @@ const Generate = () => {
           body: JSON.stringify({
             userId: userId,
             userPrompt: input,
-            pdfId: pdfId,
+            pdfId: createData.id,
             isContext: false
           })
         })
@@ -57,22 +54,22 @@ const Generate = () => {
         const generateData = await generateRes.json()
         toast.success("HTML Generated")
         setPdf({ htmlContent: generateData.data })
-        if (generateData.response === 200) {
-          const updateRes = await fetch('/api/updatePdf', {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              html: generateData.data,
-              id: pdfId
-            })
+
+        const updateRes = await fetch('/api/updatePdf', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            html: generateData.data,
+            id: pdfId
           })
-          if (!updateRes.ok) throw new Error("Failed to create PDF")
-          const updateData = await updateRes.json()
-          if (updateData.status === 200) {
-            setSuccess(true)
-            toast.success(updateData.message)
-          }
+        })
+        if (!updateRes.ok) throw new Error("Failed to create PDF")
+        const updateData = await updateRes.json()
+        if (updateData.status === 200) {
+          setSuccess(true)
+          toast.success(updateData.message)
         }
+
       }
     }
     catch (err) {
@@ -187,7 +184,7 @@ const Generate = () => {
             transition={{ duration: 0.3 }}
             className="flex-1 overflow-y-auto"
           >
-            <PDFPreview loading={loading} html={html} />
+            <PDFPreview loading={loading} html={htmlContent} />
           </motion.div>
         )}
       </AnimatePresence>
