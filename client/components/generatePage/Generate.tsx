@@ -1,12 +1,13 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
 import { createContextFile, addContextFile } from '../../db/context'
 import { toast } from 'sonner'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useRouter } from 'next/navigation'
+import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 
 const Generate = () => {
   const router = useRouter()
@@ -17,7 +18,9 @@ const Generate = () => {
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
+
+  useEffect(()=>{clearPdf()},[])
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -37,7 +40,6 @@ const Generate = () => {
       if (!createRes.ok) throw new Error("Failed to create PDF")
       const createData = await createRes.json()
       setPdf({ pdfId: createData.id })
-      toast.success("PDF Created")
 
       if (createData.status === 200) {
         const generateRes = await fetch('/api/generateHTML', {
@@ -86,6 +88,7 @@ const Generate = () => {
     }
   }, [success])
 
+
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
       <div className={`w-full bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
@@ -122,7 +125,7 @@ const Generate = () => {
             disabled={loading}
             className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
           >
-            {loading ? 'Generating...' : 'Generate'}
+            {loading ? <TextShimmerWave duration={1}>Generating...</TextShimmerWave> : 'Generate'}
           </button>
 
           <div>

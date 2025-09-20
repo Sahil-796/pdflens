@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
 import DownloadPDF from '@/components/editPage/DownloadPDF'
 import PDFPreview from '@/components/editPage/PDFPreview'
+import { toast } from 'sonner'
 
 interface Pdf {
     id: string
@@ -32,18 +33,19 @@ export default function EditClient({ id }: { id: string }) {
                         pdfId: id
                     })
                 })
-                if (!res.ok) throw new Error("Failed to create PDF")
+                if (!res.ok) throw new Error("Failed to fetch PDF")
                 const data = await res.json()
                 if (data.pdf) {
                     setEditPdf(data.pdf)
                 } else {
                     console.error("PDF not found")
-                    // router.push("/dashboard")
+                    toast.error("PDF not found")
+                    router.push("/dashboard")
                 }
             } catch (err) {
+                toast.error("Error fetching PDF")
                 console.error("Error fetching PDF:", err)
-                console.log('go to dashboard')
-                // router.push('/dashboard')
+                router.push('/dashboard')
             } finally {
                 setLoading(false)
             }
@@ -78,7 +80,6 @@ export default function EditClient({ id }: { id: string }) {
                 </motion.div>
 
                 <motion.div
-                    key="preview"
                     initial={{ opacity: 0, x: 30 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 30 }}

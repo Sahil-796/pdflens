@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
+import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 
 interface Pdf {
     id: string
@@ -30,7 +31,7 @@ const Recents: React.FC = () => {
         fetchPdfs()
     }, [])
 
-    if (loading) return <div>⏳ Loading recent PDFs...</div>
+    if (loading) return <TextShimmerWave duration={1} className='ztext-muted-foreground'>Loading recent PDFs...</TextShimmerWave>
 
     return (
         <div className="space-y-3">
