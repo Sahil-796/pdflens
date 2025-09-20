@@ -626,43 +626,37 @@ body.X {
     letter-spacing: var(--tracking-normal);
   }
 
-  .selectable {
-    position: relative;
-    transition: all 0.25s ease;
-    border-radius: var(--radius);
-    border: 1px solid transparent;
-  }
-
+  /* When the user clicks/taps */
   .selectable:hover {
-    border-color: var(--primary);
-    /* Visible border */
-    background-color: color-mix(in srgb, var(--primary) 12%, white);
-    transform: translateY(-2px) scale(1.01);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
-    /* stronger shadow */
-    cursor: pointer;
+    transform: translateY(1px) scale(1.03);
+    /* subtle press down effect */
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
+    /* softer shadow */
+    background-color: color-mix(in srgb, var(--primary) 25%, white);
+    /* slightly darker bg */
+    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
+    border-radius: var(--radius);
   }
 
-  .selectable:active {
-    transform: scale(0.98);
-    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  /* When the element is selected (persistent state) */
+  .selectable.selected {
+    border-color: var(--primary);
+    background-color: color-mix(in srgb, var(--primary) 30%, white);
+    box-shadow:
+      0 0 0 2px var(--primary),
+      /* solid outline */
+      0 8px 24px rgba(0, 123, 255, 0.3);
+    /* softer glow */
+    transform: translateY(-2px) scale(1.03);
+    /* slightly lifted + scaled */
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
 
-  .selected {
-    border-color: var(--primary);
-    background-color: color-mix(in srgb, var(--primary) 20%, white);
-    box-shadow: 0 0 0 2px var(--primary),
-      0 6px 18px rgba(0, 123, 255, 0.25);
-    /* solid + soft glow */
-    transform: translateY(-2px) scale(1.02);
-    transition: all 0.25s ease;
-  }
-
-  .selectable:focus-visible {
-    border-color: var(--primary);
-    outline: none;
-    /* avoid double outlines */
-    box-shadow: 0 0 0 3px var(--primary),
-      0 0 0 6px rgba(0, 123, 255, 0.3);
+  /* Optional: smoother hover -> selected interaction */
+  .selectable.selected:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow:
+      0 0 0 2px var(--primary),
+      0 10px 28px rgba(0, 123, 255, 0.35);
   }
 }
