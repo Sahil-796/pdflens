@@ -7,7 +7,7 @@ import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 interface Pdf {
     id: string
     fileName: string
-    createdAt: string | null // keep as string, since fetch returns JSON
+    createdAt: string | null
 }
 
 const Recents: React.FC = () => {
@@ -31,30 +31,36 @@ const Recents: React.FC = () => {
         fetchPdfs()
     }, [])
 
-    if (loading) return <TextShimmerWave duration={1} className='ztext-muted-foreground'>Loading recent PDFs...</TextShimmerWave>
+    if (loading)
+        return (
+            <TextShimmerWave duration={1} className="text-muted-foreground">
+                Loading recent PDFs...
+            </TextShimmerWave>
+        )
+
+    if (pdfs.length === 0)
+        return <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
 
     return (
-        <div className="space-y-3">
-            {pdfs.length === 0 ? (
-                <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
-            ) : (
-                <div className="grid grid-cols-3 gap-4">
-                    {pdfs.map((pdf) => (
-                        <Link
-                            href={`/edit/${pdf.id}`}
-                            key={pdf.id}
-                            className="p-4 border border-border rounded-lg bg-card shadow-sm hover:shadow-md transition cursor-pointer"
-                        >
-                            <p className="text-primary font-medium truncate">{pdf.fileName}</p>
-                            <span className="text-xs text-muted-foreground">
-                                {pdf.createdAt
-                                    ? new Date(pdf.createdAt).toLocaleDateString()
-                                    : "No date"}
-                            </span>
-                        </Link>
-                    ))}
-                </div>
-            )}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {pdfs.map((pdf) => (
+                <Link
+                    href={`/edit/${pdf.id}`}
+                    key={pdf.id}
+                    className="p-5 border border-border rounded-xl bg-card shadow-sm cursor-pointer flex flex-col justify-between"
+                >
+                    <p className="text-primary font-semibold text-lg truncate">{pdf.fileName}</p>
+                    <span className="text-xs text-muted-foreground mt-2">
+                        {pdf.createdAt
+                            ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(undefined, {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric',
+                            })}`
+                            : "Created On: N/A"}
+                    </span>
+                </Link>
+            ))}
         </div>
     )
 }
