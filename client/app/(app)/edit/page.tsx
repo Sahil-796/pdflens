@@ -1,25 +1,26 @@
-'use client'
-import { usePdfStore } from '@/app/store/usePdfStore'
 import TitleNav from '@/components/bars/title-nav'
-import { useRouter } from 'next/navigation'
+import Recents from '@/components/dashboardPage/Recents'
 import React from 'react'
 
-const page = () => {
-    const router = useRouter()
-    const { pdfId } = usePdfStore()
-    if (pdfId) {
-        router.push(`/edit/${pdfId}`)
-        return;
-    }
-
+const Page = () => {
     return (
-        <div className='h-screen flex flex-col'>
+        <div className="h-screen flex flex-col">
             <TitleNav text="Edit PDF" />
-            <div className='flex-1 overflow-hidden'>
-                
+            <div className="flex-1 overflow-hidden p-4">
+                <div className="bg-card border border-border rounded-xl p-4 h-full flex flex-col">
+                    <h2 className="text-xl font-semibold text-primary mb-2">
+                        Choose a PDF to Edit
+                    </h2>
+                    <p className="text-muted-foreground text-sm mb-6">
+                        Select one of your recent PDFs below to continue editing, or create a new one from the dashboard.
+                    </p>
+                    <div className="flex-1 overflow-y-auto">
+                        <Recents />
+                    </div>
+                </div>
             </div>
         </div>
     )
 }
 
-export default page
+export default Page

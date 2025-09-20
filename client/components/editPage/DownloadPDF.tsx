@@ -11,7 +11,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         wrapper.innerHTML = html;
 
         // Send wrapped HTML
-        const res = await fetch("/api/downloadPDF", {
+        const res = await fetch("/api/downloadPdf", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ html: wrapper.outerHTML }),
