@@ -86,7 +86,7 @@ export default function EditClient({ id }: { id: string }) {
                     transition={{ duration: 0.3 }}
                     className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
                 >
-                    <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} />
+                    <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
                 </motion.div>
             </div>
         </div>
