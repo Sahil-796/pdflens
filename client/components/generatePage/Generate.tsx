@@ -1,9 +1,7 @@
 'use client'
 import React, { useState } from 'react'
-import PDFPreview from './PDFPreview'
 import { createContextFile, addContextFile } from '../../db/context'
 import { toast } from 'sonner'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
@@ -18,7 +16,7 @@ const Generate = () => {
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { pdfId, fileName, htmlContent, setPdf } = usePdfStore()
+  const { fileName } = usePdfStore()
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -38,7 +36,6 @@ const Generate = () => {
       if (!createRes.ok) throw new Error("Failed to create PDF")
       const createData = await createRes.json()
       toast.success("PDF Created")
-      setPdf({ pdfId: createData.id })
 
       if (createData.status === 200) {
         const generateRes = await fetch('/api/generateHTML', {
@@ -55,14 +52,13 @@ const Generate = () => {
 
         const generateData = await generateRes.json()
         toast.success("HTML Generated")
-        setPdf({ htmlContent: generateData.data })
 
         const updateRes = await fetch('/api/updatePdf', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             html: generateData.data,
-            id: pdfId
+            id: createData.id
           })
         })
         if (!updateRes.ok) throw new Error("Failed to create PDF")
@@ -95,7 +91,9 @@ const Generate = () => {
             loading={loading}
           />
           :
-          <EditSection loading={loading} />
+          <EditSection
+            loading={loading}
+          />
       }
     </div>
   )

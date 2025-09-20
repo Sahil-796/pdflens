@@ -48,8 +48,8 @@ export const updatePdf = async (
 
 export const getAllpdf = async(userId: string) => {
     try {
-        const [allpdf] = await db.select().from(pdf).where(eq(pdf.userId, userId))
-        return [allpdf]
+        const allpdf = await db.select().from(pdf).where(eq(pdf.userId, userId))
+        return allpdf
     } catch (err) {
         throw new Error(`Failed to get pdf: ${err}`)
     }

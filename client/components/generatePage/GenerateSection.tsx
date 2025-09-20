@@ -39,7 +39,7 @@ const GenerateSection: React.FC<GenerateSectionProps> = ({
                     <input
                         type="text"
                         value={fileName}
-                        onChange={(e) => setPdf({ fileName: e.target.value || "Untitled" })}
+                        onChange={(e) => setPdf({ fileName: e.target.value })}
                         placeholder="Enter filename"
                         className="bg-muted border border-border rounded-md p-2 w-full 
              focus:outline-none focus:ring-2 focus:ring-ring"
