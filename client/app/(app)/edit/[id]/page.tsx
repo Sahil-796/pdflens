@@ -1,16 +1,10 @@
 import EditClient from '@/components/editPage/EditClient'
 
-interface Pdf {
-    id: string
-    fileName: string
-    htmlContent: string
-    createdAt: string | null
-}
-
-const page = async ({ params }: { params: { id: string } }) => {
+const Page = async ({ params }: { params: { id: string } }) => {
+    const {id} = await params
     return (
-        <EditClient id={params.id} />
+        <EditClient id={id} />
     )
 }
 
-export default page
+export default Page

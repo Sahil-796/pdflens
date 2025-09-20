@@ -76,7 +76,7 @@ export default function EditClient({ id }: { id: string }) {
               focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
                     />
 
-                    <DownloadPDF html={htmlContent} pdfName={fileName} />
+                    <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
                 </motion.div>
 
                 <motion.div
