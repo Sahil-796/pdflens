@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
 interface Pdf {
@@ -39,7 +40,8 @@ const Recents: React.FC = () => {
             ) : (
                 <div className="grid grid-cols-3 gap-4">
                     {pdfs.map((pdf) => (
-                        <div
+                        <Link
+                            href={`/edit/${pdf.id}`}
                             key={pdf.id}
                             className="p-4 border border-border rounded-lg bg-card shadow-sm hover:shadow-md transition cursor-pointer"
                         >
@@ -49,7 +51,7 @@ const Recents: React.FC = () => {
                                     ? new Date(pdf.createdAt).toLocaleDateString()
                                     : "No date"}
                             </span>
-                        </div>
+                        </Link>
                     ))}
                 </div>
             )}

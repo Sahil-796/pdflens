@@ -17,9 +17,9 @@ interface Pdf {
 
 export default function EditClient({ id }: { id: string }) {
     const router = useRouter()
-    const { htmlContent, fileName } = usePdfStore()
-    const [input, setInput] = useState('')
-    const [pdf, setPdf] = useState<Pdf | null>(null)
+    const { htmlContent, fileName, setPdf } = usePdfStore()
+    const [editPrompt, setEditPrompt] = useState('')
+    const [editPdf, setEditPdf] = useState<Pdf | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -35,7 +35,7 @@ export default function EditClient({ id }: { id: string }) {
                 if (!res.ok) throw new Error("Failed to create PDF")
                 const data = await res.json()
                 if (data.pdf) {
-                    setPdf(data.pdf)
+                    setEditPdf(data.pdf)
                 } else {
                     console.error("PDF not found")
                     // router.push("/dashboard")
@@ -56,41 +56,37 @@ export default function EditClient({ id }: { id: string }) {
             <TitleNav text="Generate PDF" />
             <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
-                {/* Left Editor */}
-                <AnimatePresence>
-                    <motion.div
-                        key="editing"
-                        initial={{ opacity: 0, x: -30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 30 }}
-                        transition={{ duration: 0.3 }}
-                        className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden"
-                    >
-                        <h2 className="text-xl font-semibold">Edit PDF</h2>
+                <motion.div
+                    key="editing"
+                    initial={{ opacity: 0, x: -30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 30 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden"
+                >
+                    <h2 className="text-xl font-semibold">Edit PDF</h2>
 
-                        <textarea
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            placeholder="Refine, shorten, or edit..."
-                            className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
+                    <textarea
+                        value={editPrompt}
+                        onChange={(e) => setEditPrompt(e.target.value)}
+                        placeholder="Refine, shorten, or edit..."
+                        className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
               focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
-                        />
+                    />
 
-                        <DownloadPDF html={htmlContent} pdfName={fileName} />
-                    </motion.div>
+                    <DownloadPDF html={htmlContent} pdfName={fileName} />
+                </motion.div>
 
-                    {/* Right Preview */}
-                    <motion.div
-                        key="preview"
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 30 }}
-                        transition={{ duration: 0.3 }}
-                        className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
-                    >
-                        <PDFPreview loading={loading} html={pdf?.htmlContent || htmlContent} />
-                    </motion.div>
-                </AnimatePresence>
+                <motion.div
+                    key="preview"
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 30 }}
+                    transition={{ duration: 0.3 }}
+                    className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
+                >
+                    <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} />
+                </motion.div>
             </div>
         </div>
     )
