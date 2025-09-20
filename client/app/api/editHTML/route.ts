@@ -24,8 +24,7 @@ export async function POST(req: Request) {
         const session = await auth.api.getSession({ headers: req.headers })
         const userId = session!.user.id
 
-        const PYTHON_URL = process.env.
-        PYTHON_URL || 'http://localhost:8000'
+        const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
         const res = await fetch(`${PYTHON_URL}/ai/edit`, {
             method: "POST",

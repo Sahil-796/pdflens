@@ -18,9 +18,9 @@ export async function POST(req: Request) {
         }
         
         const { pdfId } = parsed.data
-        const pdf = getPdf(pdfId)
+        const pdf = await getPdf(pdfId)
 
-        return NextResponse.json(pdf)
+        return NextResponse.json({pdf})
     } catch (err) {
         return NextResponse.json({ error: `Pdf not found : ${err}` }, { status: 404 })
     }

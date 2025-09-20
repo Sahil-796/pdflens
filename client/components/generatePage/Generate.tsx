@@ -1,14 +1,15 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import {motion} from 'framer-motion'
 import { createContextFile, addContextFile } from '../../db/context'
 import { toast } from 'sonner'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
-import GenerateSection from './GenerateSection'
-import EditSection from './EditSection'
+import { useRouter } from 'next/navigation'
 
 const Generate = () => {
+  const router = useRouter()
   useAuthRehydrate()
   const [input, setInput] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -16,7 +17,7 @@ const Generate = () => {
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName } = usePdfStore()
+  const { fileName, pdfId, setPdf } = usePdfStore()
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -35,6 +36,7 @@ const Generate = () => {
       })
       if (!createRes.ok) throw new Error("Failed to create PDF")
       const createData = await createRes.json()
+      setPdf({ pdfId: createData.id })
       toast.success("PDF Created")
 
       if (createData.status === 200) {
@@ -51,7 +53,7 @@ const Generate = () => {
         if (!generateRes.ok) throw new Error("Failed to create PDF")
 
         const generateData = await generateRes.json()
-        toast.success("HTML Generated")
+        setPdf({ htmlContent: generateData.data })
 
         const updateRes = await fetch('/api/updatePdf', {
           method: "POST",
@@ -78,23 +80,76 @@ const Generate = () => {
     }
   }
 
+  useEffect(() => {
+    if (success) {
+      router.push(`/edit/${pdfId}`)
+    }
+  }, [success])
+
   return (
     <div className="flex p-4 text-foreground gap-6 bg-background h-full">
-      {
-        !success ?
-          <GenerateSection
-            input={input}
-            setInput={setInput}
-            files={files}
-            setFiles={setFiles}
-            handleSend={handleSend}
-            loading={loading}
+      <div className={`w-full bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
+        <h2 className="text-xl font-semibold">
+          Generate PDF
+        </h2>
+        <motion.div
+          key="initial"
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 30 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col gap-4"
+        >
+          <input
+            type="text"
+            value={fileName}
+            onChange={(e) => setPdf({ fileName: e.target.value })}
+            placeholder="Enter filename"
+            className="bg-muted border border-border rounded-md p-2 w-full 
+             focus:outline-none focus:ring-2 focus:ring-ring"
           />
-          :
-          <EditSection
-            loading={loading}
+          <textarea
+            id="inputMessage"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Enter your text here..."
+            className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
+                         focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
           />
-      }
+
+          <button
+            onClick={handleSend}
+            disabled={loading}
+            className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
+          >
+            {loading ? 'Generating...' : 'Generate'}
+          </button>
+
+          <div>
+            <label className="block font-medium mb-2">Upload Files</label>
+            <input
+              type="file"
+              multiple
+              className="block w-full text-sm text-muted-foreground
+                             file:mr-4 file:py-2 file:px-4
+                             file:rounded-md file:border-0
+                             file:text-sm file:font-semibold
+                             file:bg-muted file:text-foreground
+                             hover:file:bg-accent
+                             cursor-pointer"
+            />
+            {files.length > 0 && (
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                {files.map((file, idx) => (
+                  <li key={idx} className="truncate">
+                    📄 {file.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </motion.div>
+      </div>
     </div>
   )
 }
