@@ -20,10 +20,10 @@ const PDFPreview = ({ loading, html }: { loading: boolean, html: string }) => {
                                 el.classList.remove("selected")
                             })
                             target.classList.add("selected")
-                            target.textContent = "AI generated"
+                            // target.textContent = "AI generated"
                         }
                     }}
-                    className="mx-auto flex-1 w-full overflow-y-scroll rounded-md p-6 bg-white text-black"
+                    className="mx-auto flex-1 w-full overflow-y-scroll rounded-md px-6 pb-6 bg-white text-black"
                     dangerouslySetInnerHTML={{ __html: html }}
                 />
             )}
