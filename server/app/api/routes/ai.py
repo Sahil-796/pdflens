@@ -24,8 +24,7 @@ router = APIRouter(
 @router.post('/generate')
 async def generate(req: PromptRequest, secret1: str = Header(...)):
 
-    print(req, secret1, secret)
-    print("here")
+
     if secret1 != secret:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
