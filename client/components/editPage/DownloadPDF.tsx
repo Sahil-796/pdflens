@@ -28,7 +28,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
 
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${pdfName || "document"}.pdf`;
+            a.download = `${pdfName || "documentFromPDFLens"}.pdf`;
             a.click();
             URL.revokeObjectURL(url);
         }

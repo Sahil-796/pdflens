@@ -56,28 +56,9 @@ export default function EditClient({ id }: { id: string }) {
     return (
         <div className='h-screen flex flex-col'>
             <TitleNav text={editPdf?.fileName || "Untitled"} />
-            <div className='flex-1 overflow-hidden flex gap-6 p-6'>
+            <div className='flex-1 overflow-hidden flex flex-col gap-6 p-6'>
 
-                <motion.div
-                    key="editing"
-                    initial={{ opacity: 0, x: -30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 30 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-1/3 bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden"
-                >
-                    <h2 className="text-xl font-semibold">Edit PDF</h2>
-
-                    <textarea
-                        value={editPrompt}
-                        onChange={(e) => setEditPrompt(e.target.value)}
-                        placeholder="Refine, shorten, or edit..."
-                        className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
-              focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
-                    />
-
-                    <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
-                </motion.div>
+                <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
 
                 <motion.div
                     initial={{ opacity: 0, x: 30 }}
