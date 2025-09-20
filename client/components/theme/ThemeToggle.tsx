@@ -16,10 +16,10 @@ function ThemeToggle() {
 
     return (
         <Button
-            variant="ghost"
+            variant="secondary"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-full hover:bg-secondary"
+            className="rounded-full bg-background shadow-none"
             aria-label="Toggle dark mode"
         >
             {theme === "dark" ? (

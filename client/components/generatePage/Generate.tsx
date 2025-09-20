@@ -104,7 +104,7 @@ const Generate = () => {
             type="text"
             value={fileName}
             onChange={(e) => setPdf({ fileName: e.target.value })}
-            placeholder="Enter filename"
+            placeholder="Enter filename (Can't change afterwards)"
             className="bg-muted border border-border rounded-md p-2 w-full 
              focus:outline-none focus:ring-2 focus:ring-ring"
           />
@@ -112,7 +112,7 @@ const Generate = () => {
             id="inputMessage"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Enter your text here..."
+            placeholder={'Describe your here...'}
             className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
                          focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
           />

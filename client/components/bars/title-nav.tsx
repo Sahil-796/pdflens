@@ -12,7 +12,7 @@ const TitleNav = ({ text }: { text: string }) => {
                     orientation="vertical"
                     className="mr-2 data-[orientation=vertical]:h-4"
                 />
-                <h2 className="text-foreground text-sm">{text}</h2>
+                <h2 className="text-foreground text-lg font-semibold">{text}</h2>
             </div>
             <ThemeToggle />
         </header>

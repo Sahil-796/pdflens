@@ -14,7 +14,7 @@ const page = () => {
 
     return (
         <div className='h-screen flex flex-col'>
-            <TitleNav text="Generate PDF" />
+            <TitleNav text="Edit PDF" />
             <div className='flex-1 overflow-hidden'>
                 
             </div>

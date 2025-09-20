@@ -34,7 +34,6 @@ const Recents: React.FC = () => {
 
     return (
         <div className="space-y-3">
-            <h2 className="text-primary font-semibold text-lg">Recent PDFs</h2>
             {pdfs.length === 0 ? (
                 <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
             ) : (

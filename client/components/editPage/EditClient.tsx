@@ -53,7 +53,7 @@ export default function EditClient({ id }: { id: string }) {
 
     return (
         <div className='h-screen flex flex-col'>
-            <TitleNav text="Generate PDF" />
+            <TitleNav text={editPdf?.fileName || "Untitled"} />
             <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
                 <motion.div

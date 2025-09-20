@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import TitleNav from "@/components/bars/title-nav"
 import Recents from "@/components/dashboardPage/Recents"
+import Link from "next/link"
 
 export default function Dashboard() {
   return (
@@ -18,9 +19,11 @@ export default function Dashboard() {
               placeholder="Search PDFs..."
               className="w-1/3 border-border text-primary bg-card"
             />
-            <Button className="bg-card text-primary border border-border">
-              + Create New PDF
-            </Button>
+            <Link href='/generate'>
+              <Button variant='secondary' className="bg-card text-primary border border-border">
+                + Create New PDF
+              </Button>
+            </Link>
           </div>
 
           {/* Recent PDFs */}

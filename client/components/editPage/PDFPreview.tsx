@@ -23,7 +23,7 @@ const PDFPreview = ({loading, html}: {loading: boolean, html: string}) => {
                             target.textContent = "AI generated"
                         }
                     }}
-                    className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6 "
+                    className="mx-auto flex-1 w-full overflow-y-scroll border border-border rounded-md p-6 bg-white text-black"
                     dangerouslySetInnerHTML={{ __html: html }}
                 />
             )}
