@@ -6,18 +6,18 @@ import { toast } from 'sonner'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 
 const SaveChanges = () => {
-    const { htmlContent, pdfId } = usePdfStore()
+    const { renderedHtml, pdfId } = usePdfStore()
     const [loading, setLoading] = useState(false)
 
     async function handleSave() {
-        if (!htmlContent) return;
+        if (!renderedHtml) return;
 
         setLoading(true)
         const res = await fetch("/api/updatePdf", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                html: htmlContent,
+                html: renderedHtml,
                 id: pdfId
             }),
         });

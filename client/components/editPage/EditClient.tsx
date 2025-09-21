@@ -21,7 +21,6 @@ interface Pdf {
 export default function EditClient({ id }: { id: string }) {
     const router = useRouter()
     const { htmlContent, fileName, setPdf } = usePdfStore()
-    const [editPrompt, setEditPrompt] = useState('')
     const [editPdf, setEditPdf] = useState<Pdf | null>(null)
     const [loading, setLoading] = useState(true)
 
