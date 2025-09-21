@@ -660,3 +660,11 @@ body.X {
       0 10px 28px rgba(0, 123, 255, 0.35);
   }
 }
+
+:root {
+  --elegant-font: 'Great Vibes';
+}
+
+@theme inline {
+  --elegant-font: var(----elegant-font);
+}

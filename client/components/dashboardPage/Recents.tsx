@@ -51,7 +51,7 @@ const Recents: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {pdfs.map((pdf) => (
                 <Link href={`/edit/${pdf.id}`} key={pdf.id}>
-                    <Card className="cursor-pointer gap-2 transition-all ">
+                    <Card className="cursor-pointer gap-2 transition-all hover:scale-105 duration-150 hover:border-primary">
                         <CardHeader>
                             <CardTitle className="text-primary truncate">{pdf.fileName}</CardTitle>
                         </CardHeader>
