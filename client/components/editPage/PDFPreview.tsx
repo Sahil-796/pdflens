@@ -1,11 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+import { usePdfStore } from '@/app/store/usePdfStore'
 
 const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, pdfId: string }) => {
+    const { setPdf } = usePdfStore()
+
     const [open, setOpen] = useState(false)
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
     const [promptValue, setPromptValue] = useState("")
@@ -14,6 +17,10 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
     const [originalHtml, setOriginalHtml] = useState("")
     const [status, setStatus] = useState('prompt')
     const [renderedHtml, setRenderedHtml] = useState(`${html}`)
+
+    useEffect(() => {
+        setRenderedHtml(html)
+    }, [html])
 
     return (
         <div className="relative flex-1 bg-card rounded-xl p-6 overflow-auto">
@@ -45,7 +52,10 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
             )}
 
             {anchorEl && (
-                <Popover open={open} onOpenChange={setOpen}>
+                <Popover open={open} onOpenChange={(val)=>{
+                    setOpen(val)
+                    if(!val) setStatus("prompt")
+                }}>
                     <PopoverTrigger asChild>
                         {/* Hidden trigger, positioning handled manually */}
                         <span
@@ -93,7 +103,7 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
                                         })
                                         if (!res.ok) throw new Error('API failed')
                                         const data = await res.json()
-                                        setPromptValue(data) // display AI response
+                                        setPromptValue(`${data}`) // display AI response
                                         setStatus('aiResult')
                                     } catch (err) {
                                         console.error(err)
@@ -106,7 +116,9 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
                                     const el = doc.getElementById(selectedId)
                                     if (el) {
                                         el.innerHTML = promptValue
-                                        setRenderedHtml(doc.documentElement.outerHTML)
+                                        const updatedHtml = doc.documentElement.outerHTML
+                                        setRenderedHtml(updatedHtml)
+                                        setPdf({ htmlContent: updatedHtml })
                                     }
                                     setOpen(false)
                                     setStatus('prompt')

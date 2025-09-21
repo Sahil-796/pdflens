@@ -3,11 +3,12 @@
 import { usePdfStore } from '@/app/store/usePdfStore'
 import TitleNav from '@/components/bars/title-nav'
 import { useRouter } from 'next/navigation'
-import { AnimatePresence, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
 import DownloadPDF from '@/components/editPage/DownloadPDF'
 import PDFPreview from '@/components/editPage/PDFPreview'
 import { toast } from 'sonner'
+import SaveChanges from './SaveChanges'
 
 interface Pdf {
     id: string
@@ -24,6 +25,7 @@ export default function EditClient({ id }: { id: string }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
+        setPdf({pdfId: id})
         const fetchPdf = async () => {
             try {
                 const res = await fetch('/api/getPdf', {
@@ -59,6 +61,7 @@ export default function EditClient({ id }: { id: string }) {
             <div className='flex-1 overflow-hidden flex flex-col gap-6 p-6'>
 
                 <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                <SaveChanges />
 
                 <motion.div
                     initial={{ opacity: 0, x: 30 }}
