@@ -30,7 +30,7 @@ async def editWorkflow(req: EditRequest) -> str:
     existing_content = req.html
 
     system = (
-        "You are an expert HTML and CSS editor. "
+        "You are an expert CSS editor. "
         "Your task is to carefully edit the given HTML based on the user's requirements. "
         "Rules:\n"
         "- Only modify the content and CSS styling according to the requirements.\n"
@@ -39,6 +39,7 @@ async def editWorkflow(req: EditRequest) -> str:
         "- If you need to change the styling of an element with `class='selectable'`, "
         "do it via inline `style` attributes only, without altering the class itself.\n"
         "- Keep the structure valid and consistent."
+        "- Don't add any extra tags. Just use the tags that are provided in the user's requirements"
     )
 
     human = (
