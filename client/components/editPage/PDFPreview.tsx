@@ -11,7 +11,9 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
     const [promptValue, setPromptValue] = useState("")
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [originalContent, setOriginalContent] = useState("")
+    const [originalHtml, setOriginalHtml] = useState("")
     const [status, setStatus] = useState('prompt')
+    const [renderedHtml, setRenderedHtml] = useState(`${html}`)
 
     return (
         <div className="relative flex-1 bg-card rounded-xl p-6 overflow-auto">
@@ -31,13 +33,14 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
 
                             setSelectedId(target.id)
                             setOriginalContent(target.innerText)
+                            setOriginalHtml(target.innerHTML)
                             setPromptValue('')
                             setAnchorEl(target)
                             setOpen(true)
                         }
                     }}
                     className="mx-auto flex-1 w-full overflow-y-scroll rounded-md px-6 pb-6 bg-white text-black"
-                    dangerouslySetInnerHTML={{ __html: html }}
+                    dangerouslySetInnerHTML={{ __html: renderedHtml }}
                 />
             )}
 
@@ -83,14 +86,14 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({
                                                 userPrompt: promptValue,
-                                                html: originalContent,
+                                                html: originalHtml,
                                                 pdfId,
                                                 isContext: false,
                                             }),
                                         })
                                         if (!res.ok) throw new Error('API failed')
                                         const data = await res.json()
-                                        setPromptValue(data.editedHtml) // display AI response
+                                        setPromptValue(data) // display AI response
                                         setStatus('aiResult')
                                     } catch (err) {
                                         console.error(err)
@@ -98,9 +101,15 @@ const PDFPreview = ({ loading, html, pdfId }: { loading: boolean, html: string, 
                                     }
                                 } else if (status === 'aiResult' && selectedId) {
                                     // Step 2: Apply to actual content
-                                    const el = document.getElementById(selectedId)
-                                    if (el) el.innerText = promptValue
+                                    const parser = new DOMParser()
+                                    const doc = parser.parseFromString(renderedHtml, "text/html")
+                                    const el = doc.getElementById(selectedId)
+                                    if (el) {
+                                        el.innerHTML = promptValue
+                                        setRenderedHtml(doc.documentElement.outerHTML)
+                                    }
                                     setOpen(false)
+                                    setStatus('prompt')
                                 }
                             }}
                         >

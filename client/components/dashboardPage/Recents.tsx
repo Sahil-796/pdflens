@@ -18,7 +18,7 @@ const Recents: React.FC = () => {
         const fetchPdfs = async () => {
             try {
                 setLoading(true)
-                const res = await fetch("/api/getALL")
+                const res = await fetch("/api/getAll")
                 const data: Pdf[] = await res.json()
                 setPdfs(data)
             } catch (error) {
