@@ -9,6 +9,7 @@ import DownloadPDF from '@/components/editPage/DownloadPDF'
 import PDFPreview from '@/components/editPage/PDFPreview'
 import { toast } from 'sonner'
 import SaveChanges from './SaveChanges'
+import EditPDF from './EditPDF'
 
 interface Pdf {
     id: string
@@ -25,7 +26,7 @@ export default function EditClient({ id }: { id: string }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        setPdf({pdfId: id})
+        setPdf({ pdfId: id })
         const fetchPdf = async () => {
             try {
                 const res = await fetch('/api/getPdf', {
@@ -58,10 +59,13 @@ export default function EditClient({ id }: { id: string }) {
     return (
         <div className='h-screen flex flex-col'>
             <TitleNav text={editPdf?.fileName || "Untitled"} />
-            <div className='flex-1 overflow-hidden flex flex-col gap-6 p-6'>
+            <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
-                <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
-                <SaveChanges />
+                <div className='flex flex-col gap-6 w-1/3'>
+                    <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                    <EditPDF />
+                    <SaveChanges />
+                </div>
 
                 <motion.div
                     initial={{ opacity: 0, x: 30 }}

@@ -14,7 +14,7 @@ const Page = () => {
                     <p className="text-muted-foreground text-sm mb-6">
                         Select one of your recent PDFs below to continue editing, or create a new one from the dashboard.
                     </p>
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 overflow-y-scroll p-2">
                         <Recents />
                     </div>
                 </div>
