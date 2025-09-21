@@ -39,9 +39,9 @@ async def workflow(req = PromptRequest) -> str:
             context = "\n\n".join([doc.page_content for doc in results])
 
         extractor = await extract_formatting_and_content(user_input)
-        draft = await create_draft(extractor[0], context)
-        formatting = await generate_formatting_kwargs(extractor[1])
+        draft = await create_draft(extractor[0], extractor[2],context)
         content = await refine_structure(extractor[0], draft)
+        formatting = await generate_formatting_kwargs(extractor[1], content)
 
         html = create_html(content, formatting)
 

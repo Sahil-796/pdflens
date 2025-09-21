@@ -6,13 +6,14 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
+async def generate_formatting_kwargs(formatting_instructions: str, content: str) -> dict:
     
     system = ("""
 You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. 
 Your output must be a valid Python dictionary of CSS-compatible formatting parameters. 
 Keys must be plain strings (no '.' or '#').
-
+Content in markdown format will be provided to you, this markdown would be converted to html using other workflows using markdownIT. Your job is to match the formattings you generate according to the to be converted markdown. 
+              
 Follow this process:
 1. Always establish global styles for standard tags (at minimum: 'body', 'p', 'h1', 'h2', 'blockquote').
    - Include reasonable defaults unless overridden:
@@ -26,6 +27,7 @@ Only return a Python dictionary literal. Do not output explanations, quotes arou
 Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'.
 Use proper CSS keywords with hyphens; don't use underscores.
 Use perfect styles and sizes for heading tags, maintaining visual hierarchy; don't give colors other than black and white unless the user specifies so. You can make it bold and light-colored for good visuals.
+For tables use borders and keep everything centered or left aligned. Match the alignment of cells with headings.
 Your output must be a valid JSON object (not Python dict). 
 Keys must use double quotes. 
 Maintain required spacing between each elements
@@ -35,6 +37,7 @@ Maintain required spacing between each elements
     human = (
     """
     Convert the following formatting instructions into a valid Python dictionary for WeasyPrint:\n\n{text}\n\n
+    Here's the content in md format : \n\n{content}\n\n
     Rules:\n
     - Always include global defaults for 'body', 'p', 'h1', etc.\n
     - If the user says 'all h1 tags blue', apply that under 'h1'.\n
@@ -49,7 +52,7 @@ Maintain required spacing between each elements
         ("human", human)
         ])
     chain = prompt | llm
-    response = await chain.ainvoke({"text": formatting_instructions})
+    response = await chain.ainvoke({"text": formatting_instructions, "content": content})
 
     kwargs_json = response.content.strip()
 

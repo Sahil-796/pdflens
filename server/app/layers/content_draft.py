@@ -15,13 +15,13 @@ def clean_markdown(text: str) -> str:
     text = re.sub(r"\n```$", "", text)
     return text.strip()
 
-async def create_draft(content_description: str, context: str) -> str: 
+async def create_draft(content_description: str, instructions: str, context: str) -> str: 
     
     # Generates detailed content based on the content description.  
 
     system = (
         "You are a subject matter expert writing a pro handbook. "
-        "By default, create authoritative, well-structured content of around 200–300 words. "
+        "By default, create authoritative, well-structured content of around 200 to 300 words. "
         "Ensure the output is valid Markdown ONLY — no triple backticks, no code fences, "
         "strictly NO wrapping inside ```markdown or ``` blocks. over the full content."
         "The Markdown must be clean and valid for seamless conversion with markitdown → HTML → styled PDF. "
@@ -33,16 +33,17 @@ async def create_draft(content_description: str, context: str) -> str:
 
     human = (
         "Create visually well-structured Markdown content for the following description. "
-        "By default, keep the length around 200–300 words unless I explicitly specify otherwise "
+        "By default, keep the length around 200 to 300 words unless I explicitly specify otherwise "
         "(e.g., 'make it short 100 words' or 'make it 10 pages'). "
         "Focus only on niche-specific content for the description provided, avoiding extra comments:\n\n{text}"
+        "Refer to this instructions : {instructions}"
         "To refer from  a knowledge base use this context text to provide accurate information: {context}"
     )
 
 
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     chain = prompt | llm 
-    response = await chain.ainvoke({"text": content_description, "context": context})
+    response = await chain.ainvoke({"text": content_description, "context": context, "instructions": instructions})
     raw_content = response.content.strip()
     content = clean_markdown(raw_content)
     print(f"LLM-Content:\n{content}\n")

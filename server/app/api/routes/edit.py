@@ -6,14 +6,12 @@ load_dotenv()
 import os
 secret = os.getenv("secret")
 
-from langchain_pinecone import PineconeVectorStore
-
 
 class EditRequest(BaseModel):
     userPrompt: str
     html: str
     pdfId: str
-    isConetxt: bool
+    isContext: bool
     userId: str
 
 router = APIRouter(
@@ -23,7 +21,6 @@ router = APIRouter(
 
 @router.post('/edit')
 async def edit(req:EditRequest, secret1: str = Header(...)) -> str:
-
     if secret1 != secret:
         raise Exception("Unauthorized")
 
