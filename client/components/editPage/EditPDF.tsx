@@ -91,7 +91,7 @@ return (
                             className="mt-4 w-full col-span-2"
                             onClick={handleAiEdit}
                         >
-                            {status === 'prompt' ? 'Edit' : status === 'loading' ? <TextShimmerWave duration={1}>Editing</TextShimmerWave> : 'Apply'}
+                            {status === 'prompt' ? 'Ask AI' : status === 'loading' ? <TextShimmerWave duration={1}>Editing</TextShimmerWave> : 'Apply'}
                         </Button>
                     </div>
                 ) : (
