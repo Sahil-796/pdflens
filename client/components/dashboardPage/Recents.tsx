@@ -3,6 +3,12 @@
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 interface Pdf {
     id: string
@@ -42,23 +48,25 @@ const Recents: React.FC = () => {
         return <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {pdfs.map((pdf) => (
-                <Link
-                    href={`/edit/${pdf.id}`}
-                    key={pdf.id}
-                    className="p-5 border border-border rounded-xl bg-card shadow-sm cursor-pointer flex flex-col justify-between"
-                >
-                    <p className="text-primary font-semibold text-lg truncate">{pdf.fileName}</p>
-                    <span className="text-xs text-muted-foreground mt-2">
-                        {pdf.createdAt
-                            ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(undefined, {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric',
-                            })}`
-                            : "Created On: N/A"}
-                    </span>
+                <Link href={`/edit/${pdf.id}`} key={pdf.id}>
+                    <Card className="cursor-pointer gap-2 transition-all ">
+                        <CardHeader>
+                            <CardTitle className="text-primary truncate">{pdf.fileName}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <span className="text-xs text-muted-foreground">
+                                {pdf.createdAt
+                                    ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(undefined, {
+                                        day: '2-digit',
+                                        month: 'short',
+                                        year: 'numeric',
+                                    })}`
+                                    : "Created On: N/A"}
+                            </span>
+                        </CardContent>
+                    </Card>
                 </Link>
             ))}
         </div>

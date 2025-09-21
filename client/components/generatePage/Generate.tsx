@@ -90,11 +90,8 @@ const Generate = () => {
 
 
   return (
-    <div className="flex p-4 text-foreground gap-6 bg-background h-full">
-      <div className={`w-full bg-card p-6 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
-        <h2 className="text-xl font-semibold">
-          Generate PDF
-        </h2>
+    <div className="flex p-4 text-foreground bg-background h-full">
+      <div className={`w-full bg-card p-4 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
         <motion.div
           key="initial"
           initial={{ opacity: 0, x: -30 }}

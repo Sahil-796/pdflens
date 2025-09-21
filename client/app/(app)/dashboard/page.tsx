@@ -27,52 +27,40 @@ export default function Dashboard() {
           </div>
 
           {/* Recent PDFs */}
-          <Card className="bg-card border border-border">
-            <CardHeader>
-              <CardTitle className="text-primary">Recent PDFs</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Recents />
-            </CardContent>
-          </Card>
-
+          <div className="space-y-4 ">
+            <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
+            <Recents />
+          </div>
+          
           {/* Favourites */}
-          <Card className="bg-card border border-border">
-            <CardHeader>
-              <CardTitle className="text-primary">Favourites</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {[1, 2].map((fav) => (
-                  <div
-                    key={fav}
-                    className="p-4 rounded-lg border border-border bg-card text-primary"
-                  >
-                    Favourite {fav}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-primary">Favourites</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {[1, 2].map((fav) => (
+                <Card
+                  key={fav}
+                  className="p-4 rounded-lg border border-border bg-card text-primary"
+                >
+                  Favourite {fav}
+                </Card>
+              ))}
+            </div>
+          </div>
 
           {/* Templates */}
-          <Card className="bg-card border border-border">
-            <CardHeader>
-              <CardTitle className="text-primary">Templates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                {["Resume", "Invoice", "Certificate"].map((template) => (
-                  <div
-                    key={template}
-                    className="p-4 rounded-lg border border-border bg-card text-primary cursor-pointer hover:opacity-80"
-                  >
-                    {template}
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-primary">Templates</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {["Resume", "Invoice", "Certificate"].map((template) => (
+                <Card
+                  key={template}
+                  className="p-4 rounded-lg border border-border bg-card text-primary cursor-pointer hover:opacity-80"
+                >
+                  {template}
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
 
       </div>
