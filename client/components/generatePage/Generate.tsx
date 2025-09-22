@@ -1,13 +1,14 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { createContextFile, addContextFile } from '../../db/context'
 import { toast } from 'sonner'
 import { useUserStore } from '@/app/store/useUserStore'
 import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useRouter } from 'next/navigation'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
+import { X } from "lucide-react" // or Trash2 if you prefer a trash icon
+import UploadFiles from './UploadFiles'
 
 const Generate = () => {
   const router = useRouter()
@@ -20,7 +21,7 @@ const Generate = () => {
   const { userId } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
 
-  useEffect(()=>{clearPdf()},[])
+  useEffect(() => { clearPdf() }, [])
 
   const handleSend = async () => {
     if (!input.trim()) {
@@ -125,29 +126,7 @@ const Generate = () => {
             {loading ? <TextShimmerWave duration={1}>Generating...</TextShimmerWave> : 'Generate'}
           </button>
 
-          <div>
-            <label className="block font-medium mb-2">Upload Files</label>
-            <input
-              type="file"
-              multiple
-              className="block w-full text-sm text-muted-foreground
-                             file:mr-4 file:py-2 file:px-4
-                             file:rounded-md file:border-0
-                             file:text-sm file:font-semibold
-                             file:bg-muted file:text-foreground
-                             hover:file:bg-accent
-                             cursor-pointer"
-            />
-            {files.length > 0 && (
-              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
-                {files.map((file, idx) => (
-                  <li key={idx} className="truncate">
-                    📄 {file.name}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <UploadFiles />
         </motion.div>
       </div>
     </div>
