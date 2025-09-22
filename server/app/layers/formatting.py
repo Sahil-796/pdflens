@@ -28,6 +28,7 @@ Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'.
 Use proper CSS keywords with hyphens; don't use underscores.
 Use perfect styles and sizes for heading tags, maintaining visual hierarchy; don't give colors other than black and white unless the user specifies so. You can make it bold and light-colored for good visuals.
 For tables use borders and keep everything centered or left aligned. Match the alignment of cells with headings.
+Set appropriate gap between each element so it doesnt stick to each other
 Your output must be a valid JSON object (not Python dict). 
 Keys must use double quotes. 
 Maintain required spacing between each elements
