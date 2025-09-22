@@ -1,18 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TextShimmerWave } from "../motion-primitives/text-shimmer-wave";
+import { usePdfStore } from "@/app/store/usePdfStore";
 
 const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
     const [loading, setLoading] = useState(false)
 
+    const {renderedHtml, setRenderedHtml} = usePdfStore()
+
+    useEffect(() => {
+        if (html) setRenderedHtml(html)
+    }, [html, setRenderedHtml])
+
+
     async function handleDownload() {
-        if (!html) return;
+        if (!renderedHtml) return;
 
         setLoading(true)
         // ✅ Wrap HTML in a div with padding
         const wrapper = document.createElement("div");
         wrapper.style.padding = "16px";
-        wrapper.innerHTML = html;
+        wrapper.innerHTML = renderedHtml;
 
         // Send wrapped HTML
         const res = await fetch("/api/downloadPdf", {
@@ -22,6 +30,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         });
 
         if (res.ok) {
+            console.log(renderedHtml)
             setLoading(false)
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
