@@ -56,7 +56,7 @@ const Generate = () => {
               pdfId: currentPdfId,
             })
           })
-          if(!delRes.ok) throw new Error("Failed to delte PDF.")
+          if (!delRes.ok) throw new Error("Failed to delte PDF.")
           throw new Error("Failed to create PDF")
         }
         const createData = await createRes.json()
@@ -107,8 +107,8 @@ const Generate = () => {
   }
 
   return (
-    <div className="flex p-4 text-foreground bg-background h-full">
-      <div className={`w-full bg-card p-4 rounded-xl shadow-lg flex flex-col gap-4 border border-border relative overflow-hidden`}>
+    <div className="flex h-full p-4 text-foreground bg-background">
+      <div className="relative flex w-full flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-lg overflow-hidden">
         <motion.div
           key="initial"
           initial={{ opacity: 0, x: -30 }}
@@ -117,31 +117,43 @@ const Generate = () => {
           transition={{ duration: 0.3 }}
           className="flex flex-col gap-4"
         >
+          {/* File Name Input */}
           <input
             type="text"
             value={fileName}
             onChange={(e) => setPdf({ fileName: e.target.value })}
             placeholder="Enter filename (Can't change afterwards)"
-            className="bg-muted border border-border rounded-md p-2 w-full 
-             focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-md border border-border bg-muted p-2 
+                     focus:outline-none focus:ring-2 focus:ring-ring"
           />
+
+          {/* Prompt Textarea */}
           <textarea
             id="inputMessage"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={'Describe your here...'}
-            className="bg-muted border border-border rounded-md p-3 w-full h-40 resize-none 
-                         focus:outline-none focus:ring-2 focus:ring-ring text-foreground placeholder-muted-foreground"
+            placeholder="Describe your here..."
+            className="h-40 w-full resize-none rounded-md border border-border bg-muted p-3 
+                     text-foreground placeholder-muted-foreground 
+                     focus:outline-none focus:ring-2 focus:ring-ring"
           />
 
+          {/* Generate Button */}
           <button
             onClick={handleSend}
             disabled={loading}
-            className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
+            className="rounded-md bg-primary px-4 py-2 text-primary-foreground 
+                     transition hover:bg-primary/90 
+                     disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? <TextShimmerWave duration={1}>Generating...</TextShimmerWave> : 'Generate'}
+            {loading ? (
+              <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
+            ) : (
+              "Generate"
+            )}
           </button>
 
+          {/* File Upload */}
           <UploadFiles />
         </motion.div>
       </div>

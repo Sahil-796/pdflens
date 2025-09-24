@@ -9,6 +9,19 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
 interface Pdf {
     id: string
@@ -37,6 +50,27 @@ const Recents: React.FC = () => {
         fetchPdfs()
     }, [])
 
+    const handleDelete = async (pdfId: string, pdfName: string) => {
+        try {
+            const res = await fetch("/api/deletePdf", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pdfId }),
+            })
+
+            if (!res.ok) {
+                const err = await res.json()
+                throw new Error(err.error || "Failed to delete")
+            }
+
+            toast.success(`${pdfName} deleted`)
+            setPdfs((prev) => prev.filter((p) => p.id !== pdfId))
+        } catch (error) {
+            console.error("Error deleting PDF:", error)
+            toast.error("Failed to delete PDF")
+        }
+    }
+
     if (loading)
         return (
             <TextShimmerWave duration={1} className="text-muted-foreground">
@@ -48,26 +82,63 @@ const Recents: React.FC = () => {
         return <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {pdfs.map((pdf) => (
-                <Link href={`/edit/${pdf.id}`} key={pdf.id}>
-                    <Card className="cursor-pointer gap-2 transition-all hover:scale-105 duration-150 hover:border-primary">
-                        <CardHeader>
-                            <CardTitle className="text-primary truncate">{pdf.fileName}</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <span className="text-xs text-muted-foreground">
-                                {pdf.createdAt
-                                    ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(undefined, {
-                                        day: '2-digit',
-                                        month: 'short',
-                                        year: 'numeric',
-                                    })}`
-                                    : "Created On: N/A"}
-                            </span>
-                        </CardContent>
-                    </Card>
-                </Link>
+                <Card
+                    key={pdf.id}
+                    className="gap-2 transition-all duration-150 hover:scale-105 hover:border-primary"
+                >
+                    {/* Header */}
+                    <CardHeader>
+                        <div className="flex items-center justify-between">
+                            {/* PDF Link */}
+                            <Link href={`/edit/${pdf.id}`} className="flex-1 truncate">
+                                <CardTitle className="truncate text-primary">
+                                    {pdf.fileName}
+                                </CardTitle>
+                            </Link>
+
+                            {/* Delete Confirmation Dialog */}
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button size="sm" variant="destructive" className='cursor-pointer'>
+                                        Delete
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to delete{" "}
+                                            <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive hover:bg-destructive/80 cursor-pointer"
+                                            onClick={() => handleDelete(pdf.id, pdf.fileName)}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    </CardHeader>
+
+                    {/* Content */}
+                    <CardContent>
+                        <span className="text-xs text-muted-foreground">
+                            {pdf.createdAt
+                                ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(
+                                    undefined,
+                                    { day: "2-digit", month: "short", year: "numeric" }
+                                )}`
+                                : "Created On: N/A"}
+                        </span>
+                    </CardContent>
+                </Card>
             ))}
         </div>
     )
