@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { TextShimmerWave } from "../motion-primitives/text-shimmer-wave"
 import { Upload, X } from "lucide-react"
@@ -9,33 +9,51 @@ export default function UploadFiles() {
     const [files, setFiles] = useState<File[]>([])
     const [loading, setLoading] = useState(false)
     const [dragActive, setDragActive] = useState(false)
-    const {pdfId} = usePdfStore()
+    const { pdfId, setPdf, fileName } = usePdfStore()
 
     const handleUpload = async (newFiles: File[]) => {
-        if (!pdfId) {
-            toast.error("No PDF ID provided")
-            return
-        }
-
         setLoading(true)
         try {
+            let currentPdfId = pdfId
+
+            // If no PDF exists, create one
+            if (!currentPdfId) {
+                const createRes = await fetch('/api/createPdf', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        html: '',
+                        pdfName: fileName,
+                    }),
+                })
+                if (!createRes.ok) throw new Error("Failed to create PDF")
+                const createData = await createRes.json()
+                if (createData.status !== 200) throw new Error("PDF creation failed")
+
+                currentPdfId = createData.id
+                setPdf({ pdfId: currentPdfId })
+            }
+
+            // Upload all files at once instead of one by one
             const formData = new FormData()
             for (const file of newFiles) {
-                formData.append("files", file)
+                formData.append("files", file)  // plural ✅
             }
-            formData.append("pdfId", pdfId)
+            formData.append("pdfId", currentPdfId!)
 
             const res = await fetch("/api/addContext", {
                 method: "POST",
                 body: formData,
             })
+            if (!res.ok) {
+                const errText = await res.text()
+                console.error("Upload failed response:", errText)
+                throw new Error("Upload failed")
+            }
 
-            if (!res.ok) throw new Error("Upload failed")
-
-            const data = await res.json()
             setFiles((prev) => [...prev, ...newFiles])
+            setPdf({ isContext: true }) // ✅ Mark context as true
             toast.success(`${newFiles.length} file(s) uploaded successfully`)
-            console.log("Upload response:", data)
         } catch (err) {
             console.error("Upload error:", err)
             toast.error("Upload failed")

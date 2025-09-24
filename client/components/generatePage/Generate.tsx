@@ -7,81 +7,19 @@ import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useRouter } from 'next/navigation'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import { X } from "lucide-react" // or Trash2 if you prefer a trash icon
 import UploadFiles from './UploadFiles'
 
 const Generate = () => {
   const router = useRouter()
   useAuthRehydrate()
   const [input, setInput] = useState('')
-  const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
   useEffect(() => { clearPdf() }, [])
-
-  const handleSend = async () => {
-    if (!input.trim()) {
-      toast.error("Prompt is empty dumbass.")
-      return
-    }
-    setLoading(true)
-    try {
-      const createRes = await fetch('/api/createPdf', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html: '',
-          pdfName: fileName,
-        })
-      })
-      if (!createRes.ok) throw new Error("Failed to create PDF")
-      const createData = await createRes.json()
-      setPdf({ pdfId: createData.id })
-
-      if (createData.status === 200) {
-        const generateRes = await fetch('/api/generateHTML', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: userId,
-            userPrompt: input,
-            pdfId: createData.id,
-            isContext: false
-          })
-        })
-        if (!generateRes.ok) throw new Error("Failed to create PDF")
-
-        const generateData = await generateRes.json()
-        setPdf({ htmlContent: generateData.data })
-
-        const updateRes = await fetch('/api/updatePdf', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            html: generateData.data,
-            id: createData.id
-          })
-        })
-        if (!updateRes.ok) throw new Error("Failed to create PDF")
-        const updateData = await updateRes.json()
-        if (updateData.status === 200) {
-          setSuccess(true)
-          toast.success(updateData.message)
-        }
-
-      }
-    }
-    catch (err) {
-      console.error("Error in handleSend:", err)
-      toast.error("Error occurred while generating HTML")
-    } finally {
-      setLoading(false)
-    }
-  }
 
   useEffect(() => {
     if (success) {
@@ -89,6 +27,74 @@ const Generate = () => {
     }
   }, [success])
 
+
+  const handleSend = async () => {
+    if (!input.trim()) {
+      toast.error("Prompt is empty dumbass.")
+      return
+    }
+
+    setLoading(true)
+    try {
+      let currentPdfId = pdfId
+
+      // Case 2: If no PDF exists, create one
+      if (!currentPdfId) {
+        const createRes = await fetch('/api/createPdf', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            html: '',
+            pdfName: fileName,
+          })
+        })
+        if (!createRes.ok) throw new Error("Failed to create PDF")
+        const createData = await createRes.json()
+        if (createData.status !== 200) throw new Error("PDF creation failed")
+
+        currentPdfId = createData.id
+        setPdf({ pdfId: currentPdfId })
+      }
+
+      // Generate HTML
+      const generateRes = await fetch('/api/generateHTML', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId: userId,
+          userPrompt: input,
+          pdfId: currentPdfId,
+          isContext: isContext
+        })
+      })
+      if (!generateRes.ok) throw new Error("Failed to generate HTML")
+
+      const generateData = await generateRes.json()
+      setPdf({ htmlContent: generateData.data })
+
+      // Update PDF with generated HTML
+      const updateRes = await fetch('/api/updatePdf', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          html: generateData.data,
+          id: currentPdfId
+        })
+      })
+      if (!updateRes.ok) throw new Error("Failed to update PDF")
+
+      const updateData = await updateRes.json()
+      if (updateData.status === 200) {
+        setSuccess(true)
+        toast.success(updateData.message)
+      }
+    } catch (err) {
+      console.error("Error in handleSend:", err)
+      toast.error("Error occurred while generating/updating HTML")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="flex p-4 text-foreground bg-background h-full">
