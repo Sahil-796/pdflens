@@ -66,7 +66,7 @@ const EditPDF = () => {
     }
 
 return (
-    <div className='flex-1'>
+    <div className='flex-1 overflow-y-scroll'>
         <Tabs defaultValue="ai-edit" className="w-full">
             <TabsList>
                 <TabsTrigger className='text-lg font-medium' value="ai-edit">AI Edit</TabsTrigger>

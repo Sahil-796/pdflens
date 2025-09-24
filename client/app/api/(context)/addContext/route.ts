@@ -4,68 +4,56 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 
 const AddContextSchema = z.object({
-  files: z.array(z.any()).nonempty(),
+  file: z.instanceof(File),
   pdfId: z.string().min(1),
-  userId: z.string().min(1),
 })
 
 export async function POST(req: Request) {
   try {
     const formData = await req.formData()
 
-    // get all files
-    const files = formData.getAll("files") as File[]
-    const pdfId = formData.get("pdfId") as string | null
-
-    if (!files.length) {
-      return NextResponse.json({ error: "No files uploaded" }, { status: 400 })
+    const file = formData.get("file")
+    const pdfId = formData.get("pdfId")
+    if (!file || !(file instanceof File)) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
     }
 
     const session = await auth.api.getSession({ headers: req.headers })
     const userId = session?.user?.id
-
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const parsed = AddContextSchema.safeParse({ files, pdfId, userId })
+    const parsed = AddContextSchema.safeParse({ file, pdfId })
     if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid request", details: parsed.error.format() },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
     }
 
-    const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000"
+    // Forward to FastAPI
+    const forwardData = new FormData()
+    forwardData.append("file", parsed.data.file)
+    forwardData.append("pdfId", parsed.data.pdfId)
+    forwardData.append("userId", userId)
 
-    const uploadedFileNames: string[] = []
-    const results: any[] = []
+    const PYTHON_URL = process.env.NEXT_PUBLIC_PYTHON_URL || "http://localhost:8000"
 
-    for (const file of parsed.data.files) {
-      const forwardData = new FormData()
-      forwardData.append("file", file)
-      forwardData.append("userId", parsed.data.userId)
-      forwardData.append("pdfId", parsed.data.pdfId)
+    const response = await fetch(`${PYTHON_URL}/context/upload`, {
+      method: "POST",
+      body: forwardData,
+    })
 
-      const response = await fetch(`${PYTHON_URL}/upload`, {
-        headers: { secret1: process.env.secret as string },
-        method: "POST",
-        body: forwardData,
-      })
-
-      if (!response.ok) {
-        throw new Error("Upload to FastAPI failed")
-      }
-
-      const result = await response.json()
-      results.push(result)
-
-      // save in DB
-      await createContextFile(parsed.data.pdfId, file.name)
-      uploadedFileNames.push(file.name)
+    if (!response.ok) {
+      const errText = await response.text()
+      console.error("FastAPI upload failed:", errText)
+      throw new Error("Upload to FastAPI failed")
     }
 
-    return NextResponse.json({ results, uploadedFileNames })
+    const result = await response.json()
+
+    // Store reference in DB
+    const newContext = await createContextFile(parsed.data.pdfId, file.name)
+
+    return NextResponse.json({ result, newContext })
   } catch (err) {
     console.error("Upload handler failed:", err)
     return NextResponse.json({ error: "Proxy upload failed" }, { status: 500 })
