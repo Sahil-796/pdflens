@@ -30,7 +30,6 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         });
 
         if (res.ok) {
-            console.log(renderedHtml)
             setLoading(false)
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);

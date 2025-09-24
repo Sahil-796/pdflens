@@ -25,7 +25,6 @@ const SaveChanges = () => {
         if (res.ok) {
             setLoading(false)
             toast.success("Changes Saved.")
-            console.log(renderedHtml)
         } else {
             toast.error("Error while Saving.")
         }
