@@ -7,17 +7,17 @@ import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useRouter } from 'next/navigation'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import UploadFiles from './UploadFiles'
 
 const Generate = () => {
   const router = useRouter()
   useAuthRehydrate()
   const [input, setInput] = useState('')
+  const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
 
   useEffect(() => { clearPdf() }, [])
 
@@ -33,23 +33,22 @@ const Generate = () => {
       toast.error("Prompt is empty dumbass.")
       return
     }
-
     setLoading(true)
     try {
       let currentPdfId = pdfId
 
       // Case 2: If no PDF exists, create one
       if (!currentPdfId) {
-        const createRes = await fetch('/api/createPdf', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            html: '',
-            pdfName: fileName,
-          })
+      const createRes = await fetch('/api/createPdf', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          html: '',
+          pdfName: fileName,
         })
-        if (!createRes.ok) throw new Error("Failed to create PDF")
-        const createData = await createRes.json()
+      })
+      if (!createRes.ok) throw new Error("Failed to create PDF")
+      const createData = await createRes.json()
         if (createData.status !== 200) throw new Error("PDF creation failed")
 
         currentPdfId = createData.id
@@ -57,16 +56,16 @@ const Generate = () => {
       }
 
       // Generate HTML
-      const generateRes = await fetch('/api/generateHTML', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId,
-          userPrompt: input,
-          pdfId: currentPdfId,
-          isContext: isContext
+        const generateRes = await fetch('/api/generateHTML', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: userId,
+            userPrompt: input,
+            pdfId: currentPdfId,
+            isContext: false
+          })
         })
-      })
       if (!generateRes.ok) {
         const delRes = await fetch('/api/deletePdf', {
           method: "POST",
@@ -80,25 +79,25 @@ const Generate = () => {
       }
 
 
-      const generateData = await generateRes.json()
-      setPdf({ htmlContent: generateData.data })
+        const generateData = await generateRes.json()
+        setPdf({ htmlContent: generateData.data })
 
       // Update PDF with generated HTML
-      const updateRes = await fetch('/api/updatePdf', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html: generateData.data,
+        const updateRes = await fetch('/api/updatePdf', {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            html: generateData.data,
           id: currentPdfId
         })
       })
       if (!updateRes.ok) throw new Error("Failed to update PDF")
 
-      const updateData = await updateRes.json()
-      if (updateData.status === 200) {
-        setSuccess(true)
-        toast.success(updateData.message)
-      }
+        const updateData = await updateRes.json()
+        if (updateData.status === 200) {
+          setSuccess(true)
+          toast.success(updateData.message)
+        }
     } catch (err) {
       console.error("Error in handleSend:", err)
       toast.error("Error occurred while generating/updating HTML")
@@ -125,7 +124,7 @@ const Generate = () => {
             onChange={(e) => setPdf({ fileName: e.target.value })}
             placeholder="Enter filename (Can't change afterwards)"
             className="w-full rounded-md border border-border bg-muted p-2 
-                     focus:outline-none focus:ring-2 focus:ring-ring"
+             focus:outline-none focus:ring-2 focus:ring-ring"
           />
 
           {/* Prompt Textarea */}
@@ -154,8 +153,29 @@ const Generate = () => {
             )}
           </button>
 
-          {/* File Upload */}
-          <UploadFiles />
+          <div>
+            <label className="block font-medium mb-2">Upload Files</label>
+            <input
+              type="file"
+              multiple
+              className="block w-full text-sm text-muted-foreground
+                             file:mr-4 file:py-2 file:px-4
+                             file:rounded-md file:border-0
+                             file:text-sm file:font-semibold
+                             file:bg-muted file:text-foreground
+                             hover:file:bg-accent
+                             cursor-pointer"
+            />
+            {files.length > 0 && (
+              <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                {files.map((file, idx) => (
+                  <li key={idx} className="truncate">
+                    📄 {file.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </motion.div>
       </div>
     </div>

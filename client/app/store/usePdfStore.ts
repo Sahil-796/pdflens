@@ -12,7 +12,6 @@ type PdfState = {
   pdfId: string | null;
   fileName: string;
   htmlContent: string;
-  isContext: boolean;
   setPdf: (data: Partial<PdfState>) => void;
   clearPdf: () => void;
 };
@@ -29,7 +28,6 @@ export const usePdfStore = create<PdfState>((set) => ({
   pdfId: null,
   fileName: "",
   htmlContent: "",
-  isContext: false,
   setPdf: (data) => set((state) => ({ ...state, ...data })),
-  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: "", isContext: false }),
+  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: ""}),
 }));
