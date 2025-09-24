@@ -48,7 +48,17 @@ const Generate = () => {
             pdfName: fileName,
           })
         })
-        if (!createRes.ok) throw new Error("Failed to create PDF")
+        if (!createRes.ok) {
+          const delRes = await fetch('/api/deletePdf', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              pdfId: currentPdfId,
+            })
+          })
+          if(!delRes.ok) throw new Error("Failed to delte PDF.")
+          throw new Error("Failed to create PDF")
+        }
         const createData = await createRes.json()
         if (createData.status !== 200) throw new Error("PDF creation failed")
 
