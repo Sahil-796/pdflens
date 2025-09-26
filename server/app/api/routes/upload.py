@@ -8,19 +8,11 @@ from langchain_pinecone import PineconeVectorStore
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-# schema for metadata 
-                # "pdfId": 
-                # "userId": 
-                # "filename": 
-                # "chunkId": 
-
 load_dotenv()
 router = APIRouter(
     prefix='/context',
     tags=["context"]
 )
-
-
 
 @router.post('/upload')
 async def upload_context(file: UploadFile = File(...), userId: str = Form(...), pdfId: str = Form(...)):
