@@ -58,6 +58,7 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
             embedding=embeddings,
             index_name=INDEX_NAME
         )
+
         
         return {
             "message": "File uploaded and indexed",
@@ -65,32 +66,3 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
     
     except Exception as e:
         return f"Error at upload context : {e}"
-
-# @router.post('/add-text')
-# async def add_text_context(text: str = Form(...), title: str = Form(...), userId: str = Form(...)):
-#     # Create document object (no file, no temp file needed)
-#     fake_doc = Document(
-#         page_content=text,
-#         metadata={"source": "user_input"}
-#     )
-    
-#     # Same splitting as your existing code
-#     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-#     chunks = splitter.split_documents([fake_doc])
-    
-#     # Same metadata update pattern
-#     for i, chunk in enumerate(chunks):
-#         chunk.metadata.update({
-#             "userId": userId,
-#             "filename": f"{title}_manual.txt",
-#             "chunkId": i
-#         })
-    
-#     # Same vectorstore creation
-#     vectorStore = PineconeVectorStore.from_documents(
-#         documents=chunks,
-#         embedding=embeddings,
-#         index_name=INDEX_NAME
-#     )
-    
-#     return {"message": "Text added to context"}

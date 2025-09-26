@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       forwardData.append("userId", parsed.data.userId)
       forwardData.append("pdfId", parsed.data.pdfId)
 
-      const response = await fetch(`${PYTHON_URL}/upload`, {
+      const response = await fetch(`${PYTHON_URL}/context/upload`, {
         headers: { secret1: process.env.secret as string },
         method: "POST",
         body: forwardData,
