@@ -47,9 +47,6 @@ export const useCredits = async (userId: string, cost: number) => {
         return result;
 
     } catch (err: any) {
-        if (err.message === "Insufficient credits") {
-            return null; 
-        }
         throw new Error(`Failed to use credits: ${err.message}`);
     }
 }

@@ -1,3 +1,4 @@
+import { useCredits } from "@/db/credits"
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -22,6 +23,13 @@ export async function POST(req: Request) {
         const { userPrompt, pdfId, isContext } = parsed.data
         const session = await auth.api.getSession({ headers: req.headers })
         const userId = session!.user.id
+
+        if (!userId || typeof userId !== "string") {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
+
+        const creditsLeft = await useCredits(userId, 4)
+
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
         const res = await fetch(`${PYTHON_URL}/ai/generate`, {
@@ -41,9 +49,16 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Python API failed" }, { status: res.status })
         }
         const data = await res.json()
-        return NextResponse.json({data, status: 200})
+        return NextResponse.json({data, creditsLeft, status: 200})
     } catch (err) {
         console.log("API Error:", err)
+
+        if (err.message.includes("Insufficient credits")) {
+            return NextResponse.json(
+                { error: "Insufficient credits" },
+                { status: 429 }
+            )
+        }
         return NextResponse.json({ error: "Server error" }, { status: 500 })
     }
 }
