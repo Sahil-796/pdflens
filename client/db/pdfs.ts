@@ -1,5 +1,5 @@
 import { db } from "./client"
-import { user, pdf } from "./schema"
+import { user, pdf, context } from "./schema"
 import { eq, lt, gte, ne, sql, and } from 'drizzle-orm';
 
 
@@ -66,13 +66,18 @@ export const getPdf = async (pdfId: string) => {
 
 export const deletePdf = async (pdfId: string, userId: string) => {
   try {
-    const deleted = await db.delete(pdf).where(
+    await db.delete(context).where(
+      and(
+        eq(context.pdfId, pdfId),
+      )
+    )
+    const deletedPdf = await db.delete(pdf).where(
       and(
         eq(pdf.id, pdfId),
         eq(pdf.userId, userId) // ensures the user owns the PDF
       )
     )
-    return deleted
+    return deletedPdf
   } catch (err) {
     throw new Error(`Failed to delete pdf: ${err}`)
   }
