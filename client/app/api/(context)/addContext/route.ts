@@ -5,6 +5,7 @@ import { z } from "zod"
 
 const AddContextSchema = z.object({
   file: z.instanceof(File),
+  file: z.instanceof(File),
   pdfId: z.string().min(1),
 })
 
@@ -12,6 +13,12 @@ export async function POST(req: Request) {
   try {
     // Parse form-data
     const formData = await req.formData()
+
+    const file = formData.get("file")
+    const pdfId = formData.get("pdfId")
+    if (!file || !(file instanceof File)) {
+      return NextResponse.json({ error: "No file uploaded" }, { status: 400 })
+    }
 
     const file = formData.get("file")
     const pdfId = formData.get("pdfId")
@@ -23,6 +30,7 @@ export async function POST(req: Request) {
 
     const parsed = AddContextSchema.safeParse({ file, userId, pdfId })
     if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
       return NextResponse.json({ error: "Invalid request" }, { status: 400 })
     }
 
@@ -36,6 +44,11 @@ export async function POST(req: Request) {
 
     const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
+      const response = await fetch(`${PYTHON_URL}/context/upload`, {
+        headers: { secret1: process.env.secret as string },
+        method: "POST",
+        body: forwardData,
+      })
     const response = await fetch(`${PYTHON_URL}/upload`, {
       headers: {
         "secret1": process.env.secret as string
@@ -44,10 +57,20 @@ export async function POST(req: Request) {
       body: forwardData,
     })
 
+
+    if (!response.ok) {
+      const errText = await response.text()
+      console.error("FastAPI upload failed:", errText)
+      throw new Error("Upload to FastAPI failed")
+    }
     if (!response.ok) {
       throw new Error("Upload to FastAPI failed")
     }
 
+    const result = await response.json()
+
+    // Store reference in DB
+    const newContext = await createContextFile(parsed.data.pdfId, file.name)
     const result = await response.json()
 
     // Store reference in DB
@@ -56,6 +79,7 @@ export async function POST(req: Request) {
       uploadedFileName
     )
 
+    return NextResponse.json({ result, newContext })
     return NextResponse.json({ result, newContext })
   } catch (err) {
     console.error("Upload handler failed:", err)
