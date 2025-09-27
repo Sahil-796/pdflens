@@ -35,6 +35,7 @@ export async function POST(req: Request) {
     forwardData.append("pdfId", parsed.data.pdfId)
     forwardData.append("userId", userId)
 
+
     const PYTHON_URL = process.env.NEXT_PUBLIC_PYTHON_URL || "http://localhost:8000"
 
     const response = await fetch(`${PYTHON_URL}/context/upload`, {

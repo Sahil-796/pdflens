@@ -1,0 +1,2 @@
+ALTER TABLE "user" ADD COLUMN "credits_left" integer DEFAULT 20 NOT NULL;--> statement-breakpoint
+ALTER TABLE "user" ADD COLUMN "credits_reset_at" date DEFAULT (now() at time zone 'utc')::date NOT NULL;

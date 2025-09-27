@@ -6,66 +6,133 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-async def generate_formatting_kwargs(formatting_instructions: str, content: str) -> dict:
+async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
     
     system = ("""
 You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. 
-Your output must be a valid Python dictionary of CSS-compatible formatting parameters. 
-Keys must be plain strings (no '.' or '#').
-Content in markdown format will be provided to you, this markdown would be converted to html using other workflows using markdownIT. Your job is to match the formattings you generate according to the to be converted markdown. 
-              
-Follow this process:
-1. Always establish global styles for standard tags (at minimum: 'body', 'p', 'h1', 'h2', 'blockquote').
-   - Include reasonable defaults unless overridden:
-     background-color: 'white', color: 'black', font-family: 'Helvetica', line-height: '1.5', margin: '1in'.
-   - If the user provides broad instructions like 'all h1 tags blue', put that under the global key 'h1'.
+Your output must be a valid JSON object with CSS-compatible formatting parameters.
 
-2. Then, add element-specific overrides only if the user explicitly targets a single element. 
-   Use the format 'tag-n' (e.g., 'p-3' means the 3rd paragraph).
+ESSENTIAL REQUIREMENTS:
+1. Always include basic spacing: margin-bottom for p/h1/h2/h3, padding for tables
+2. Provide reasonable defaults for body, headings, and paragraphs
+3. Use proper CSS property names with hyphens (margin-bottom, not margin_bottom)
+4. Maintain visual hierarchy for headings (h1 > h2 > h3 in size/weight)
+5. Ensure readability with proper line-height and font sizes
 
-Only return a Python dictionary literal. Do not output explanations, quotes around the entire dict, or JSON. 
-Example keys: 'body', 'p', 'h1', 'p-2', 'h1-3'.
-Use proper CSS keywords with hyphens; don't use underscores.
-Use perfect styles and sizes for heading tags, maintaining visual hierarchy; don't give colors other than black and white unless the user specifies so. You can make it bold and light-colored for good visuals.
-For tables use borders and keep everything centered or left aligned. Match the alignment of cells with headings.
-Set appropriate gap between each element so it doesnt stick to each other
-Your output must be a valid JSON object (not Python dict). 
-Keys must use double quotes. 
-Maintain required spacing between each elements
-"""
-)
+DEFAULT STRUCTURE (always include these basics):
+- 'body': page margins, font-family, background, color
+- 'p': margin-bottom for spacing
+- 'h1', 'h2', 'h3': font-size, font-weight, margin-bottom
+- Add element-specific styles only if user requests them
+
+Keys must be plain strings. Use 'tag-n' format for specific elements (e.g., 'p-2' for 2nd paragraph).
+Output only the JSON object, no explanations or markdown formatting.
+""")
 
     human = (
-    """
-    Convert the following formatting instructions into a valid Python dictionary for WeasyPrint:\n\n{text}\n\n
-    Here's the content in md format : \n\n{content}\n\n
-    Rules:\n
-    - Always include global defaults for 'body', 'p', 'h1', etc.\n
-    - If the user says 'all h1 tags blue', apply that under 'h1'.\n
-    - If the user says 'make only the 3rd paragraph red', add 'p-3': {{'color': 'red'}}.\n
-    - Use plain keys only, no '.' or '#' prefixes.
-    """
+        "Convert the following formatting instructions into a valid JSON object for WeasyPrint:\n\n{text}\n\n"
+        "Include proper spacing and visual hierarchy. If no specific instructions given, use clean professional defaults."
     )
-
 
     prompt = ChatPromptTemplate.from_messages([
         ("system", system),
         ("human", human)
-        ])
+    ])
     chain = prompt | llm
-    response = await chain.ainvoke({"text": formatting_instructions, "content": content})
+    response = await chain.ainvoke({"text": formatting_instructions})
+
+    
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    print("Running formatting")
 
     kwargs_json = response.content.strip()
 
     try:
-        match = re.search(r"\{.*\}", kwargs_json, re.DOTALL) #regex to search {} in the match
+        match = re.search(r"\{.*\}", kwargs_json, re.DOTALL)
         if match:
             kwargs_dict = match.group(0)
-            formatting_kwargs = json.loads(kwargs_dict) #basically json.parse()
+            formatting_kwargs = json.loads(kwargs_dict)
+            
+            # Apply smart defaults if missing
+            formatting_kwargs = ensure_quality_formatting(formatting_kwargs)
             return formatting_kwargs
         else:
             raise ValueError("No valid dictionary found in the response")
     except Exception as e:
         print(f"Error parsing formatting kwargs: {e}")
-        return {}
+        # Return safe defaults instead of empty dict
+        return get_default_formatting()
+
+def ensure_quality_formatting(formatting_dict: dict) -> dict:
+    """Ensure essential formatting elements are present"""
     
+    # Essential defaults that should always exist
+    essential_defaults = {
+        'body': {
+            'font-family': 'Arial, sans-serif',
+            'line-height': '1.5',         
+            'color': 'black',
+            'background-color': 'white',
+            'margin': '0.8in'             
+        },
+        'p': {
+            'margin-bottom': '10px',    
+            'font-size': '11pt'
+        },
+        'h1': {
+            'font-size': '18pt',
+            'font-weight': 'bold',
+            'margin-top': '16px',         # reduced from 20px
+            'margin-bottom': '8px'        # reduced from 10px
+        },
+        'h2': {
+            'font-size': '16pt',
+            'font-weight': 'bold',
+            'margin-top': '12px',         # reduced from 16px
+            'margin-bottom': '6px'        # reduced from 8px
+        },
+        'h3': {
+            'font-size': '14pt',
+            'font-weight': 'bold',
+            'margin-top': '10px',         # reduced from 12px
+            'margin-bottom': '5px'        # reduced from 6px
+        },
+        'ul': {'margin-bottom': '8px'},
+        'ol': {'margin-bottom': '8px'},
+        'li': {'margin-bottom': '2px'},
+        'table': {
+            'border-collapse': 'collapse',
+            'margin-bottom': '10px',
+            'width': '100%'
+        },
+        'td': {'padding': '5px', 'border': '1px solid #ddd'},
+        'th': {'padding': '6px', 'border': '1px solid #ddd', 'font-weight': 'bold'}
+    }
+    
+    # Merge defaults with user preferences (user preferences take priority)
+    for tag, defaults in essential_defaults.items():
+        if tag not in formatting_dict:
+            formatting_dict[tag] = {}
+        
+        # Only add missing properties, don't override user choices
+        for prop, value in defaults.items():
+            if prop not in formatting_dict[tag]:
+                formatting_dict[tag][prop] = value
+    
+    return formatting_dict
+
+def get_default_formatting() -> dict:
+    """Fallback formatting if everything fails"""
+    return {
+        'body': {
+            'font-family': 'Arial, sans-serif',
+            'line-height': '1.6',
+            'margin': '1in',
+            'color': 'black'
+        },
+        'p': {'margin-bottom': '12px'},
+        'h1': {'font-size': '18pt', 'font-weight': 'bold', 'margin-bottom': '10px'},
+        'h2': {'font-size': '16pt', 'font-weight': 'bold', 'margin-bottom': '8px'},
+        'h3': {'font-size': '14pt', 'font-weight': 'bold', 'margin-bottom': '6px'}
+    }

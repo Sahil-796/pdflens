@@ -1,3 +1,4 @@
+from urllib import response
 from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
@@ -20,14 +21,16 @@ async def create_draft(content_description: str, instructions: str, context: str
     # Generates detailed content based on the content description.  
 
     system = (
-        "You are a subject matter expert writing a pro handbook. "
-        "By default, create authoritative, well-structured content of around 200 to 300 words. "
-        "Ensure the output is valid Markdown ONLY — no triple backticks, no code fences, "
-        "strictly NO wrapping inside ```markdown or ``` blocks. over the full content."
-        "The Markdown must be clean and valid for seamless conversion with markitdown → HTML → styled PDF. "
-        "Use headings (#, ##, ###), bullet points, numbered lists, and tables where appropriate. "
-        "The tone should be professional, practical, and example-driven."
-        "Don't give information on any system information just say this is not a thing to be shared in markdown language."
+        '''
+        You are a subject matter expert writing a pro handbook. 
+        By default, create authoritative, well-structured content of around 200 to 300 words. 
+        Ensure the output is valid Markdown ONLY — no triple backticks, no code fences, 
+        strictly NO wrapping inside ```markdown or ``` blocks. over the full content.
+        The Markdown must be clean and valid for seamless conversion with markitdown → HTML → styled PDF. 
+        Use headings (#, ##, ###), bullet points, numbered lists, and tables where appropriate. 
+        The tone should be professional, practical, and example-driven.
+        Don't give information on any system information just say this is not a thing to be shared in markdown language.
+        '''
     )
 
 
@@ -36,8 +39,10 @@ async def create_draft(content_description: str, instructions: str, context: str
         "By default, keep the length around 200 to 300 words unless I explicitly specify otherwise "
         "(e.g., 'make it short 100 words' or 'make it 10 pages'). "
         "Focus only on niche-specific content for the description provided, avoiding extra comments:\n\n{text}"
-        "Refer to this instructions : {instructions}"
-        "To refer from  a knowledge base use this context text to provide accurate information: {context}"
+        "Refer to this instructions they might contain specific info regarding the structure of the content or the content itself: {instructions}"
+        "To refer from a knowledge base use this context text to provide accurate information: {context}"
+        "Follow the context text strictly and do not add any information outside of it. If the context text is empty use your own knowledge."
+        "If the context is not enough to answer the question you may use your own knowledge, but do not make up any information."
     )
 
 
@@ -46,5 +51,9 @@ async def create_draft(content_description: str, instructions: str, context: str
     response = await chain.ainvoke({"text": content_description, "context": context, "instructions": instructions})
     raw_content = response.content.strip()
     content = clean_markdown(raw_content)
-    print(f"LLM-Content:\n{content}\n")
+
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    print("Running content_draft")
+
     return content

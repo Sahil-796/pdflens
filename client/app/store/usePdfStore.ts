@@ -31,5 +31,5 @@ export const usePdfStore = create<PdfState>((set) => ({
   htmlContent: "",
   isContext: false,
   setPdf: (data) => set((state) => ({ ...state, ...data })),
-  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: ""}),
+  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: "", isContext: false }),
 }));

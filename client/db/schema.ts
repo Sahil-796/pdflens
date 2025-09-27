@@ -1,21 +1,26 @@
-import { pgTable, pgEnum, text, timestamp, boolean } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { pgTable, pgEnum, text, timestamp, boolean, integer, date } from "drizzle-orm/pg-core";
 
 export const planEnum = pgEnum("plan", ["free", "premium"]);
 export const statusEnum = pgEnum("status", ["pending", "completed", "failed"]);
 
 // USER TABLE 
 export const user = pgTable("user", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  email: text("email").notNull().unique(),
-  plan: planEnum("plan").default("free").notNull(),
-  emailVerified: boolean("email_verified").default(false).notNull(),
-  image: text("image"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at")
-    .defaultNow()
-    .$onUpdate(() => /* @__PURE__ */ new Date())
-    .notNull(),
+    id: text("id").primaryKey(),
+    name: text("name").notNull(),
+    email: text("email").notNull().unique(),
+    plan: planEnum("plan").default("free").notNull(),
+    emailVerified: boolean("email_verified").default(false).notNull(),
+    image: text("image"),
+    creditsLeft: integer("credits_left").default(20).notNull(),
+    creditsResetAt: date("credits_reset_at")
+    .notNull()
+    .default(sql`(now() at time zone 'utc')::date`),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
 });
 
 export const session = pgTable("session", {

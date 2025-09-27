@@ -19,22 +19,38 @@ export async function POST(req: Request) {
 
         const { html } = parsed.data
 
+        // --- Start of Changes ---
+
         const styledHTML = `
       <html>
         <head>
           <style>
-            @page { size: A4; margin: 20mm; }
+            /* 1. Define the page size and margins */
+            @page { 
+                size: A4; 
+                margin: 0.8in; /* Use a consistent margin */
+            }
+
             body { font-family: sans-serif; }
+
+            /* 2. Define print-specific rules */
             @media print {
-              h1, h2, h3, h4, h5, h6 { page-break-before: avoid; page-break-after: avoid; }
-              p, table, pre, blockquote, img { page-break-inside: avoid; }
-              section, article, .content-block { page-break-after: always; }
+                /* Prevent a page break immediately AFTER a heading */
+              h1, h2, h3, h4, h5, h6 { 
+                    page-break-after: avoid; 
+                }
+
+                /* Prevent tables, lists, and code blocks from splitting across pages */
+              table, pre, blockquote, ul, ol { 
+                    page-break-inside: avoid; 
+                }
             }
           </style>
         </head>
         <body>${html}</body>
       </html>
     `
+        // --- End of Changes ---
 
         const browser = await chromium.launch()
         const page = await browser.newPage()
@@ -43,7 +59,7 @@ export async function POST(req: Request) {
         const pdfBuffer = await page.pdf({
             format: "A4",
             printBackground: true,
-            preferCSSPageSize: true,
+            preferCSSPageSize: true, // This is important! It tells Playwright to use your @page styles
         })
         await browser.close()
 

@@ -7,9 +7,9 @@ from pydantic import BaseModel
 from app.config import index, embeddings, INDEX_NAME
 
 class PromptRequest(BaseModel):
-    usePrompt: str
+    userPrompt: str
     pdfId: str
-    useId: str
+    userId: str
     isContext: bool
 
 
@@ -18,9 +18,6 @@ vector_store = PineconeVectorStore(
     embedding=embeddings,
     index=index
 )
-
-
-
 
 async def workflow(req = PromptRequest) -> str:
 
@@ -32,19 +29,34 @@ async def workflow(req = PromptRequest) -> str:
         context = ""
         if req.isContext:
             results = vector_store.similarity_search(
-                req.userPrompt,
+                user_input,
                 k=10,
                 filter={"userId": userId, "pdfId": pdfId}
             )
             context = "\n\n".join([doc.page_content for doc in results])
 
+        # Make sure input is not empty
+        if not user_input.strip():
+            return "error in workflow: user input is empty"
+
+
+        # Make sure input is not empty
+        if not user_input.strip():
+            return "error in workflow: user input is empty"
+
+
+        print(f"Context : {context}")
+
         extractor = await extract_formatting_and_content(user_input)
+        if not extractor or len(extractor) < 3:
+            return "error in workflow: could not extract formatting/content"
+
         draft = await create_draft(extractor[0], extractor[2],context)
-        content = await refine_structure(extractor[0], draft)
-        formatting = await generate_formatting_kwargs(extractor[1], content)
+        content = await refine_structure(extractor[0], draft, extractor[2])
+        formatting = await generate_formatting_kwargs(extractor[1])
 
         html = create_html(content, formatting)
-
-        return html    
+        return html  
+      
     except Exception as e:
         return f"error in workflow : {e}"
