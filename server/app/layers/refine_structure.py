@@ -11,10 +11,13 @@ async def refine_structure(content_description: str, initial_content: str, instr
         "Use the content description as a guide to ensure the content aligns with the user's requirements."
         "Don't write anything except the content like no heres your refined content or no other messages."
         "Follow the instructions regarding the structure of the content or the content itself strictly."
-        "The instructions : {instructions}"
     )
 
-    human = "Refine and improve the following Markdown content based on the given content description. Ensure the final content is detailed, well-structured, and free of unnecessary text:\n\nContent Description:\n{description}\n\nInitial Content:\n{content}"
+    human = ("Refine and improve the following Markdown content based on the given content description and instructions. "
+             "Ensure the final content is detailed, well-structured, and adheres to the structural requests:\n\n"
+             "Content Description:\n{description}\n\n"
+             "Structural Instructions:\n{instructions}\n\n"
+             "Initial Content:\n{content}")
     
     prompt = ChatPromptTemplate.from_messages([("system", system), ("human", human)])
     chain = prompt |llm 
