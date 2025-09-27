@@ -13,12 +13,11 @@ const Generate = () => {
   const router = useRouter()
   useAuthRehydrate()
   const [input, setInput] = useState('')
-  const [files, setFiles] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
 
   useEffect(() => { clearPdf() }, [])
 
