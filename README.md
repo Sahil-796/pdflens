@@ -79,7 +79,3 @@ This section defines the primary communication contract between the services.
 * **Premium Plan**: Users can upgrade to a premium plan, which also provides 20 credits. (Note: Clarify if this is a monthly refresh or a one-time allocation).
 * **Credit Deduction**: One credit is deducted for each successful call to the `/generate` or `/edit` endpoints. Context uploads are free.
 * **Management**: The credit count for each user is stored and managed in the Supabase `user` table. 
-
-Ensure you have a `.env.local` file in the `next-app` directory and a `.env` file in the `fastapi-server` directory.
-
-**Next.js (`.env.local`):**
