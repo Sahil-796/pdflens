@@ -58,7 +58,11 @@ async def editWorkflow(req: EditRequest) -> str:
     )
     raw = response.content.strip()
     content = clean_markdown(raw)
-    print(f"LLM-Edit-Content:\n{content}\n")
+
+
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+
     return content
 
 

@@ -1,3 +1,4 @@
+from urllib import response
 from dotenv import load_dotenv
 load_dotenv()
 from langchain_core.prompts import ChatPromptTemplate
@@ -37,7 +38,9 @@ async def create_draft(content_description: str, instructions: str, context: str
         "(e.g., 'make it short 100 words' or 'make it 10 pages'). "
         "Focus only on niche-specific content for the description provided, avoiding extra comments:\n\n{text}"
         "Refer to this instructions : {instructions}"
-        "To refer from  a knowledge base use this context text to provide accurate information: {context}"
+        "To refer from a knowledge base use this context text to provide accurate information: {context}"
+        "Follow the context text strictly and do not add any information outside of it. If the context text is empty use your own knowledge."
+        "If the context is not enough to answer the question you may use your own knowledge, but do not make up any information."
     )
 
 
@@ -46,5 +49,9 @@ async def create_draft(content_description: str, instructions: str, context: str
     response = await chain.ainvoke({"text": content_description, "context": context, "instructions": instructions})
     raw_content = response.content.strip()
     content = clean_markdown(raw_content)
-    print(f"LLM-Content:\n{content}\n")
+
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    print("Running content_draft")
+
     return content

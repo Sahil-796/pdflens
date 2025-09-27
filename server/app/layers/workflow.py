@@ -53,7 +53,7 @@ async def workflow(req = PromptRequest) -> str:
 
         draft = await create_draft(extractor[0], extractor[2],context)
         content = await refine_structure(extractor[0], draft)
-        formatting = await generate_formatting_kwargs(extractor[1], content)
+        formatting = await generate_formatting_kwargs(extractor[1])
 
         html = create_html(content, formatting)
         return html  

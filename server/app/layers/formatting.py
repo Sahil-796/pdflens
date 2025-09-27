@@ -41,6 +41,11 @@ Output only the JSON object, no explanations or markdown formatting.
     chain = prompt | llm
     response = await chain.ainvoke({"text": formatting_instructions})
 
+    
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    print("Running formatting")
+
     kwargs_json = response.content.strip()
 
     try:

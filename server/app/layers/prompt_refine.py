@@ -23,6 +23,11 @@ async def extract_formatting_and_content(user_input: str) -> tuple:
     response = await chain.ainvoke({"text": user_input})
     result = response.content.strip()
 
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    print("Running prompt_refine")
+
+
     # regex for matching required content 
     content_desc_match = re.search(
         r'Content Description:\s*(.*?)\s*(?=Formatting Instructions:|General Instructions:|$)',

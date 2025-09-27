@@ -19,4 +19,10 @@ async def refine_structure(content_description: str, initial_content: str) -> st
     response = await chain.ainvoke({"description": content_description, "content": initial_content})
     refined_content = response.content.strip()
 
+    # --- Minimal addition to print token usage ---
+    print(response.usage_metadata)
+    
+    print("Running refine_structure")
+
+
     return refined_content
