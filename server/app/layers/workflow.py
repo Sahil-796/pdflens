@@ -52,7 +52,7 @@ async def workflow(req = PromptRequest) -> str:
             return "error in workflow: could not extract formatting/content"
 
         draft = await create_draft(extractor[0], extractor[2],context)
-        content = await refine_structure(extractor[0], draft)
+        content = await refine_structure(extractor[0], draft, extractor[2])
         formatting = await generate_formatting_kwargs(extractor[1])
 
         html = create_html(content, formatting)

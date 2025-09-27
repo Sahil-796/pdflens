@@ -37,7 +37,7 @@ async def create_draft(content_description: str, instructions: str, context: str
         "By default, keep the length around 200 to 300 words unless I explicitly specify otherwise "
         "(e.g., 'make it short 100 words' or 'make it 10 pages'). "
         "Focus only on niche-specific content for the description provided, avoiding extra comments:\n\n{text}"
-        "Refer to this instructions : {instructions}"
+        "Refer to this instructions they might contain specific info regarding the structure of the content or the content itself: {instructions}"
         "To refer from a knowledge base use this context text to provide accurate information: {context}"
         "Follow the context text strictly and do not add any information outside of it. If the context text is empty use your own knowledge."
         "If the context is not enough to answer the question you may use your own knowledge, but do not make up any information."

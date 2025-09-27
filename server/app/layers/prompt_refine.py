@@ -11,7 +11,7 @@ async def extract_formatting_and_content(user_input: str) -> tuple:
         "Your task is to separate the given (Prompt) into three parts: "
         "1. Description of the content to be included in the PDF based on the topic provided by the user."
         "2. Formatting instructions for the PDF provided by user."
-        "3. General instructions for both. Example scenario: if user tells you to use a table or any specific details regarding the structure which is common for btoh content generation and formatting generation include it here."
+        "3. General instructions for both. Example scenario: if user tells you to use a table or any specific details regarding the structure include it here. Include any specific details regarding the structure of the content or formatting here. And do not miss any details."
         "Your response should be in this format:"
         "Formatting Instructions: [Your response]\nContent Description: [Your response]\nGeneral Instructions: [Your Response]"
         "Only write formatting instructions for those specified in the input and if not specified, decide best possible instructions for the content"
