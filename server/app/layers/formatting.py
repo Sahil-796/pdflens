@@ -71,43 +71,43 @@ def ensure_quality_formatting(formatting_dict: dict) -> dict:
     essential_defaults = {
         'body': {
             'font-family': 'Arial, sans-serif',
-            'line-height': '1.6',
+            'line-height': '1.5',         
             'color': 'black',
             'background-color': 'white',
-            'margin': '1in'
+            'margin': '0.8in'             
         },
         'p': {
-            'margin-bottom': '12px',
+            'margin-bottom': '10px',    
             'font-size': '11pt'
         },
         'h1': {
             'font-size': '18pt',
             'font-weight': 'bold',
-            'margin-bottom': '10px',
-            'margin-top': '20px'
+            'margin-top': '16px',         # reduced from 20px
+            'margin-bottom': '8px'        # reduced from 10px
         },
         'h2': {
             'font-size': '16pt',
             'font-weight': 'bold',
-            'margin-bottom': '8px',
-            'margin-top': '16px'
+            'margin-top': '12px',         # reduced from 16px
+            'margin-bottom': '6px'        # reduced from 8px
         },
         'h3': {
             'font-size': '14pt',
             'font-weight': 'bold',
-            'margin-bottom': '6px',
-            'margin-top': '12px'
+            'margin-top': '10px',         # reduced from 12px
+            'margin-bottom': '5px'        # reduced from 6px
         },
-        'ul': {'margin-bottom': '10px'},
-        'ol': {'margin-bottom': '10px'},
-        'li': {'margin-bottom': '3px'},
+        'ul': {'margin-bottom': '8px'},
+        'ol': {'margin-bottom': '8px'},
+        'li': {'margin-bottom': '2px'},
         'table': {
             'border-collapse': 'collapse',
-            'margin-bottom': '12px',
+            'margin-bottom': '10px',
             'width': '100%'
         },
-        'td': {'padding': '6px', 'border': '1px solid #ddd'},
-        'th': {'padding': '8px', 'border': '1px solid #ddd', 'font-weight': 'bold'}
+        'td': {'padding': '5px', 'border': '1px solid #ddd'},
+        'th': {'padding': '6px', 'border': '1px solid #ddd', 'font-weight': 'bold'}
     }
     
     # Merge defaults with user preferences (user preferences take priority)
