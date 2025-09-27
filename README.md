@@ -1,6 +1,6 @@
-# AI PDF Generator - Project Documentation
+# PDFLens - Documentation
 
-This document serves as the internal technical guide for the AI PDF Generator application.
+This document serves as the internal guide for the AI PDF Generator application.
 
 ## 1. Overview
 
@@ -34,7 +34,6 @@ The application is split into two main services: the **Next.js App** and the **F
 
 * **FastAPI Server**: A stateless Python service that exposes endpoints for all AI-related tasks. It is never directly accessed by the end-user. Its sole purpose is to receive requests from the Next.js BFF, perform complex operations using LangChain and the Gemini API, and return the result.
 
-*(A diagram illustrating the flow between Client -> Next.js -> FastAPI -> Databases/Services should be embedded here.)*
 
 ### Core Workflows
 
@@ -52,7 +51,7 @@ The generation process is a multi-layered pipeline designed to produce high-qual
 
 #### B. Context Upload
 
-1.  **Upload**: The user uploads a PDF. The Next.js BFF streams this file to the `/add_context` endpoint on the FastAPI server.
+1.  **Upload**: The user uploads a PDF. The Next.js BFF streams this file to the `/context/upload` endpoint on the FastAPI server.
 2.  **Processing**: The FastAPI server uses LangChain's document loaders to parse the PDF, split it into text chunks, generate embeddings for each chunk using an embedding model, and upsert the resulting vectors into the Pinecone database, tagged with the user's ID.
 
 ## 5. API Endpoints & Contract
@@ -61,17 +60,18 @@ This section defines the primary communication contract between the services.
 
 ### Next.js API Routes (BFF)
 
-* `POST /api/generate`: Receives prompt from client, proxies to FastAPI, saves metadata to Supabase.
-* `POST /api/context`: Receives PDF file from client, streams it to FastAPI.
-* `POST /api/edit`: Receives edit instructions, proxies to FastAPI.
-* `GET /api/pdfs`: Fetches the list of a user's generated PDFs from Supabase.
-* `POST /api/download-pdf`: Receives final HTML and uses Playwright to convert it to a downloadable PDF.
+* `POST /api/generateHTML`: Receives prompt from client, proxies to FastAPI, saves metadata to Supabase.
+* `POST /api/(context)`: Homes addContext and removeContext apis.
+* `POST /api/editHTML`: Edit. Proxies to fastapi
+* `GET /api/(pdfs)`: All pdf crud api's.
+* `POST /api/downloadPdf`: download PDF.
 
 ### FastAPI Endpoints
 
-* `POST /generate`: Expects a JSON payload with `userPrompt`, `userId`, etc. Executes the full AI workflow and returns a final HTML string.
-* `POST /add_context`: Expects a file upload. Processes the PDF and stores it in Pinecone.
-* `POST /edit`: Expects `userPrompt` and existing `html`. Returns a modified HTML string.
+* `POST /ai/generate`: Expects a JSON payload with `userPrompt`, `userId`, etc. Executes the full AI workflow and returns a final HTML string.
+* `POST /context/upload`: Expects a file upload. Processes the PDF and stores it in Pinecone.
+* `POST /context/remove`: Expects a file upload. Processes the PDF and deletes it in Pinecone.
+* `POST /ai/edit`: `userPrompt`. Returns a modified HTML string.
 
 ## 6. Credit System
 
@@ -79,3 +79,4 @@ This section defines the primary communication contract between the services.
 * **Premium Plan**: Users can upgrade to a premium plan, which also provides 20 credits. (Note: Clarify if this is a monthly refresh or a one-time allocation).
 * **Credit Deduction**: One credit is deducted for each successful call to the `/generate` or `/edit` endpoints. Context uploads are free.
 * **Management**: The credit count for each user is stored and managed in the Supabase `user` table. 
+
