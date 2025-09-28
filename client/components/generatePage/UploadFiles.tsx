@@ -135,7 +135,7 @@ export default function UploadFiles() {
                 onDrop={handleDrop}
                 onClick={() => { if (!loading) document.getElementById("fileInput")?.click() }}
             >
-                <Upload className="mx-auto mb-2 text-muted-foreground" size={28} />
+                <Upload className="mx-auto mb-2 text-muted-foreground" size={32} />
                 <p className="text-sm text-muted-foreground">
                     Drag & drop a file here, or <span className="text-primary font-medium">browse</span>
                 </p>
@@ -161,7 +161,7 @@ export default function UploadFiles() {
                             <span className="flex items-center gap-2 truncate">📄 <span className="truncate">{fileItem.name}</span></span>
                             <button
                                 onClick={() => removeFile(fileItem.name, idx)}
-                                className="text-muted-foreground hover:text-destructive transition"
+                                className="bg-destructive/10 hover:bg-destructive/20 text-destructive p-1 rounded-full transition"
                             >
                                 <X size={16} />
                             </button>

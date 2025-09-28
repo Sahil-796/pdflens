@@ -1,6 +1,6 @@
 import { db } from "./client"
 import { pdf, context } from "./schema"
-import { eq, and } from 'drizzle-orm';
+import { eq, and, desc } from 'drizzle-orm';
 
 
 export const createPdf = async (
@@ -46,10 +46,20 @@ export const updatePdf = async (
 };
 
 
-export const getAllpdf = async (userId: string) => {
+export const getAllpdf = async (userId: string, limit?: number) => {
   try {
-    const allpdf = await db.select().from(pdf).where(eq(pdf.userId, userId))
-    return allpdf
+    const query = db
+      .select()
+      .from(pdf)
+      .where(eq(pdf.userId, userId))
+      .orderBy(desc(pdf.createdAt))
+
+    // ✅ only add limit if provided
+    if (limit) {
+      return await query.limit(limit)   // this works in drizzle-orm 0.30+
+    }
+
+    return await query
   } catch (err) {
     throw new Error(`Failed to get pdf: ${err}`)
   }
