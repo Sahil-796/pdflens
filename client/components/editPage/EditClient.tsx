@@ -81,17 +81,31 @@ export default function EditClient({ id }: { id: string }) {
                     {/* Context Files */}
                     <div className="bg-card border border-border rounded-xl p-4 shadow">
                         <h2 className="font-medium mb-2">Context Files</h2>
-                        {contextFiles.length > 0 ? (
+
+                        {loading ? (
+                            <div className="space-y-2">
+                                <div className="h-4 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
+                                <div className="h-4 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
+                                <div className="h-4 w-2/3 rounded bg-muted relative overflow-hidden animate-pulse" />
+                            </div>
+                        ) : contextFiles.length > 0 ? (
+                            // Files list
                             <ul className="space-y-2">
                                 {contextFiles.map((file, i) => (
-                                    <li key={i} className="p-2 rounded bg-muted text-sm flex items-center justify-between">
-                                        <span>{file}</span>
-                                        {/* You can add a remove button here */}
+                                    <li
+                                        key={i}
+                                        className="p-2 rounded bg-muted text-sm flex items-center justify-between"
+                                    >
+                                        <span className="truncate">{file}</span>
+                                        {/* optional remove button here */}
                                     </li>
                                 ))}
                             </ul>
                         ) : (
-                            <p className="text-muted-foreground text-sm">No context files uploaded</p>
+                            // Empty state
+                            <p className="text-muted-foreground text-sm">
+                                No context files uploaded
+                            </p>
                         )}
                     </div>
                 </div>
