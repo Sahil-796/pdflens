@@ -51,7 +51,7 @@ async def upload_context(file: UploadFile = File(...), userId: str = Form(...), 
             index_name=INDEX_NAME
         )
 
-        
+        print("this shit works")
         return {
             "message": "File uploaded and indexed",
         }
