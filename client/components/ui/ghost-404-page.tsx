@@ -1,43 +1,81 @@
 'use client';
 
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 
-const containerVariants = {
+const containerVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.7, ease: [0.43, 0.13, 0.23, 0.96], delayChildren: 0.1, staggerChildren: 0.1 },
+    transition: {
+      duration: 0.7,
+      ease: [0.43, 0.13, 0.23, 0.96],
+      delayChildren: 0.1,
+      staggerChildren: 0.1,
+    },
   },
 };
 
-const itemVariants = {
+const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] },
+  },
 };
 
-const numberVariants = {
-  hidden: (direction: number) => ({ opacity: 0, x: direction * 40, y: 15, rotate: direction * 5 }),
-  visible: { opacity: 0.7, x: 0, y: 0, rotate: 0, transition: { duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] } },
+const numberVariants: Variants = {
+  hidden: (direction: number) => ({
+    opacity: 0,
+    x: direction * 40,
+    y: 15,
+    rotate: direction * 5,
+  }),
+  visible: {
+    opacity: 0.7,
+    x: 0,
+    y: 0,
+    rotate: 0,
+    transition: { duration: 0.8, ease: [0.43, 0.13, 0.23, 0.96] },
+  },
 };
 
-const ghostVariants = {
+const ghostVariants: Variants = {
   hidden: { scale: 0.8, opacity: 0, y: 15, rotate: -5 },
-  visible: { scale: 1, opacity: 1, y: 0, rotate: 0, transition: { duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] } },
+  visible: {
+    scale: 1,
+    opacity: 1,
+    y: 0,
+    rotate: 0,
+    transition: { duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] },
+  },
   hover: {
     scale: 1.1,
     y: -10,
     rotate: [0, -5, 5, -5, 0],
     transition: {
       duration: 0.8,
-      ease: "easeInOut",
-      rotate: { duration: 2, ease: "linear", repeat: Infinity, repeatType: "reverse" },
+      ease: 'easeInOut',
+      rotate: {
+        duration: 2,
+        ease: 'linear',
+        repeat: Infinity,
+        repeatType: 'reverse',
+      },
     },
   },
   floating: {
     y: [-5, 5],
-    transition: { y: { duration: 2, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" } },
+    transition: {
+      y: {
+        duration: 2,
+        ease: 'easeInOut',
+        repeat: Infinity,
+        repeatType: 'reverse',
+      },
+    },
   },
 };
 
@@ -62,14 +100,18 @@ export function NotFound() {
               4
             </motion.span>
 
-            <motion.div variants={ghostVariants} whileHover="hover" animate={["visible", "floating"]}>
+            <motion.div
+              variants={ghostVariants}
+              whileHover="hover"
+              animate={['visible', 'floating']}
+            >
               <img
                 src="https://xubohuah.github.io/xubohua.top/Group.png"
                 alt="Ghost"
                 width={120}
                 height={120}
                 className="w-[80px] h-[80px] md:w-[120px] md:h-[120px] object-contain select-none"
-                draggable="false"
+                draggable={false}
               />
             </motion.div>
 
@@ -101,7 +143,10 @@ export function NotFound() {
           {/* Link */}
           <motion.div
             variants={itemVariants}
-            whileHover={{ scale: 1.05, transition: { duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] } }}
+            whileHover={{
+              scale: 1.05,
+              transition: { duration: 0.3, ease: [0.43, 0.13, 0.23, 0.96] },
+            }}
           >
             <Link
               href="/dashboard"
