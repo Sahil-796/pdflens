@@ -53,7 +53,7 @@ export default function EditClient({ id }: { id: string }) {
             }
         }
         fetchPdf()
-    }, [id, router])
+    }, [id, router, setPdf])
 
     return (
         <div className='h-screen flex flex-col'>

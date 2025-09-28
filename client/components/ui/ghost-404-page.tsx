@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import Image from 'next/image';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0, y: 30 },
@@ -105,7 +106,7 @@ export function NotFound() {
               whileHover="hover"
               animate={['visible', 'floating']}
             >
-              <img
+              <Image
                 src="https://xubohuah.github.io/xubohua.top/Group.png"
                 alt="Ghost"
                 width={120}
