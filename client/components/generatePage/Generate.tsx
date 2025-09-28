@@ -27,7 +27,7 @@ const Generate = () => {
 
   const handleSend = async () => {
     if (!input.trim()) {
-      toast.error("Prompt cannot be empty ⚠️")
+      toast.error("Prompt cannot be empty️")
       return
     }
     setLoading(true)
@@ -65,11 +65,11 @@ const Generate = () => {
 
       if (updateData.status === 200) {
         setSuccess(true)
-        toast.success("✅ PDF Generated Successfully!")
+        toast.success("PDF Generated Successfully!")
       }
     } catch (err) {
       console.error("Error in handleSend:", err)
-      toast.error("Something went wrong while generating 😞")
+      toast.error("Something went wrong while generating")
     } finally {
       setLoading(false)
     }

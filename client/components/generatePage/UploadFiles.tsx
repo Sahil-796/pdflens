@@ -24,13 +24,14 @@ export default function UploadFiles() {
         try {
             let currentPdfId = pdfId
 
-            // Create PDF if it doesn't exist
+            // Step 1: Create PDF if missing
             if (!currentPdfId) {
                 const createRes = await fetch('/api/createPdf', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ html: '', pdfName: fileName }),
                 })
+
                 if (!createRes.ok) throw new Error("Failed to create PDF")
                 const createData = await createRes.json()
                 currentPdfId = createData.id
@@ -40,19 +41,21 @@ export default function UploadFiles() {
 
             if (!currentPdfId) throw new Error("PDF ID is missing")
 
-            // Decide API: addContext for first file, updateContext for subsequent files
+            // Step 2: Choose API endpoint
             const apiEndpoint = files.length === 0 ? "/api/addContext" : "/api/updateContext"
 
+            // Step 3: Prepare upload data
             const formData = new FormData()
             formData.append("file", newFile, newFile.name)
             formData.append("pdfId", currentPdfId)
 
+            // Step 4: Upload file
             const res = await fetch(apiEndpoint, { method: "POST", body: formData })
             if (!res.ok) {
                 const errText = await res.text()
                 console.error("Upload failed:", errText)
 
-                // If we created a new PDF but addContext failed, delete that PDF
+                // Rollback orphan PDF if addContext failed
                 if (createdPdfId) {
                     try {
                         await fetch(`/api/deletePdf`, {
@@ -70,6 +73,8 @@ export default function UploadFiles() {
             }
 
             await res.json()
+
+            // Step 5: Update state
             setFiles(prev => [...prev, { name: newFile.name }])
             setPdf({ isContext: true })
             toast.success(`${newFile.name} uploaded successfully`)
