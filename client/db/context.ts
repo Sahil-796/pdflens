@@ -36,12 +36,12 @@ export const addContextFile = async (pdfId: string, filename: string) => {
 };
 
 
-export const removeContextFile = async (pdfId: string, userId: string, filename: string) => {
+export const removeContextFile = async (pdfId: string, filename: string) => {
   try {
     const updated = await db.execute(sql`
       UPDATE context
       SET files = array_remove(files, ${filename})
-      WHERE pdf_id = ${pdfId} AND user_id = ${userId}
+      WHERE pdf_id = ${pdfId}
       RETURNING *;
     `);
 

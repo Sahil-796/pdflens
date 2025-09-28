@@ -81,6 +81,36 @@ export default function UploadFiles() {
         }
     }
 
+    const removeFile = async (fileName: string, idx: number) => {
+        if (!pdfId) return
+        try {
+            const res = await fetch("/api/removeContext", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pdfId, filename: fileName }),
+            })
+
+            if (!res.ok) {
+                const errText = await res.text()
+                console.error("Remove failed:", errText)
+                throw new Error("Remove failed")
+            }
+
+            await res.json()
+            setFiles(prev => prev.filter((_, i) => i !== idx))
+
+            // if no files left, reset store context
+            if (files.length === 1) {
+                setPdf({ isContext: false })
+            }
+
+            toast.success(`${fileName} removed successfully`)
+        } catch (err) {
+            console.error("Remove error:", err)
+            toast.error("Failed to remove file")
+        }
+    }
+
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         e.stopPropagation()
@@ -130,7 +160,7 @@ export default function UploadFiles() {
                         <li key={idx} className="flex items-center justify-between truncate">
                             <span className="flex items-center gap-2 truncate">📄 <span className="truncate">{fileItem.name}</span></span>
                             <button
-                                onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))}
+                                onClick={() => removeFile(fileItem.name, idx)}
                                 className="text-muted-foreground hover:text-destructive transition"
                             >
                                 <X size={16} />
