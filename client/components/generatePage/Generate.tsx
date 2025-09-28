@@ -19,13 +19,13 @@ const Generate = () => {
   const { userId } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
-  useEffect(() => { clearPdf() }, [])
+  useEffect(() => { clearPdf() }, [clearPdf])
 
   useEffect(() => {
     if (success) {
       router.push(`/edit/${pdfId}`)
     }
-  }, [success])
+  }, [success, pdfId, router])
 
 
   const handleSend = async () => {

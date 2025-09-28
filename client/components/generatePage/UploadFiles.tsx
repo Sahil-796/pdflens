@@ -28,7 +28,12 @@ export default function UploadFiles() {
                 if (!createRes.ok) throw new Error("Failed to create PDF")
                 const createData = await createRes.json()
                 currentPdfId = createData.id
-                setPdf({ pdfId: currentPdfId })
+                setPdf({ pdfId: currentPdfId }) // update store
+            }
+
+            // ✅ Ensure we always have a valid pdfId before continuing
+            if (!currentPdfId) {
+                throw new Error("PDF ID is still missing after creation")
             }
 
             // Upload file
@@ -67,7 +72,7 @@ export default function UploadFiles() {
             e.dataTransfer.clearData()
         }
     }
-
+    
     return (
         <div className="w-full">
             <label className="block font-medium mb-2">Upload File</label>
@@ -75,7 +80,7 @@ export default function UploadFiles() {
             {/* Dropzone */}
             <div
                 className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition 
-          ${dragActive ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:bg-muted/50"}`}
+                            ${dragActive ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:bg-muted/50"}`}
                 onDragOver={(e) => { e.preventDefault(); setDragActive(true) }}
                 onDragLeave={() => setDragActive(false)}
                 onDrop={handleDrop}

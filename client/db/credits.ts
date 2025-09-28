@@ -46,7 +46,7 @@ export const useCredits = async (userId: string, cost: number) => {
         });
         return result;
 
-    } catch (err: any) {
+    } catch (err) {
         throw new Error(`Failed to use credits: ${err.message}`);
     }
 }

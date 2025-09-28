@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 
@@ -20,7 +20,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
 
 
     return (
-        <div className="flex-1 overflow-y-scroll rounded-md p-6 bg-card text-black">
+        <div className="flex-1 rounded-md p-6 bg-card text-black">
             {loading ? (
                 <TextShimmerWave duration={1} className="left-1/2 -translate-x-1/2">
                     Loading the PDF...
@@ -35,7 +35,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                             setOriginalHtml(target.innerHTML)
                         }
                     }}
-                    className="mx-auto flex-1 w-full overflow-y-scroll rounded-md px-6 pb-6 bg-white text-black"
+                    className="mx-auto flex-1 w-full rounded-md px-6 pb-6 bg-white text-black"
                     dangerouslySetInnerHTML={{ __html: renderedHtml }}
                 />
             )}
