@@ -1,4 +1,7 @@
 from fastapi import APIRouter, Header, HTTPException
+import logging
+logger = logging.getLogger(__name__)
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from app.layers import workflow
 from dotenv import load_dotenv
@@ -30,6 +33,19 @@ async def generate(req: PromptRequest, secret1: str = Header(...)):
 
     try:
         html = await workflow(req)
-        return html
+        return {"html": html}
+    
+    except ValueError as ve:
+        logger.error(f"Validation error: {str(ve)}", exc_info=True)
+        raise JSONResponse(status_code=400, content={"message": str(ve)})
+    
+    except HTTPException:
+        # Re-raise 
+        raise
+
     except Exception as e:
-        return f"Error : {e}"
+        logger.error(
+            f"Error processing request for user {req.userId}: {str(e)}", 
+            exc_info=True
+        )
+        return JSONResponse(status_code=500, content={"message": str(e)})
