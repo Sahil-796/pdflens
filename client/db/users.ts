@@ -1,7 +1,6 @@
-import { use } from "react";
 import { db } from "./client"
 import { user, pdf } from "./schema"
-import { eq, lt, gte, ne } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 
 
 

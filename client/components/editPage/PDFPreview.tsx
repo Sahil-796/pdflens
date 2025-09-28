@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 

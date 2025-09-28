@@ -26,7 +26,7 @@ export async function POST(req: Request) {
         const delPdf = await deletePdf(pdfId, userId)
 
         return NextResponse.json({ success: true, deleted: delPdf })
-    } catch (err: any) {
+    } catch (err) {
         return NextResponse.json(
             { error: `Failed to delete pdf: ${err.message}` },
             { status: 500 }

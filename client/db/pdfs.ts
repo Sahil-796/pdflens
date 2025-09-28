@@ -1,6 +1,6 @@
 import { db } from "./client"
-import { user, pdf, context } from "./schema"
-import { eq, lt, gte, ne, sql, and } from 'drizzle-orm';
+import { pdf, context } from "./schema"
+import { eq, and } from 'drizzle-orm';
 
 
 export const createPdf = async (

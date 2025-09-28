@@ -128,7 +128,7 @@ const LandingPage: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {testimonials.map((t, idx) => (
             <div key={idx} className="p-6 rounded-xl bg-background border border-border shadow">
-              <p className="italic mb-4 text-muted-foreground">"{t.quote}"</p>
+              <p className="italic mb-4 text-muted-foreground">{t.quote}</p>
               <div className="font-semibold text-foreground">
                 {t.name} - {t.role}, {t.company}
               </div>
