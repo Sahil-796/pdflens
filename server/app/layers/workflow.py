@@ -26,34 +26,30 @@ async def workflow(req = PromptRequest) -> str:
         user_input = req.userPrompt
         pdfId = req.pdfId
 
+        print({"userId": userId, "pdfId": pdfId})
+        # Make sure input is not empty
+        if not user_input.strip():
+            return "error in workflow: user input is empty"
+
+
+        extractor = await extract_formatting_and_content(user_input)
+
+        if not extractor or len(extractor) < 3:
+            return "error in workflow: could not extract formatting/content"
+
         context = ""
         if req.isContext:
             results = vector_store.similarity_search(
-                user_input,
+                extractor[0],
                 k=10,
                 filter={"userId": userId, "pdfId": pdfId}
             )
             context = "\n\n".join([doc.page_content for doc in results])
 
-        # Make sure input is not empty
-        if not user_input.strip():
-            return "error in workflow: user input is empty"
-
-
-        # Make sure input is not empty
-        if not user_input.strip():
-            return "error in workflow: user input is empty"
-
-
-        print(f"Context : {context}")
-
-        extractor = await extract_formatting_and_content(user_input)
-        if not extractor or len(extractor) < 3:
-            return "error in workflow: could not extract formatting/content"
-
-        draft = await create_draft(extractor[0], extractor[2],context)
-        content = await refine_structure(extractor[0], draft, extractor[2])
-        formatting = await generate_formatting_kwargs(extractor[1])
+        draft = await create_draft(extractor[0], extractor[2], context)
+        print({"context": context})
+        content = await refine_structure(extractor[0] + " " + context, draft, extractor[2])
+        formatting = await generate_formatting_kwargs(extractor[1], content)
 
         html = create_html(content, formatting)
         return html  

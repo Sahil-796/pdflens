@@ -6,18 +6,19 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
 
-async def generate_formatting_kwargs(formatting_instructions: str) -> dict:
+async def generate_formatting_kwargs(formatting_instructions: str, content) -> dict:
     
     system = ("""
 You are an assistant that generates valid formatting arguments for a PDF using WeasyPrint. 
 Your output must be a valid JSON object with CSS-compatible formatting parameters.
-
+You will be provided the markdown and would have to generate the json object according to that markdown. The markdown would be later converted to html using markdownIt in other workflows but your job is to generate styles for corresponding html tags
 ESSENTIAL REQUIREMENTS:
 1. Always include basic spacing: margin-bottom for p/h1/h2/h3, padding for tables
 2. Provide reasonable defaults for body, headings, and paragraphs
 3. Use proper CSS property names with hyphens (margin-bottom, not margin_bottom)
 4. Maintain visual hierarchy for headings (h1 > h2 > h3 in size/weight)
 5. Ensure readability with proper line-height and font sizes
+6. Ensure to use px as units for every styles where it may require
 
 DEFAULT STRUCTURE (always include these basics):
 - 'body': page margins, font-family, background, color
@@ -31,7 +32,8 @@ Output only the JSON object, no explanations or markdown formatting.
 
     human = (
         "Convert the following formatting instructions into a valid JSON object for WeasyPrint:\n\n{text}\n\n"
-        "Include proper spacing and visual hierarchy. If no specific instructions given, use clean professional defaults."
+        "Include proper spacing and visual hierarchy. If no specific instructions given, use clean professional defaults.\n\n"
+        "This is the markdown content : {content}"
     )
 
     prompt = ChatPromptTemplate.from_messages([
@@ -39,7 +41,7 @@ Output only the JSON object, no explanations or markdown formatting.
         ("human", human)
     ])
     chain = prompt | llm
-    response = await chain.ainvoke({"text": formatting_instructions})
+    response = await chain.ainvoke({"text": formatting_instructions, "content": content})
 
     
     # --- Minimal addition to print token usage ---

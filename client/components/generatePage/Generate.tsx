@@ -17,7 +17,7 @@ const Generate = () => {
   const [success, setSuccess] = useState(false)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
   useEffect(() => { clearPdf() }, [])
 
@@ -64,7 +64,7 @@ const Generate = () => {
           userId: userId,
           userPrompt: input,
           pdfId: currentPdfId,
-          isContext: false
+          isContext: isContext
         })
       })
       if (!generateRes.ok) {

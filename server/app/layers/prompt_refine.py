@@ -11,7 +11,7 @@ async def extract_formatting_and_content(user_input: str) -> tuple:
 
     system = (
             "You are an expert at parsing user requests for a PDF generator. Your task is to accurately separate the request into three distinct categories:\n\n"
-            "1. **Content Description**: What is the document about? Summarize the core topic and the information to be included.\n\n"
+            "1. **Content Description**: What is the document about? Summarize the core topic and the information to be included. This will also be used to search the vector database so use such keywords that might help\n\n"
             "2. **Formatting Instructions**: Purely VISUAL and STYLISTIC requests. This includes colors (e.g., 'text should be blue'), fonts ('use Arial'), text alignment ('center the title'), spacing, and margins. **DO NOT** include instructions about content structure like tables or lists here. Include structure information but make sure it is in genral instructions too.\n\n"
             "3. **General Instructions**: Instructions about the STRUCTURE, LAYOUT, and ORGANIZATION of the content. This includes requests for specific elements like **tables**, bulleted lists, numbered lists, or a specific order of sections. For example, 'use a table to compare X and Y' or 'include a bulleted list' belongs here.\n\n"
             "Your response must strictly follow this format:\n"
