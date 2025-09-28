@@ -82,53 +82,52 @@ const Recents: React.FC = () => {
         return <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
 
     return (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {pdfs.map((pdf) => (
-                <Card
-                    key={pdf.id}
-                    className="gap-2 transition-all duration-150 hover:scale-105 hover:border-primary"
-                >
+                <Card key={pdf.id} className="flex-1 flex flex-col transition-all duration-150 hover:scale-105 hover:border-primary">
                     {/* Header */}
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            {/* PDF Link */}
-                            <Link href={`/edit/${pdf.id}`} className="flex-1 truncate">
-                                <CardTitle className="truncate text-primary">
-                                    {pdf.fileName}
-                                </CardTitle>
-                            </Link>
+                    <CardHeader className="flex flex-row items-center justify-between gap-6">
+                        {/* PDF Link */}
+                        <Link href={`/edit/${pdf.id}`} className="flex-1 min-w-0">
+                            <CardTitle className="truncate text-primary text-sm sm:text-base">
+                                {pdf.fileName}
+                            </CardTitle>
+                        </Link>
 
-                            {/* Delete Confirmation Dialog */}
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button size="sm" variant="destructive" className='cursor-pointer'>
+                        {/* Delete Confirmation Dialog */}
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    className="cursor-pointer shrink-0"
+                                >
+                                    Delete
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to delete{" "}
+                                        <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                        className="bg-destructive hover:bg-destructive/80 cursor-pointer"
+                                        onClick={() => handleDelete(pdf.id, pdf.fileName)}
+                                    >
                                         Delete
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete PDF</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete{" "}
-                                            <strong>{pdf.fileName}</strong>? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            className="bg-destructive hover:bg-destructive/80 cursor-pointer"
-                                            onClick={() => handleDelete(pdf.id, pdf.fileName)}
-                                        >
-                                            Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </div>
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </CardHeader>
 
                     {/* Content */}
-                    <CardContent>
+                    <CardContent className="mt-auto">
                         <span className="text-xs text-muted-foreground">
                             {pdf.createdAt
                                 ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(
