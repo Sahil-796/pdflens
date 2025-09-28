@@ -11,3 +11,4 @@ PyMuPDF
 bs4
 markdown-it-py
 pydantic
+pypdf
