@@ -22,37 +22,50 @@ export default function EditClient({ id }: { id: string }) {
     const router = useRouter()
     const { htmlContent, fileName, setPdf } = usePdfStore()
     const [editPdf, setEditPdf] = useState<Pdf | null>(null)
+    const [contextFiles, setContextFiles] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         setPdf({ pdfId: id })
+
         const fetchPdf = async () => {
             try {
                 const res = await fetch('/api/getPdf', {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        pdfId: id
-                    })
+                    body: JSON.stringify({ pdfId: id })
                 })
                 if (!res.ok) throw new Error("Failed to fetch PDF")
                 const data = await res.json()
                 if (data.pdf) {
                     setEditPdf(data.pdf)
                 } else {
-                    console.error("PDF not found")
                     toast.error("PDF not found")
                     router.push("/dashboard")
                 }
             } catch (err) {
                 toast.error("Error fetching PDF")
-                console.error("Error fetching PDF:", err)
                 router.push('/dashboard')
-            } finally {
-                setLoading(false)
             }
         }
-        fetchPdf()
+
+        const fetchContextFiles = async () => {
+            try {
+                const res = await fetch('/api/getContext', {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ pdfId: id })
+                })
+                if (!res.ok) throw new Error("Failed to fetch context files")
+                const data = await res.json()
+                setContextFiles(data.files || [])
+            } catch (err) {
+                console.error("Error fetching context files:", err)
+                toast.error("Error fetching context files")
+            }
+        }
+
+        Promise.all([fetchPdf(), fetchContextFiles()]).finally(() => setLoading(false))
     }, [id, router, setPdf])
 
     return (
@@ -64,6 +77,37 @@ export default function EditClient({ id }: { id: string }) {
                     <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
                     <EditPDF />
                     <SaveChanges />
+
+                    {/* Context Files */}
+                    <div className="bg-card border border-border rounded-xl p-4 shadow">
+                        <h2 className="font-medium mb-2">Context Files</h2>
+
+                        {loading ? (
+                            <div className="space-y-2">
+                                <div className="h-4 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
+                                <div className="h-4 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
+                                <div className="h-4 w-2/3 rounded bg-muted relative overflow-hidden animate-pulse" />
+                            </div>
+                        ) : contextFiles.length > 0 ? (
+                            // Files list
+                            <ul className="space-y-2">
+                                {contextFiles.map((file, i) => (
+                                    <li
+                                        key={i}
+                                        className="p-2 rounded bg-muted text-sm flex items-center justify-between"
+                                    >
+                                        <span className="truncate">{file}</span>
+                                        {/* optional remove button here */}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            // Empty state
+                            <p className="text-muted-foreground text-sm">
+                                No context files uploaded
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 <motion.div

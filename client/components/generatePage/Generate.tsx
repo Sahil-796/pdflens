@@ -22,86 +22,54 @@ const Generate = () => {
   useEffect(() => { clearPdf() }, [clearPdf])
 
   useEffect(() => {
-    if (success) {
-      router.push(`/edit/${pdfId}`)
-    }
+    if (success) router.push(`/edit/${pdfId}`)
   }, [success, pdfId, router])
-
 
   const handleSend = async () => {
     if (!input.trim()) {
-      toast.error("Prompt is empty dumbass.")
+      toast.error("Prompt cannot be empty️")
       return
     }
     setLoading(true)
 
     try {
       let currentPdfId = pdfId
-
-      // Case 2: If no PDF exists, create one
       if (!currentPdfId) {
         const createRes = await fetch('/api/createPdf', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            html: '',
-            pdfName: fileName,
-          })
+          body: JSON.stringify({ html: '', pdfName: fileName }),
         })
         if (!createRes.ok) throw new Error("Failed to create PDF")
         const createData = await createRes.json()
-        if (createData.status !== 200) throw new Error("PDF creation failed")
-
         currentPdfId = createData.id
         setPdf({ pdfId: currentPdfId })
       }
 
-      // Generate HTML
       const generateRes = await fetch('/api/generateHTML', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: userId,
-          userPrompt: input,
-          pdfId: currentPdfId,
-          isContext: isContext
-        })
+        body: JSON.stringify({ userId, userPrompt: input, pdfId: currentPdfId, isContext }),
       })
-      if (!generateRes.ok) {
-        const delRes = await fetch('/api/deletePdf', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            pdfId: currentPdfId,
-          })
-        })
-        if (!delRes.ok) throw new Error("Failed to delte PDF.")
-        throw new Error("Failed to generate HTML")
-      }
-
+      if (!generateRes.ok) throw new Error("Failed to generate HTML")
 
       const generateData = await generateRes.json()
       setPdf({ htmlContent: generateData.data })
 
-      // Update PDF with generated HTML
       const updateRes = await fetch('/api/updatePdf', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          html: generateData.data,
-          id: currentPdfId
-        })
+        body: JSON.stringify({ html: generateData.data, id: currentPdfId }),
       })
-      if (!updateRes.ok) throw new Error("Failed to update PDF")
-
       const updateData = await updateRes.json()
+
       if (updateData.status === 200) {
         setSuccess(true)
-        toast.success(updateData.message)
+        toast.success("PDF Generated Successfully!")
       }
     } catch (err) {
       console.error("Error in handleSend:", err)
-      toast.error("Error occurred while generating/updating HTML")
+      toast.error("Something went wrong while generating")
     } finally {
       setLoading(false)
     }
@@ -109,35 +77,41 @@ const Generate = () => {
 
   return (
     <div className="flex h-full p-4 text-foreground bg-background">
-      <div className="relative flex w-full flex-col gap-4 rounded-xl border border-border bg-card p-4 shadow-lg overflow-hidden">
+      <div className="relative flex w-full flex-col gap-6 rounded-xl border border-border bg-card p-6 shadow-lg">
         <motion.div
           key="initial"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 30 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-6"
         >
           {/* File Name Input */}
-          <input
-            type="text"
-            value={fileName}
-            onChange={(e) => setPdf({ fileName: e.target.value })}
-            placeholder="Enter filename (Can't change afterwards)"
-            className="w-full rounded-md border border-border bg-muted p-2 
-             focus:outline-none focus:ring-2 focus:ring-ring"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={fileName}
+              onChange={(e) => setPdf({ fileName: e.target.value })}
+              placeholder="Enter filename"
+              className="w-full rounded-md border border-border bg-muted p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <p className="text-xs text-muted-foreground mt-1">Filename can't be changed later</p>
+          </div>
 
           {/* Prompt Textarea */}
-          <textarea
-            id="inputMessage"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Describe your here..."
-            className="h-40 w-full resize-none rounded-md border border-border bg-muted p-3 
-                     text-foreground placeholder-muted-foreground 
-                     focus:outline-none focus:ring-2 focus:ring-ring"
-          />
+          <div className="relative">
+            <textarea
+              id="inputMessage"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Describe what you want..."
+              className="h-40 w-full resize-none rounded-md border border-border bg-muted p-3 
+                         text-foreground placeholder-muted-foreground 
+                         focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
+              {input.length}/500
+            </span>
+          </div>
 
           {/* Generate Button */}
           <button
@@ -145,9 +119,10 @@ const Generate = () => {
             disabled={loading}
             className="bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition cursor-pointer disabled:opacity-50"
           >
-            {loading ? <TextShimmerWave duration={1}>Generating...</TextShimmerWave> : 'Generate'}
+            {loading ? <TextShimmerWave duration={1}>Generating...</TextShimmerWave> : 'Generate PDF'}
           </button>
 
+          {/* File Upload */}
           <UploadFiles />
         </motion.div>
       </div>

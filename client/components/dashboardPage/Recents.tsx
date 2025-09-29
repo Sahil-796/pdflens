@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import {
     Card,
     CardContent,
@@ -22,6 +21,8 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import Skeleton from '@mui/material/Skeleton'
+import { FileText, Trash2, Calendar } from "lucide-react"
 
 interface Pdf {
     id: string
@@ -32,12 +33,13 @@ interface Pdf {
 const Recents: React.FC = () => {
     const [pdfs, setPdfs] = useState<Pdf[]>([])
     const [loading, setLoading] = useState(true)
+    const [viewMore, setViewMore] = useState(false)
 
     useEffect(() => {
-        const fetchPdfs = async () => {
+        const fetchPdfs = async (limit = 8) => {
             try {
                 setLoading(true)
-                const res = await fetch("/api/getAll")
+                const res = await fetch(`/api/getAll?limit=${limit}`)
                 const data: Pdf[] = await res.json()
                 setPdfs(data)
             } catch (error) {
@@ -47,8 +49,22 @@ const Recents: React.FC = () => {
             }
         }
 
-        fetchPdfs()
+        fetchPdfs(8)
     }, [])
+
+    const handleViewMore = async () => {
+        try {
+            setLoading(true)
+            const res = await fetch(`/api/getAll`) // fetch all
+            const data: Pdf[] = await res.json()
+            setPdfs(data)
+            setViewMore(true)
+        } catch (err) {
+            console.error("Error fetching all PDFs:", err)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const handleDelete = async (pdfId: string, pdfName: string) => {
         try {
@@ -71,74 +87,100 @@ const Recents: React.FC = () => {
         }
     }
 
+    // Skeleton loader
     if (loading)
         return (
-            <TextShimmerWave duration={1} className="text-muted-foreground">
-                Loading recent PDFs...
-            </TextShimmerWave>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="p-4 rounded-xl border border-border shadow-sm flex flex-col gap-3 overflow-hidden relative bg-card">
+                        <div className="h-6 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
+                        <div className="h-6 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
+                        <div className="h-4 w-1/2 rounded bg-muted relative overflow-hidden animte-pulse" />
+                    </div>
+                ))}
+            </div>
         )
 
+    // Empty state
     if (pdfs.length === 0)
-        return <p className="text-muted-foreground">No PDFs yet. Create one to get started!</p>
+        return (
+            <div className="flex flex-col items-center justify-center text-center p-10 border rounded-xl bg-muted/30">
+                <FileText className="w-12 h-12 text-muted-foreground mb-3" />
+                <p className="text-lg font-medium">No PDFs yet</p>
+                <p className="text-sm text-muted-foreground">Create or upload one to get started!</p>
+            </div>
+        )
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {pdfs.map((pdf) => (
-                <Card key={pdf.id} className="flex-1 flex flex-col transition-all duration-150 hover:scale-105 hover:border-primary">
-                    {/* Header */}
-                    <CardHeader className="flex flex-row items-center justify-between gap-6">
-                        {/* PDF Link */}
-                        <Link href={`/edit/${pdf.id}`} className="flex-1 min-w-0">
-                            <CardTitle className="truncate text-primary text-sm sm:text-base">
-                                {pdf.fileName}
-                            </CardTitle>
-                        </Link>
-
-                        {/* Delete Confirmation Dialog */}
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    size="sm"
-                                    variant="destructive"
-                                    className="cursor-pointer shrink-0"
-                                >
-                                    Delete
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete PDF</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Are you sure you want to delete{" "}
-                                        <strong>{pdf.fileName}</strong>? This action cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                        className="bg-destructive hover:bg-destructive/80 cursor-pointer"
-                                        onClick={() => handleDelete(pdf.id, pdf.fileName)}
+        <div className="flex flex-col gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-7">
+                {pdfs.map((pdf) => (
+                    <Card
+                        key={pdf.id}
+                        className="flex flex-col group rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40"
+                    >
+                        <CardHeader className="flex flex-row items-start justify-between gap-3">
+                            <Link href={`/edit/${pdf.id}`} className="flex-1 min-w-0">
+                                <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
+                                    <FileText className="w-4 h-4 text-primary/80 shrink-0" />
+                                    {pdf.fileName}
+                                </CardTitle>
+                            </Link>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="text-destructive hover:bg-destructive/10 cursor-pointer"
                                     >
-                                        Delete
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </CardHeader>
-
-                    {/* Content */}
-                    <CardContent className="mt-auto">
-                        <span className="text-xs text-muted-foreground">
+                                        <Trash2 className="w-4 h-4" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to delete{" "}
+                                            <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive hover:bg-destructive/80 cursor-pointer"
+                                            onClick={() => handleDelete(pdf.id, pdf.fileName)}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </CardHeader>
+                        <CardContent className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
+                            <Calendar className="w-3.5 h-3.5" />
                             {pdf.createdAt
-                                ? `Created On: ${new Date(pdf.createdAt).toLocaleDateString(
+                                ? `Created: ${new Date(pdf.createdAt).toLocaleDateString(
                                     undefined,
                                     { day: "2-digit", month: "short", year: "numeric" }
                                 )}`
-                                : "Created On: N/A"}
-                        </span>
-                    </CardContent>
-                </Card>
-            ))}
+                                : "Created: N/A"}
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+
+            {!viewMore && pdfs.length >= 8 && (
+                <div className="flex justify-center">
+                    <Button
+                        onClick={handleViewMore}
+                        variant="outline"
+                        className="cursor-pointer px-6 py-2 rounded-lg transition-colors"
+                        disabled={loading}
+                    >
+                        {loading ? "Loading..." : "View More"}
+                    </Button>
+                </div>
+            )}
         </div>
     )
 }
