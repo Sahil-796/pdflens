@@ -97,7 +97,6 @@ export default function EditClient({ id }: { id: string }) {
                                         className="p-2 rounded bg-muted text-sm flex items-center justify-between"
                                     >
                                         <span className="truncate">{file}</span>
-                                        {/* optional remove button here */}
                                     </li>
                                 ))}
                             </ul>
