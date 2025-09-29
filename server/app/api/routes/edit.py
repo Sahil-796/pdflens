@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Header, JSONResponse
+import logging
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel
 from app.layers import editWorkflow
 from dotenv import load_dotenv
@@ -28,4 +30,8 @@ async def edit(req:EditRequest, secret1: str = Header(...)) -> str:
         html = await editWorkflow(req)
         return html
     except Exception as e:
-        return f"Error : {e}"
+        logger.error(
+            f"Error processing request for user {str(e)}", 
+            exc_info=True
+        )
+        return JSONResponse(status_code=500, content={"message": str(e)})
