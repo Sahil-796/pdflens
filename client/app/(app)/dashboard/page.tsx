@@ -7,11 +7,17 @@ import Link from "next/link"
 import PdfSearch from "@/components/dashboardPage/SearchBar"
 
 export default function Dashboard() {
+  const templates = [
+    "Resume",
+    "Business-Proposal",
+    "Cover-Letter",
+    "Research-Paper",
+    "Agreement",
+    "Report",
+  ]
 
-  const templates = ["Resume", "Invoice", "Certificate"];
-  
   return (
-    <div className='h-screen flex flex-col'>
+    <div className="h-screen flex flex-col">
       <TitleNav text="Dashboard" />
       <div className="flex-1 overflow-y-scroll flex flex-col gap-6 p-4 text-foreground bg-background h-full">
         {/* Search Section */}
@@ -24,8 +30,7 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-primary">Templates</h2>
             <Link href="/generate">
               <Button
-                variant="secondary"
-                className="bg-card text-primary border border-border whitespace-nowrap cursor-pointer"
+                className="bg-primary text-primary-foreground rounded-xl px-6 py-2 shadow-md hover:shadow-lg hover:bg-primary/90 transition"
               >
                 + Create New PDF
               </Button>
@@ -40,7 +45,7 @@ export default function Dashboard() {
                 href={`/generate?template=${encodeURIComponent(template)}`}
                 className="block"
               >
-                <Card className="p-4 rounded-lg border border-border bg-card text-primary text-center font-medium cursor-pointer hover:bg-muted hover:text-primary transition">
+                <Card className="h-12 lg:h-18 flex items-center justify-center rounded-lg border border-border bg-card text-primary text-center font-medium cursor-pointer hover:bg-muted hover:text-primary transition overflow-hidden text-ellipsis">
                   {template}
                 </Card>
               </Link>
@@ -49,26 +54,10 @@ export default function Dashboard() {
         </div>
 
         {/* Recent PDFs */}
-        <div className="space-y-4 ">
-          <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-primary">Recent PDFs</h2>
           <Recents />
         </div>
-
-        {/* Favourites
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-primary">Favourites</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {[1, 2].map((fav) => (
-              <Card
-                key={fav}
-                className="p-4 rounded-lg border border-border bg-card text-primary"
-              >
-                Favourite {fav}
-              </Card>
-            ))}
-          </div>
-        </div> */}
-
       </div>
     </div>
   )

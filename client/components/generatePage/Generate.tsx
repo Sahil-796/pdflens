@@ -11,7 +11,7 @@ import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import UploadFiles from '@/components/generatePage/UploadFiles'
 
 const templatePrompts: Record<string, string> = {
-  Resume: `
+  "Resume": `
 Create a professional resume with the following details:
 - Name: [Your Name]
 - Email: [Your Email]
@@ -24,27 +24,61 @@ Create a professional resume with the following details:
 - Achievements: [Any awards or certifications]
 - Objective: [Short career objective]
 `,
-  Invoice: `
-Generate a professional invoice with placeholders for:
-- Invoice Number: [Invoice Number]
-- Date: [Invoice Date]
-- Bill To: [Client Name and Address]
-- From: [Your Company Name and Address]
-- Itemized List: [Item, Description, Quantity, Price]
-- Subtotal: [Subtotal Amount]
-- Taxes: [Applicable Taxes]
-- Total Amount: [Total Amount]
-- Payment Terms: [Payment Terms]
-- Notes: [Additional Notes]
+  "Business-Proposal": `
+Create a business proposal with placeholders for:
+- Proposal Title: [Proposal Name]
+- Client: [Client Name]
+- Prepared By: [Your Company Name]
+- Executive Summary: [Summary of Proposal]
+- Problem Statement: [Problem Definition]
+- Solution: [Proposed Solution]
+- Pricing: [Pricing Details]
+- Timeline: [Delivery Timeline]
+- Contact: [Contact Information]
 `,
-  Certificate: `
-Generate a certificate template with placeholders for:
-- Recipient Name: [Name of Recipient]
-- Course/Event Name: [Course or Event Title]
-- Date: [Date of Completion]
-- Issuer: [Organization or Person Issuing Certificate]
-- Additional Notes: [Any remarks or achievements]
-`
+  "Cover-Letter": `
+Write a professional cover letter with placeholders for:
+- Recipient Name: [Hiring Manager's Name]
+- Company: [Company Name]
+- Position: [Position Title]
+- Applicant Name: [Your Name]
+- Introduction: [Short intro about yourself]
+- Body: [Why you're a great fit, skills, achievements]
+- Closing: [Closing statement + call to action]
+- Signature: [Your Full Name]
+`,
+  "Research-Paper": `
+  Generate a structured research paper with placeholders for:
+- Title: [Paper Title]
+- Author(s): [Author Names]
+- Abstract: [Short Summary]
+- Introduction: [Introduction Content]
+- Methodology: [Method Details]
+- Results: [Findings]
+- Discussion: [Discussion Points]
+- Conclusion: [Concluding Remarks]
+- References: [List of References]
+  `,
+  "Agreement": `
+  Draft a legal agreement with placeholders for:
+- Agreement Title: [Agreement Name]
+- Parties Involved: [Party A, Party B]
+- Date: [Date of Agreement]
+- Terms & Conditions: [Key Terms]
+- Payment Details: [Payment Structure]
+- Duration: [Contract Duration]
+- Signatures: [Party A Signature, Party B Signature] 
+  `,
+  "Report": `
+  Generate a structured report with placeholders for:
+- Report Title: [Title of Report]
+- Author: [Your Name]
+- Date: [Date of Report]
+- Executive Summary: [Summary of Report]
+- Body: [Main Content Sections]
+- Conclusion: [Final Remarks]
+- Appendices: [Supporting Material] 
+  `
 }
 
 const Generate = () => {
