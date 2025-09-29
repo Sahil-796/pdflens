@@ -35,7 +35,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                             setOriginalHtml(target.innerHTML)
                         }
                     }}
-                    className="mx-auto flex-1 w-full rounded-md px-6 pb-6 bg-white text-black"
+                    className="mx-auto flex-1 w-full rounded-md p-6 bg-white text-black"
                     dangerouslySetInnerHTML={{ __html: renderedHtml }}
                 />
             )}

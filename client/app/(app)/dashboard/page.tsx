@@ -1,13 +1,15 @@
 import React from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import TitleNav from "@/components/bars/title-nav"
 import Recents from "@/components/dashboardPage/Recents"
 import Link from "next/link"
 import PdfSearch from "@/components/dashboardPage/SearchBar"
 
 export default function Dashboard() {
+
+  const templates = ["Resume", "Invoice", "Certificate"];
+  
   return (
     <div className='h-screen flex flex-col'>
       <TitleNav text="Dashboard" />
@@ -15,10 +17,11 @@ export default function Dashboard() {
         {/* Search Section */}
         <PdfSearch />
 
-        {/* Recent PDFs */}
-        <div className="space-y-4 ">
+        {/* Templates */}
+        <div className="space-y-4">
+          {/* Header */}
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
+            <h2 className="text-lg font-semibold text-primary">Templates</h2>
             <Link href="/generate">
               <Button
                 variant="secondary"
@@ -28,10 +31,30 @@ export default function Dashboard() {
               </Button>
             </Link>
           </div>
+
+          {/* Template Buttons */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {templates.map((template) => (
+              <Link
+                key={template}
+                href={`/generate?template=${encodeURIComponent(template)}`}
+                className="block"
+              >
+                <Card className="p-4 rounded-lg border border-border bg-card text-primary text-center font-medium cursor-pointer hover:bg-muted hover:text-primary transition">
+                  {template}
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent PDFs */}
+        <div className="space-y-4 ">
+          <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
           <Recents />
         </div>
 
-        {/* Favourites */}
+        {/* Favourites
         <div className="space-y-4">
           <h2 className="text-lg font-semibold text-primary">Favourites</h2>
           <div className="grid grid-cols-3 gap-4">
@@ -44,22 +67,8 @@ export default function Dashboard() {
               </Card>
             ))}
           </div>
-        </div>
+        </div> */}
 
-        {/* Templates */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-primary">Templates</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {["Resume", "Invoice", "Certificate"].map((template) => (
-              <Card
-                key={template}
-                className="p-4 rounded-lg border border-border bg-card text-primary cursor-pointer hover:opacity-80"
-              >
-                {template}
-              </Card>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   )

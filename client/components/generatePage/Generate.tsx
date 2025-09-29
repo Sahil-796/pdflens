@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { useUserStore } from '@/app/store/useUserStore'
@@ -9,8 +10,46 @@ import { useRouter } from 'next/navigation'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import UploadFiles from '@/components/generatePage/UploadFiles'
 
+const templatePrompts: Record<string, string> = {
+  Resume: `
+Create a professional resume with the following details:
+- Name: [Your Name]
+- Email: [Your Email]
+- Phone: [Your Phone Number]
+- Address: [Your Address]
+- Education: [Your College/University, Degree, Year]
+- Skills: [List of Skills]
+- Projects: [Project Name, Description, Technologies]
+- Experience: [Company Name, Role, Duration, Responsibilities]
+- Achievements: [Any awards or certifications]
+- Objective: [Short career objective]
+`,
+  Invoice: `
+Generate a professional invoice with placeholders for:
+- Invoice Number: [Invoice Number]
+- Date: [Invoice Date]
+- Bill To: [Client Name and Address]
+- From: [Your Company Name and Address]
+- Itemized List: [Item, Description, Quantity, Price]
+- Subtotal: [Subtotal Amount]
+- Taxes: [Applicable Taxes]
+- Total Amount: [Total Amount]
+- Payment Terms: [Payment Terms]
+- Notes: [Additional Notes]
+`,
+  Certificate: `
+Generate a certificate template with placeholders for:
+- Recipient Name: [Name of Recipient]
+- Course/Event Name: [Course or Event Title]
+- Date: [Date of Completion]
+- Issuer: [Organization or Person Issuing Certificate]
+- Additional Notes: [Any remarks or achievements]
+`
+}
+
 const Generate = () => {
   const router = useRouter()
+  const searchParams = useSearchParams()
   useAuthRehydrate()
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -19,7 +58,15 @@ const Generate = () => {
   const { userId } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
-  useEffect(() => { clearPdf() }, [clearPdf])
+  const template = searchParams.get('template') // Check for template param
+
+  useEffect(() => {
+    clearPdf()
+    // If template exists, pre-fill prompt
+    if (template && templatePrompts[template]) {
+      setInput(templatePrompts[template].trim())
+    }
+  }, [clearPdf, template])
 
   useEffect(() => {
     if (success) router.push(`/edit/${pdfId}`)
