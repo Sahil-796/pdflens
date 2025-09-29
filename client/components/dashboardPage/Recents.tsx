@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner"
 import Skeleton from '@mui/material/Skeleton'
 import { FileText, Trash2, Calendar } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 interface Pdf {
     id: string
@@ -34,6 +35,7 @@ const Recents: React.FC = () => {
     const [pdfs, setPdfs] = useState<Pdf[]>([])
     const [loading, setLoading] = useState(true)
     const [viewMore, setViewMore] = useState(false)
+    const router = useRouter()
 
     useEffect(() => {
         const fetchPdfs = async (limit = 8) => {
@@ -117,26 +119,26 @@ const Recents: React.FC = () => {
                 {pdfs.map((pdf) => (
                     <Card
                         key={pdf.id}
-                        className="flex flex-col group rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40"
+                        onClick={() => router.push(`/edit/${pdf.id}`)}
+                        className="flex flex-col group rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
                     >
                         <CardHeader className="flex flex-row items-start justify-between gap-3">
-                            <Link href={`/edit/${pdf.id}`} className="flex-1 min-w-0">
-                                <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
-                                    <FileText className="w-4 h-4 text-primary/80 shrink-0" />
-                                    {pdf.fileName}
-                                </CardTitle>
-                            </Link>
+                            <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
+                                <FileText className="w-4 h-4 text-primary/80 shrink-0" />
+                                {pdf.fileName}
+                            </CardTitle>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button
                                         size="icon"
                                         variant="ghost"
                                         className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                                        onClick={(e) => e.stopPropagation()} // prevent card click
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
                                     <AlertDialogHeader>
                                         <AlertDialogTitle>Delete PDF</AlertDialogTitle>
                                         <AlertDialogDescription>
@@ -145,10 +147,15 @@ const Recents: React.FC = () => {
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
+                                            Cancel
+                                        </AlertDialogCancel>
                                         <AlertDialogAction
                                             className="bg-destructive hover:bg-destructive/80 cursor-pointer"
-                                            onClick={() => handleDelete(pdf.id, pdf.fileName)}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                handleDelete(pdf.id, pdf.fileName)
+                                            }}
                                         >
                                             Delete
                                         </AlertDialogAction>
@@ -156,6 +163,7 @@ const Recents: React.FC = () => {
                                 </AlertDialogContent>
                             </AlertDialog>
                         </CardHeader>
+
                         <CardContent className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
                             <Calendar className="w-3.5 h-3.5" />
                             {pdf.createdAt
