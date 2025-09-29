@@ -13,11 +13,21 @@ export default function Dashboard() {
       <TitleNav text="Dashboard" />
       <div className="flex-1 overflow-y-scroll flex flex-col gap-6 p-4 text-foreground bg-background h-full">
         {/* Search Section */}
-      <PdfSearch />
+        <PdfSearch />
 
         {/* Recent PDFs */}
         <div className="space-y-4 ">
-          <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-primary ">Recent PDFs</h2>
+            <Link href="/generate">
+              <Button
+                variant="secondary"
+                className="bg-card text-primary border border-border whitespace-nowrap cursor-pointer"
+              >
+                + Create New PDF
+              </Button>
+            </Link>
+          </div>
           <Recents />
         </div>
 

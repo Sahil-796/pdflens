@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Loader2 } from 'lucide-react'
 
 interface Pdf {
     id: string
@@ -17,6 +18,7 @@ export default function PdfSearch() {
     const [pdfs, setPdfs] = useState<Pdf[]>([])
     const [loading, setLoading] = useState(true)
     const [showList, setShowList] = useState(false)
+
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
 
@@ -38,13 +40,10 @@ export default function PdfSearch() {
         fetchPdfs()
     }, [])
 
-    // Click outside to close dropdown
+    // Close dropdown on click outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target as Node)
-            ) {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
                 setShowList(false)
             }
         }
@@ -68,28 +67,36 @@ export default function PdfSearch() {
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [])
 
-    // Initial PDFs to show on focus
-
-    // Filter PDFs based on query
+    // Filter PDFs based on search query
     const filteredPdfs = query
-        ? pdfs.filter(pdf =>
-            pdf.fileName.toLowerCase().includes(query.toLowerCase())
-        )
+        ? pdfs.filter(pdf => pdf.fileName.toLowerCase().includes(query.toLowerCase()))
         : pdfs
 
+    // Loading state
     if (loading) {
         return (
-            <div className="flex items-center justify-center w-full py-8 text-neutral-400">
-                Loading PDFs...
+            <div className="flex items-center justify-center w-full">
+                <div className="relative w-full max-w-md">
+                    <Input
+                        type="text"
+                        placeholder="Loading PDFs..."
+                        disabled
+                        className="w-full border-border text-muted-foreground bg-card cursor-not-allowed"
+                    />
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                        <Loader2 className="animate-spin text-muted-foreground" />
+                    </div>
+                </div>
             </div>
         )
     }
 
     return (
-        <div className="w-full relative" ref={containerRef}>
-            {/* Search and Create New PDF on same row */}
-            <div className="flex items-center gap-4 w-full">
-                <div className="relative flex-1">
+        <div className="w-full flex flex-col items-center" ref={containerRef}>
+            {/* Search + Create PDF */}
+            <div className="flex items-center gap-4 w-full max-w-md">
+                {/* Search Input */}
+                <div className="relative flex-1 w-full">
                     <Input
                         ref={inputRef}
                         type="text"
@@ -104,24 +111,15 @@ export default function PdfSearch() {
                         ⌘ K
                     </span>
                 </div>
-
-                <Link href="/generate">
-                    <Button
-                        variant="secondary"
-                        className="bg-card text-primary border border-border whitespace-nowrap"
-                    >
-                        + Create New PDF
-                    </Button>
-                </Link>
             </div>
 
             {/* PDF Results Dropdown */}
             {showList && (
-                <div className="absolute z-10 w-full max-h-64 overflow-auto rounded-md border border-border bg-card p-2 shadow-lg mt-1">
+                <div className="absolute z-10 mt-10 w-full max-w-md overflow-auto rounded-md border border-border bg-card p-2 shadow-lg max-h-64">
                     {filteredPdfs.length === 0 ? (
                         <p className="text-sm text-muted-foreground">No PDFs found.</p>
                     ) : (
-                        filteredPdfs.map(pdf => (
+                        filteredPdfs.map((pdf) => (
                             <Link key={pdf.id} href={`/edit/${pdf.id}`}>
                                 <div className="cursor-pointer rounded-md p-2 hover:bg-muted transition">
                                     <p className="font-medium">{pdf.fileName}</p>
