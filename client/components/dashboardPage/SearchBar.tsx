@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 
@@ -31,19 +30,21 @@ export default function PdfSearch() {
                 const data: Pdf[] = await res.json()
                 setPdfs(data)
             } catch (error) {
-                console.error("Error fetching PDFs:", error)
+                console.error('Error fetching PDFs:', error)
             } finally {
                 setLoading(false)
             }
         }
-
         fetchPdfs()
     }, [])
 
-    // Close dropdown on click outside
+    // Close dropdown on outside click
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node)
+            ) {
                 setShowList(false)
             }
         }
@@ -51,7 +52,7 @@ export default function PdfSearch() {
         return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
-    // Keyboard shortcuts: Cmd+K / Ctrl+K to open, Esc to close
+    // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
@@ -62,17 +63,16 @@ export default function PdfSearch() {
                 setShowList(false)
             }
         }
-
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
     }, [])
 
-    // Filter PDFs based on search query
     const filteredPdfs = query
-        ? pdfs.filter(pdf => pdf.fileName.toLowerCase().includes(query.toLowerCase()))
+        ? pdfs.filter((pdf) =>
+            pdf.fileName.toLowerCase().includes(query.toLowerCase())
+        )
         : pdfs
 
-    // Loading state
     if (loading) {
         return (
             <div className="flex items-center justify-center w-full">
@@ -81,7 +81,7 @@ export default function PdfSearch() {
                         type="text"
                         placeholder="Loading PDFs..."
                         disabled
-                        className="w-full border-border text-muted-foreground bg-card cursor-not-allowed"
+                        className="w-full rounded-xl border-border text-muted-foreground bg-card shadow-sm cursor-not-allowed"
                     />
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                         <Loader2 className="animate-spin text-muted-foreground" />
@@ -92,30 +92,38 @@ export default function PdfSearch() {
     }
 
     return (
-        <div className="w-full flex flex-col items-center" ref={containerRef}>
-            {/* Search + Create PDF */}
-            <div className="flex items-center gap-4 w-full max-w-md">
-                {/* Search Input */}
-                <div className="relative flex-1 w-full">
-                    <Input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onFocus={() => setShowList(true)}
-                        placeholder="Search PDFs"
-                        className="w-full border-border text-primary bg-card pr-20"
-                    />
-                    {/* Shortcut Badge */}
-                    <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
-                        ⌘ K
-                    </span>
-                </div>
+        <div className="w-full flex flex-col items-center relative" ref={containerRef}>
+            {/* Screen Blur Overlay */}
+            {showList && (
+                <div 
+                className="fixed inset-0 bg-background/60 backdrop-blur-xs z-10" 
+                onClick={()=> {
+                    setShowList(false)
+                    inputRef.current?.blur()
+                }}
+                />
+            )}
+
+            {/* Search Bar */}
+            <div className="relative z-20 w-full max-w-md">
+                <Input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onFocus={() => setShowList(true)}
+                    placeholder="Search PDFs"
+                    className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary"
+                />
+                {/* Shortcut Badge */}
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
+                    ⌘ K
+                </span>
             </div>
 
-            {/* PDF Results Dropdown */}
+            {/* Dropdown Results */}
             {showList && (
-                <div className="absolute z-10 mt-10 w-full max-w-md overflow-auto rounded-md border border-border bg-card p-2 shadow-lg max-h-64">
+                <div className="absolute z-30 mt-14 w-full max-w-md overflow-auto rounded-xl border border-border bg-card p-2 shadow-xl max-h-64">
                     {filteredPdfs.length === 0 ? (
                         <p className="text-sm text-muted-foreground">No PDFs found.</p>
                     ) : (
