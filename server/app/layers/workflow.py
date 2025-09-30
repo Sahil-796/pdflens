@@ -19,40 +19,36 @@ vector_store = PineconeVectorStore(
     index=index
 )
 
+
 async def workflow(req = PromptRequest) -> str:
+    # No more try...except block. Let errors bubble up!
+    userId = req.userId
+    user_input = req.userPrompt
+    pdfId = req.pdfId
 
-    try:
-        userId = req.userId
-        user_input = req.userPrompt
-        pdfId = req.pdfId
+    print({"userId": userId, "pdfId": pdfId})
+    if not user_input.strip():
+        raise ValueError("User input is empty")
 
-        print({"userId": userId, "pdfId": pdfId})
-        # Make sure input is not empty
-        if not user_input.strip():
-            return "error in workflow: user input is empty"
+    extractor = await extract_formatting_and_content(user_input)
 
+    if not extractor or len(extractor) < 3:
+        raise ValueError("Could not extract formatting/content")
 
-        extractor = await extract_formatting_and_content(user_input)
+    
+    context = ""
+    if req.isContext:
+        results = vector_store.similarity_search(
+            extractor[0],
+            k=10,
+            filter={"userId": userId, "pdfId": pdfId}
+        )
+        context = "\n\n".join([doc.page_content for doc in results])
 
-        if not extractor or len(extractor) < 3:
-            return "error in workflow: could not extract formatting/content"
+    draft = await create_draft(extractor[0], extractor[2], context)
+    print({"context": context})
+    content = await refine_structure(extractor[0] + " " + context, draft, extractor[2])
+    formatting = await generate_formatting_kwargs(extractor[1], content)
 
-        context = ""
-        if req.isContext:
-            results = vector_store.similarity_search(
-                extractor[0],
-                k=10,
-                filter={"userId": userId, "pdfId": pdfId}
-            )
-            context = "\n\n".join([doc.page_content for doc in results])
-
-        draft = await create_draft(extractor[0], extractor[2], context)
-        print({"context": context})
-        content = await refine_structure(extractor[0] + " " + context, draft, extractor[2])
-        formatting = await generate_formatting_kwargs(extractor[1], content)
-
-        html = create_html(content, formatting)
-        return html  
-      
-    except Exception as e:
-        return f"error in workflow : {e}"
+    html = create_html(content, formatting)
+    return html

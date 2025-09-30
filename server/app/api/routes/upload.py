@@ -1,4 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form, Header
+from fastapi.responses import JSONResponse
+import logging
+logger = logging.getLogger(__name__)
 import tempfile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -46,4 +49,8 @@ async def upload_context(
         return {"message": "File uploaded and indexed"}
     
     except Exception as e:
-        return {"error": f"Error at upload context: {e}"}
+        logger.error(
+            f"Error processing request for user {userId}: {str(e)}", 
+            exc_info=True
+        )
+        return JSONResponse(status_code=500, content={"message": str(e)})
