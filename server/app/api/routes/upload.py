@@ -17,7 +17,7 @@ async def upload_context(
     userId: str = Form(...),
     pdfId: str = Form(...)
 ):
-    try:
+    try:      
         extension = file.filename.split('.')[-1].lower()
         with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp:
             contents = await file.read()
