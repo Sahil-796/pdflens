@@ -12,3 +12,12 @@ bs4
 markdown-it-py
 pydantic
 pypdf
+
+# pdf-to-markdown
+pdfplumber
+pytesseract
+opencv-python
+numpy
+transformers
+torch
+Pillow
