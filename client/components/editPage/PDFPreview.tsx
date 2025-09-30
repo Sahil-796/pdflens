@@ -11,12 +11,22 @@ interface PDFPreviewProps {
 }
 
 const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
-    const { renderedHtml, setRenderedHtml, setSelectedId, setSelectedText, setOriginalHtml } = usePdfStore() // store selection globally
+    const { renderedHtml, setRenderedHtml, setSelectedId, setSelectedText, setOriginalHtml, selectedId } = usePdfStore() // store selection globally
 
 
     useEffect(() => {
         if (html) setRenderedHtml(html)
     }, [html, setRenderedHtml])
+
+    useEffect(() => {
+        if (renderedHtml && selectedId) {
+            const prev = document.querySelector(".selected")
+            if (prev) prev.classList.remove("selected")
+
+            const el = document.getElementById(selectedId)
+            if (el) el.classList.add("selected")
+        }
+    }, [renderedHtml, selectedId])
 
 
     return (
@@ -27,16 +37,24 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                 </TextShimmerWave>
             ) : (
                 <div
+                    className="mx-auto flex-1 w-full rounded-md p-6 bg-white text-black"
+                    dangerouslySetInnerHTML={{ __html: renderedHtml }}
+                    onMouseOver={(e) => {
+                        const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                        if (target) target.classList.add("hovered")
+                    }}
+                    onMouseOut={(e) => {
+                        const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                        if (target) target.classList.remove("hovered")
+                    }}
                     onClick={(e) => {
-                        const target = e.target as HTMLElement
-                        if (target.id) {
+                        const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                        if (target) {
                             setSelectedId(target.id)
                             setSelectedText(target.innerText)
                             setOriginalHtml(target.innerHTML)
                         }
                     }}
-                    className="mx-auto flex-1 w-full rounded-md p-6 bg-white text-black"
-                    dangerouslySetInnerHTML={{ __html: renderedHtml }}
                 />
             )}
         </div>

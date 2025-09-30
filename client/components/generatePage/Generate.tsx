@@ -108,7 +108,7 @@ const Generate = () => {
 
   const handleSend = async () => {
     if (!input.trim()) {
-      toast.error("Prompt cannot be empty️")
+      toast.error("Prompt cannot be empty")
       return
     }
     setLoading(true)

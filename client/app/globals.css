@@ -5,6 +5,7 @@
 
 body.t3Chat {
   /* :root { */
+  --preview: oklch(0.5316 0.1409 355.1999);
   --background: oklch(0.9754 0.0084 325.6414);
   --foreground: oklch(0.3257 0.1161 325.0372);
   --card: oklch(0.9754 0.0084 325.6414);
@@ -54,6 +55,7 @@ body.t3Chat {
   /* } */
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -108,6 +110,7 @@ body.t3Chat {
 }
 
 body.t3Dark {
+  --preview: oklch(0.4607 0.1853 4.0994);
   --background: oklch(0.2409 0.0201 307.5346);
   --foreground: oklch(0.8398 0.0387 309.5391);
   --card: oklch(0.2803 0.0232 307.5413);
@@ -154,6 +157,7 @@ body.t3Dark {
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -209,6 +213,7 @@ body.t3Dark {
 
 body.Vercel {
   /* :root { */
+  --preview: oklch(0 0 0);
   --background: oklch(0.9900 0 0);
   --foreground: oklch(0 0 0);
   --card: oklch(1 0 0);
@@ -258,6 +263,7 @@ body.Vercel {
   /* } */
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -312,6 +318,7 @@ body.Vercel {
 }
 
 body.DarkVercel {
+  --preview: oklch(0 0 0);
   --background: oklch(0 0 0);
   --foreground: oklch(1 0 0);
   --card: oklch(0.1400 0 0);
@@ -358,6 +365,7 @@ body.DarkVercel {
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -412,6 +420,7 @@ body.DarkVercel {
 }
 
 body.Twitter {
+  --preview: oklch(0.6723 0.1606 244.9955);
   --background: oklch(1.0000 0 0);
   --foreground: oklch(0.1884 0.0128 248.5103);
   --card: oklch(0.9784 0.0011 197.1387);
@@ -460,6 +469,7 @@ body.Twitter {
   --spacing: 0.25rem;
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -514,6 +524,7 @@ body.Twitter {
 }
 
 body.X {
+  --preview: oklch(0.6723 0.1606 244.9955);
   --background: oklch(0 0 0);
   --foreground: oklch(0.9328 0.0025 228.7857);
   --card: oklch(0.2097 0.0080 274.5332);
@@ -560,6 +571,7 @@ body.X {
   --shadow-2xl: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
 
   @theme inline {
+    --color-preview: var(--preview);
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);
@@ -626,38 +638,12 @@ body.X {
     letter-spacing: var(--tracking-normal);
   }
 
-  /* When the user clicks/taps */
-  .selectable:hover {
-    transform: translateY(1px) scale(1.03);
-    /* subtle press down effect */
-    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.35);
-    /* softer shadow */
-    background-color: color-mix(in srgb, var(--primary) 25%, white);
-    /* slightly darker bg */
-    transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.1s ease;
-    border-radius: var(--radius);
+  .hovered {
+    @apply bg-preview/20 rounded-md cursor-pointer;
   }
 
-  /* When the element is selected (persistent state) */
-  .selectable.selected {
-    border-color: var(--primary);
-    background-color: color-mix(in srgb, var(--primary) 30%, white);
-    box-shadow:
-      0 0 0 2px var(--primary),
-      /* solid outline */
-      0 8px 24px rgba(0, 123, 255, 0.3);
-    /* softer glow */
-    transform: translateY(-2px) scale(1.03);
-    /* slightly lifted + scaled */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-  }
-
-  /* Optional: smoother hover -> selected interaction */
-  .selectable.selected:hover {
-    transform: translateY(-3px) scale(1.04);
-    box-shadow:
-      0 0 0 2px var(--primary),
-      0 10px 28px rgba(0, 123, 255, 0.35);
+  .selected {
+    @apply bg-preview/30 rounded-md;
   }
 }
 
