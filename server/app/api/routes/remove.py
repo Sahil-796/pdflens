@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Header, JSONResponse
+from fastapi import APIRouter, Header
+from fastapi.responses import JSONResponse
 import logging
 logger = logging.getLogger(__name__)
 from langchain_pinecone import PineconeVectorStore

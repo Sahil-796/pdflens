@@ -1,4 +1,5 @@
-from fastapi import APIRouter, UploadFile, File, Form, Header, JSONResponse
+from fastapi import APIRouter, UploadFile, File, Form, Header
+from fastapi.responses import JSONResponse
 import logging
 logger = logging.getLogger(__name__)
 import tempfile
