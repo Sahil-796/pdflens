@@ -19,7 +19,6 @@ vector_store = PineconeVectorStore(
     index=index
 )
 
-# layers/workflow.py - The NEW, "Error-Proofed" Way
 
 async def workflow(req = PromptRequest) -> str:
     # No more try...except block. Let errors bubble up!
@@ -29,17 +28,13 @@ async def workflow(req = PromptRequest) -> str:
 
     print({"userId": userId, "pdfId": pdfId})
     if not user_input.strip():
-        # Instead of returning a string, you raise the specific error.
         raise ValueError("User input is empty")
 
-    # This function will now raise a ValueError if it fails, which is perfect.
     extractor = await extract_formatting_and_content(user_input)
 
     if not extractor or len(extractor) < 3:
-        # This also raises a specific error.
         raise ValueError("Could not extract formatting/content")
 
-    # ... rest of your workflow logic ...
     
     context = ""
     if req.isContext:
