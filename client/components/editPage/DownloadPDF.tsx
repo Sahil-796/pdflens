@@ -43,12 +43,12 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         <button
             onClick={handleDownload}
             disabled={loading}
-            className="group flex items-center bg-primary text-primary-foreground font-medium rounded-lg py-2 hover:py-2 px-3 hover:px-4 shadow-md hover:bg-primary/90 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
+            className="group flex items-center bg-primary text-primary-foreground font-medium rounded-lg py-2 px-4 shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
         >
-            <Download className={`w-4 h-4 shrink-0 ${loading && 'animate-bounce'}`} />
+            <Download className={`w-4 h-4 shrink-0 ${loading && 'animate-bouncee'}`} />
 
             <span
-                className="max-w-0 opacity-0 group-hover:ml-2 group-hover:max-w-xs group-hover:opacity-200 transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden"
+                className="ml-2 max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden"
             >
                 Download PDF
             </span>
