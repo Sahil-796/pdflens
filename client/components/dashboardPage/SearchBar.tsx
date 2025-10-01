@@ -77,7 +77,7 @@ export default function SearchBar() {
 
     if (loading)
         return (
-            <div className="flex items-center justify-center w-full">
+            <div className="flex items-center justify-center w-7/8 mx-auto mt-2">
                 <div className="relative w-full max-w-md">
                     <Input
                         type="text"
@@ -201,8 +201,8 @@ export default function SearchBar() {
                                             whileHover={{ scale: 1.02, boxShadow: '0px 2px 8px rgba(0,0,0,0.1)' }}
                                             transition={{ duration: 0.15 }}
                                             className={`cursor-pointer rounded-md p-2 transition-colors ${idx === selectedIndex
-                                                    ? 'bg-muted text-primary'
-                                                    : 'hover:bg-muted'
+                                                ? 'bg-muted text-primary'
+                                                : 'hover:bg-muted'
                                                 }`}
                                             onClick={() => {
                                                 setShowList(false)

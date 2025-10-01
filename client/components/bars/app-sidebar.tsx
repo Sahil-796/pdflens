@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { "title": "Merge PDF", "url": "/tools/merge-pdf" },
           { "title": "Split PDF", "url": "/tools/split-pdf" },
           { "title": "Organize Pages", "url": "/tools/organize-pdf" },
-          { "title": "Edit PDF", "url": "/tools/edit-pdf" }, // edit here -----
+          { "title": "Edit PDF", "url": "/tools/edit-pdf" },
         ]
       },
     ]
