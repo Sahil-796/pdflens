@@ -74,9 +74,7 @@ export default function EditClient({ id }: { id: string }) {
             <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
                 <div className='flex flex-col gap-6 w-1/3'>
-                    <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
                     <EditPDF />
-                    <SaveChanges />
 
                     {/* Context Files */}
                     <div className="max-h-35 bg-card border border-border rounded-xl p-4 shadow overflow-y-auto">
@@ -116,6 +114,10 @@ export default function EditClient({ id }: { id: string }) {
                     transition={{ duration: 0.3 }}
                     className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
                 >
+                    <div className='flex items-center gap-3 px-6'>
+                        <SaveChanges />
+                        <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                    </div>
                     <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
                 </motion.div>
             </div>

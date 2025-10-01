@@ -3,7 +3,6 @@
 import { usePdfStore } from '@/app/store/usePdfStore'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import { Save } from 'lucide-react'
 
 const SaveChanges = () => {
@@ -35,11 +34,16 @@ const SaveChanges = () => {
     return (
         <button
             onClick={handleSave}
-            className="flex items-center justify-center gap-2 bg-primary text-primary-foreground font-medium rounded-lg px-5 py-2.5 shadow-md hover:bg-primary/90 hover:shadow-lg transition disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={loading}
+            className="group flex items-center bg-primary text-primary-foreground font-medium rounded-lg py-2 hover:py-2 px-3 hover:px-4 shadow-md hover:bg-primary/90 hover:shadow-lg transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
         >
-            <Save className={`w-4 h-4 ${loading && 'animate-caret-blink'}`} />
-            <span>Save Changes</span>
+            <Save className={`w-4 h-4 shrink-0 ${loading && 'animate-caret-blink'}`} />
+
+            <span
+                className="max-w-0 opacity-0 group-hover:ml-2 group-hover:max-w-xs group-hover:opacity-200 transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden"
+            >
+                Save Changes
+            </span>
         </button>
     )
 }
