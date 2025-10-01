@@ -184,7 +184,7 @@ const Generate = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Describe what you want..."
-            className="flex-1 w-full resize-none rounded-md border border-border bg-muted p-3 
+            className="flex-1 max-h-68 w-full resize-none rounded-md border border-border bg-muted p-3 
                          text-foreground placeholder-muted-foreground 
                          focus:outline-none focus:ring-2 focus:ring-ring"
           />

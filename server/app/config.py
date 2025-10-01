@@ -22,4 +22,4 @@ if not pc.has_index(INDEX_NAME):
     )
 index = pc.Index(INDEX_NAME)  
 
-embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
+embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-exp-03-07')

@@ -42,12 +42,12 @@ const Recents: React.FC = () => {
                 setLoading(true)
                 const res = await fetch(`/api/getAll?limit=${limit}`)
                 const data: Pdf[] = await res.json()
-                setPdfs(data)
                 data.forEach(pdf => {
                     if (pdf.htmlContent === '') {
                         handleDelete(pdf.id)
                     }
                 });
+                setPdfs(data)
             } catch (error) {
                 console.error("Error fetching PDFs:", error)
             } finally {
@@ -63,6 +63,11 @@ const Recents: React.FC = () => {
             setLoading(true)
             const res = await fetch(`/api/getAll`) // fetch all
             const data: Pdf[] = await res.json()
+            data.forEach(pdf => {
+                if (pdf.htmlContent === '') {
+                    handleDelete(pdf.id)
+                }
+            });
             setPdfs(data)
             setViewMore(true)
         } catch (err) {
