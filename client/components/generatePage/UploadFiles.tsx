@@ -3,7 +3,6 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { LoaderCircle, Upload, X } from "lucide-react"
 import { usePdfStore } from "@/app/store/usePdfStore"
-import { TextShimmerWave } from "@/components/motion-primitives/text-shimmer-wave"
 
 interface UploadedFile {
     name: string
