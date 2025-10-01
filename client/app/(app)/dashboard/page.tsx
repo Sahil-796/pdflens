@@ -13,10 +13,7 @@ export default function Dashboard() {
         <Templates />
 
         {/* Recent PDFs */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-primary">Recent PDFs</h2>
-          <Recents />
-        </div>
+        <Recents />
       </div>
     </div>
   )

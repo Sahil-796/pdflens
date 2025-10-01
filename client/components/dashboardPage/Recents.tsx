@@ -1,12 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
     AlertDialog,
@@ -22,6 +17,7 @@ import {
 import { toast } from "sonner"
 import { FileText, Trash2, Calendar } from "lucide-react"
 import { useRouter } from 'next/navigation'
+import { motion, AnimatePresence } from 'framer-motion'
 
 interface Pdf {
     id: string
@@ -43,10 +39,8 @@ const Recents: React.FC = () => {
                 const res = await fetch(`/api/getAll?limit=${limit}`)
                 const data: Pdf[] = await res.json()
                 data.forEach(pdf => {
-                    if (pdf.htmlContent === '') {
-                        handleDelete(pdf.id)
-                    }
-                });
+                    if (pdf.htmlContent === '') handleDelete(pdf.id)
+                })
                 setPdfs(data)
             } catch (error) {
                 console.error("Error fetching PDFs:", error)
@@ -61,13 +55,11 @@ const Recents: React.FC = () => {
     const handleViewMore = async () => {
         try {
             setLoading(true)
-            const res = await fetch(`/api/getAll`) // fetch all
+            const res = await fetch(`/api/getAll`)
             const data: Pdf[] = await res.json()
             data.forEach(pdf => {
-                if (pdf.htmlContent === '') {
-                    handleDelete(pdf.id)
-                }
-            });
+                if (pdf.htmlContent === '') handleDelete(pdf.id)
+            })
             setPdfs(data)
             setViewMore(true)
         } catch (err) {
@@ -90,116 +82,149 @@ const Recents: React.FC = () => {
                 throw new Error(err.error || "Failed to delete")
             }
 
-            if (pdfName) {
-                toast.success(`${pdfName} deleted`)
-            }
-            setPdfs((prev) => prev.filter((p) => p.id !== pdfId))
+            if (pdfName) toast.success(`${pdfName} deleted`)
+            setPdfs(prev => prev.filter(p => p.id !== pdfId))
         } catch (error) {
             console.error("Error deleting PDF:", error)
             toast.error("Failed to delete PDF")
         }
     }
 
-    // Skeleton loader
     if (loading)
         return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-                {Array.from({ length: 8 }).map((_, i) => (
-                    <div key={i} className="p-4 rounded-xl border border-border shadow-sm flex flex-col gap-3 overflow-hidden relative bg-card">
-                        <div className="h-6 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
-                        <div className="h-6 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
-                        <div className="h-4 w-1/2 rounded bg-muted relative overflow-hidden animte-pulse" />
-                    </div>
-                ))}
+            <div className='space-y-4'>
+                <motion.h2
+                    className="text-lg font-semibold text-primary"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                    Recent PDFs
+                </motion.h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    {Array.from({ length: 8 }).map((_, i) => (
+                        <div key={i} className="p-4 rounded-xl border border-border shadow-sm flex flex-col gap-3 overflow-hidden relative bg-card">
+                            <div className="h-6 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
+                            <div className="h-6 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
+                            <div className="h-4 w-1/2 rounded bg-muted relative overflow-hidden animate-pulse" />
+                        </div>
+                    ))}
+                </div>
             </div>
         )
 
-    // Empty state
     if (pdfs.length === 0)
         return (
-            <div className="flex flex-col items-center justify-center text-center p-10 border rounded-xl bg-muted/30">
-                <FileText className="w-12 h-12 text-muted-foreground mb-3" />
-                <p className="text-lg font-medium">No PDFs yet</p>
-                <p className="text-sm text-muted-foreground">Create or upload one to get started!</p>
+            <div className='space-y-4'>
+                <motion.h2
+                    className="text-lg font-semibold text-primary"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                    Recent PDFs
+                </motion.h2>
+                <div className="flex flex-col items-center justify-center text-center p-10 border rounded-xl bg-muted/30">
+                    <FileText className="w-12 h-12 text-muted-foreground mb-3" />
+                    <p className="text-lg font-medium">No PDFs yet</p>
+                    <p className="text-sm text-muted-foreground">Create or upload one to get started!</p>
+                </div>
             </div>
         )
 
     return (
-        <div className="flex flex-col gap-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-7">
-                {pdfs.map((pdf) => (
-                    <Card
-                        key={pdf.id}
-                        onClick={() => router.push(`/edit/${pdf.id}`)}
-                        className="flex flex-col rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
-                    >
-                        <CardHeader className="flex flex-row items-start justify-between gap-3">
-                            <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
-                                <FileText className="w-4 h-4 text-primary/80 shrink-0" />
-                                {pdf.fileName}
-                            </CardTitle>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        size="icon"
-                                        variant="ghost"
-                                        className="group text-destructive hover:bg-destructive/10 cursor-pointer "
-                                        onClick={(e) => e.stopPropagation()} // prevent card click
-                                    >
-                                        <Trash2 className="w-4 h-4 group-hover:animate-wiggle" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete PDF</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete{" "}
-                                            <strong>{pdf.fileName}</strong>? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>
-                                            Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                            className="bg-destructive hover:bg-destructive/80 cursor-pointer"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                handleDelete(pdf.id, pdf.fileName)
-                                            }}
-                                        >
-                                            Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </CardHeader>
+        <div className='space-y-4'>
 
-                        <CardContent className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
-                            <Calendar className="w-3.5 h-3.5" />
-                            {pdf.createdAt
-                                ? `Created: ${new Date(pdf.createdAt).toLocaleDateString(
-                                    undefined,
-                                    { day: "2-digit", month: "short", year: "numeric" }
-                                )}`
-                                : "Created: N/A"}
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
+            <motion.h2
+                className="text-lg font-semibold text-primary"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+            >
+                Recent PDFs
+            </motion.h2>
+            <div className="flex flex-col gap-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-7">
+                    <AnimatePresence>
+                        {pdfs.map((pdf, idx) => (
+                            <motion.div
+                                key={pdf.id}
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                transition={{ delay: idx * 0.05, duration: 0.1, type: 'spring', stiffness: 300 }}
+                                whileHover={{ scale: 1.02, transition: { type: 'spring', stiffness: 400 } }}
+                            >
+                                <Card
+                                    onClick={() => router.push(`/edit/${pdf.id}`)}
+                                    className="flex flex-col rounded-xl border shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/40"
+                                >
+                                    <CardHeader className="flex flex-row items-start justify-between gap-3">
+                                        <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
+                                            <FileText className="w-4 h-4 text-primary/80 shrink-0" />
+                                            {pdf.fileName}
+                                        </CardTitle>
 
-            {!viewMore && pdfs.length >= 8 && (
-                <div className="flex justify-center">
-                    <Button
-                        onClick={handleViewMore}
-                        variant="outline"
-                        className="cursor-pointer px-6 py-2 rounded-lg transition-colors"
-                        disabled={loading}
-                    >
-                        {loading ? "Loading..." : "View More"}
-                    </Button>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button
+                                                    size="icon"
+                                                    variant="ghost"
+                                                    className="group text-destructive hover:bg-destructive/10 cursor-pointer"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
+                                                    <Trash2 className="w-4 h-4 group-hover:animate-wiggle" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+
+                                            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Are you sure you want to delete <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction
+                                                        className="bg-destructive hover:bg-destructive/80 cursor-pointer"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            handleDelete(pdf.id, pdf.fileName)
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </CardHeader>
+
+                                    <CardContent className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
+                                        <Calendar className="w-3.5 h-3.5" />
+                                        {pdf.createdAt
+                                            ? `Created: ${new Date(pdf.createdAt).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })}`
+                                            : "Created: N/A"}
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
-            )}
+
+                {!viewMore && pdfs.length >= 8 && (
+                    <div className="flex justify-center">
+                        <Button
+                            onClick={handleViewMore}
+                            variant="outline"
+                            className="cursor-pointer px-6 py-2 rounded-lg transition-colors hover:bg-primary/10"
+                            disabled={loading}
+                        >
+                            {loading ? "Loading..." : "View More"}
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
