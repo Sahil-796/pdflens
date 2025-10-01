@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from 'next/link'
 import { Input } from '@/components/ui/input'
-import { Loader2 } from 'lucide-react'
+import { Loader2, X } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 interface Pdf {
     id: string
@@ -12,14 +13,16 @@ interface Pdf {
     url: string
 }
 
-export default function PdfSearch() {
+export default function SearchBar() {
     const [query, setQuery] = useState('')
     const [pdfs, setPdfs] = useState<Pdf[]>([])
     const [loading, setLoading] = useState(true)
     const [showList, setShowList] = useState(false)
+    const [selectedIndex, setSelectedIndex] = useState(0)
 
-    const containerRef = useRef<HTMLDivElement>(null)
+    const router = useRouter()
     const inputRef = useRef<HTMLInputElement>(null)
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([])
 
     // Fetch PDFs
     useEffect(() => {
@@ -38,28 +41,15 @@ export default function PdfSearch() {
         fetchPdfs()
     }, [])
 
-    // Close dropdown on outside click
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (
-                containerRef.current &&
-                !containerRef.current.contains(event.target as Node)
-            ) {
-                setShowList(false)
-            }
-        }
-        document.addEventListener('mousedown', handleClickOutside)
-        return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
-
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault()
-                inputRef.current?.focus()
                 setShowList(true)
+                setTimeout(() => inputRef.current?.focus(), 50)
             } else if (e.key === 'Escape') {
+                setQuery('')
                 setShowList(false)
             }
         }
@@ -73,7 +63,19 @@ export default function PdfSearch() {
         )
         : pdfs
 
-    if (loading) {
+    useEffect(() => setSelectedIndex(0), [filteredPdfs, showList])
+
+    // Scroll selected item into view
+    useEffect(() => {
+        if (selectedIndex >= 0 && itemRefs.current[selectedIndex]) {
+            itemRefs.current[selectedIndex]?.scrollIntoView({
+                block: 'nearest',
+                behavior: 'smooth',
+            })
+        }
+    }, [selectedIndex])
+
+    if (loading)
         return (
             <div className="flex items-center justify-center w-full">
                 <div className="relative w-full max-w-md">
@@ -89,59 +91,146 @@ export default function PdfSearch() {
                 </div>
             </div>
         )
-    }
 
     return (
-        <div className="w-full flex flex-col items-center relative" ref={containerRef}>
-            {/* Screen Blur Overlay */}
-            {showList && (
-                <div 
-                className="fixed inset-0 bg-background/60 backdrop-blur-xs z-10" 
-                onClick={()=> {
-                    setShowList(false)
-                    inputRef.current?.blur()
-                }}
-                />
-            )}
-
-            {/* Search Bar */}
-            <div className="relative z-20 w-full max-w-md">
-                <Input
-                    ref={inputRef}
-                    type="text"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => setShowList(true)}
-                    placeholder="Search PDFs"
-                    className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary"
-                />
-                {/* Shortcut Badge */}
+        <>
+            {/* Sidebar Search Input */}
+            <div className="relative w-7/8 mx-auto mt-2">
+                <motion.div whileFocus={{ scale: 1.02, boxShadow: '0px 5px 15px rgba(0,0,0,0.1)' }}>
+                    <Input
+                        ref={inputRef}
+                        type="text"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onFocus={() => setShowList(true)}
+                        placeholder="Search PDFs"
+                        className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary transition-all duration-200"
+                    />
+                </motion.div>
                 <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
                     ⌘ K
                 </span>
             </div>
 
-            {/* Dropdown Results */}
-            {showList && (
-                <div className="absolute z-30 mt-14 w-full max-w-md overflow-auto rounded-xl border border-border bg-card p-2 shadow-xl max-h-64">
-                    {filteredPdfs.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No PDFs found.</p>
-                    ) : (
-                        filteredPdfs.map((pdf) => (
-                            <Link key={pdf.id} href={`/edit/${pdf.id}`}>
-                                <div className="cursor-pointer rounded-md p-2 hover:bg-muted transition">
-                                    <p className="font-medium">{pdf.fileName}</p>
-                                    {pdf.createdAt && (
-                                        <p className="text-xs text-muted-foreground">
-                                            Created: {new Date(pdf.createdAt).toLocaleDateString()}
-                                        </p>
-                                    )}
-                                </div>
-                            </Link>
-                        ))
-                    )}
-                </div>
-            )}
-        </div>
+            {/* Modal Search */}
+            <AnimatePresence>
+                {showList && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-start justify-center bg-background/60 backdrop-blur-sm"
+                        onClick={() => {
+                            setShowList(false)
+                            setQuery('')
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0, y: -20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.95, opacity: 0, y: -20 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-full max-w-lg mt-32 rounded-xl border border-border bg-card shadow-2xl flex flex-col"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {/* Search Input */}
+                            <div className="relative p-4 border-b border-border shrink-0">
+                                <Input
+                                    autoFocus
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    placeholder="Search PDFs"
+                                    onKeyDown={(e) => {
+                                        if (!filteredPdfs.length) return
+                                        if (e.key === 'ArrowDown') {
+                                            e.preventDefault()
+                                            setSelectedIndex((prev) =>
+                                                prev < filteredPdfs.length - 1 ? prev + 1 : prev
+                                            )
+                                        } else if (e.key === 'ArrowUp') {
+                                            e.preventDefault()
+                                            setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev))
+                                        } else if (e.key === 'Enter') {
+                                            e.preventDefault()
+                                            const selectedPdf = filteredPdfs[selectedIndex]
+                                            if (selectedPdf) {
+                                                setShowList(false)
+                                                setQuery('')
+                                                router.push(`/edit/${selectedPdf.id}`)
+                                            }
+                                        }
+                                    }}
+                                    className="w-full rounded-xl border border-border bg-card pr-10 text-primary"
+                                />
+                                <motion.button
+                                    whileHover={{ scale: 1.2, rotate: 10 }}
+                                    onClick={() => {
+                                        setShowList(false)
+                                        setQuery('')
+                                    }}
+                                    className="absolute right-7 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary cursor-pointer"
+                                >
+                                    <X className="size-5" />
+                                </motion.button>
+                            </div>
+
+                            {/* Results */}
+                            <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={{
+                                    hidden: {},
+                                    visible: { transition: { staggerChildren: 0.03 } },
+                                }}
+                                className="max-h-[28rem] overflow-auto p-2 space-y-1"
+                            >
+                                {filteredPdfs.length === 0 ? (
+                                    <p className="text-sm text-muted-foreground px-2">
+                                        No PDFs found.
+                                    </p>
+                                ) : (
+                                    filteredPdfs.map((pdf, idx) => (
+                                        <motion.div
+                                            key={pdf.id}
+                                            ref={(el) => { itemRefs.current[idx] = el }}
+                                            tabIndex={0}
+                                            role="option"
+                                            aria-selected={idx === selectedIndex}
+                                            initial={{ opacity: 0, y: 5 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            whileHover={{ scale: 1.02, boxShadow: '0px 2px 8px rgba(0,0,0,0.1)' }}
+                                            transition={{ duration: 0.15 }}
+                                            className={`cursor-pointer rounded-md p-2 transition-colors ${idx === selectedIndex
+                                                    ? 'bg-muted text-primary'
+                                                    : 'hover:bg-muted'
+                                                }`}
+                                            onClick={() => {
+                                                setShowList(false)
+                                                setQuery('')
+                                                router.push(`/edit/${pdf.id}`)
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    setShowList(false)
+                                                    setQuery('')
+                                                    router.push(`/edit/${pdf.id}`)
+                                                }
+                                            }}
+                                        >
+                                            <p className="font-medium">{pdf.fileName}</p>
+                                            {pdf.createdAt && (
+                                                <p className="text-xs text-muted-foreground">
+                                                    Created: {new Date(pdf.createdAt).toLocaleDateString()}
+                                                </p>
+                                            )}
+                                        </motion.div>
+                                    ))
+                                )}
+                            </motion.div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </>
     )
 }

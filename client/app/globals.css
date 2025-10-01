@@ -653,23 +653,27 @@ body.X {
 
 @theme inline {
   --elegant-font: var(----elegant-font);
-  --animate-wiggle: wiggle 1s ease-in-out;
+  --animate-wiggle: wiggle 0.8s ease-in-out;
 
   @keyframes wiggle {
     0% {
       transform: rotate(0deg);
     }
 
-    25% {
-      transform: rotate(20deg);
+    20% {
+      transform: rotate(-15deg);
     }
 
-    50% {
-      transform: rotate(-20deg);
+    40% {
+      transform: rotate(15deg);
     }
 
-    85% {
-      transform: rotate(20deg);
+    60% {
+      transform: rotate(-10deg);
+    }
+
+    80% {
+      transform: rotate(10deg);
     }
 
     100% {

@@ -1,7 +1,6 @@
 import React from "react"
 import TitleNav from "@/components/bars/title-nav"
 import Recents from "@/components/dashboardPage/Recents"
-import PdfSearch from "@/components/dashboardPage/SearchBar"
 import Templates from "@/components/dashboardPage/Templates"
 
 export default function Dashboard() {
@@ -10,8 +9,6 @@ export default function Dashboard() {
     <div className="h-screen flex flex-col">
       <TitleNav text="Dashboard" />
       <div className="flex-1 overflow-y-scroll flex flex-col gap-6 p-4 text-foreground bg-background h-full">
-        {/* Search Section */}
-        <PdfSearch />
 
         <Templates />
 

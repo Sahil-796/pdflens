@@ -19,6 +19,7 @@ import {
 import LogoutButton from "../auth/logout-button"
 import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
+import SearchBar from "../dashboardPage/SearchBar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
@@ -75,6 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarHeader>
       <SidebarContent>
+        <SearchBar />
         <NavProjects projects={data.super} />
         <NavMain items={data.tools} />
       </SidebarContent>
