@@ -22,6 +22,7 @@ if not pc.has_index(INDEX_NAME):
     )
 index = pc.Index(INDEX_NAME)  
 
+embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-exp-03-07')
 embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
 
 from langchain_cloudflare import CloudflareWorkersAIEmbeddings

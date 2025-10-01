@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 import {
     Card,
@@ -21,7 +20,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
-import Skeleton from '@mui/material/Skeleton'
 import { FileText, Trash2, Calendar } from "lucide-react"
 import { useRouter } from 'next/navigation'
 
@@ -29,6 +27,7 @@ interface Pdf {
     id: string
     fileName: string
     createdAt: string | null
+    htmlContent: string
 }
 
 const Recents: React.FC = () => {
@@ -43,6 +42,11 @@ const Recents: React.FC = () => {
                 setLoading(true)
                 const res = await fetch(`/api/getAll?limit=${limit}`)
                 const data: Pdf[] = await res.json()
+                data.forEach(pdf => {
+                    if (pdf.htmlContent === '') {
+                        handleDelete(pdf.id)
+                    }
+                });
                 setPdfs(data)
             } catch (error) {
                 console.error("Error fetching PDFs:", error)
@@ -59,6 +63,11 @@ const Recents: React.FC = () => {
             setLoading(true)
             const res = await fetch(`/api/getAll`) // fetch all
             const data: Pdf[] = await res.json()
+            data.forEach(pdf => {
+                if (pdf.htmlContent === '') {
+                    handleDelete(pdf.id)
+                }
+            });
             setPdfs(data)
             setViewMore(true)
         } catch (err) {
@@ -68,7 +77,7 @@ const Recents: React.FC = () => {
         }
     }
 
-    const handleDelete = async (pdfId: string, pdfName: string) => {
+    const handleDelete = async (pdfId: string, pdfName?: string) => {
         try {
             const res = await fetch("/api/deletePdf", {
                 method: "POST",
@@ -81,7 +90,9 @@ const Recents: React.FC = () => {
                 throw new Error(err.error || "Failed to delete")
             }
 
-            toast.success(`${pdfName} deleted`)
+            if (pdfName) {
+                toast.success(`${pdfName} deleted`)
+            }
             setPdfs((prev) => prev.filter((p) => p.id !== pdfId))
         } catch (error) {
             console.error("Error deleting PDF:", error)
@@ -120,7 +131,7 @@ const Recents: React.FC = () => {
                     <Card
                         key={pdf.id}
                         onClick={() => router.push(`/edit/${pdf.id}`)}
-                        className="flex flex-col group rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
+                        className="flex flex-col rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
                     >
                         <CardHeader className="flex flex-row items-start justify-between gap-3">
                             <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
@@ -132,10 +143,10 @@ const Recents: React.FC = () => {
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                                        className="group text-destructive hover:bg-destructive/10 cursor-pointer "
                                         onClick={(e) => e.stopPropagation()} // prevent card click
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 className="w-4 h-4 group-hover:animate-wiggle" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent onClick={(e) => e.stopPropagation()}>

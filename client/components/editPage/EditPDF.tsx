@@ -18,7 +18,7 @@ const EditPlaceholder = () => (
 const SelectedTextView = ({ text }) => (
     <div className="text-sm text-muted-foreground border rounded-md p-3 bg-muted/20 shadow-sm">
         <p className="font-medium mb-1">Selected Text:</p>
-        <div className="p-2 rounded border bg-background max-h-32 overflow-y-auto">
+        <div className="p-2 rounded border bg-background max-h-42 overflow-y-auto">
             <p className="italic">{text}</p>
         </div>
     </div>
