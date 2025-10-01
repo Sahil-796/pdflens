@@ -175,7 +175,7 @@ const Generate = () => {
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-muted p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground mt-1">Filename can't be changed later</p>
+            <p className="text-xs text-muted-foreground mt-1">Filename can&apos;t be changed later</p>
           </div>
 
           {/* Prompt Textarea */}

@@ -44,7 +44,7 @@ export default function EditClient({ id }: { id: string }) {
                     router.push("/dashboard")
                 }
             } catch (err) {
-                toast.error("Error fetching PDF")
+                toast.error(err || "Error fetching PDF")
                 router.push('/dashboard')
             }
         }
