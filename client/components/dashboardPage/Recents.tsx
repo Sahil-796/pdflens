@@ -131,7 +131,7 @@ const Recents: React.FC = () => {
                     <Card
                         key={pdf.id}
                         onClick={() => router.push(`/edit/${pdf.id}`)}
-                        className="flex flex-col group rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
+                        className="flex flex-col rounded-xl border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/40 cursor-pointer"
                     >
                         <CardHeader className="flex flex-row items-start justify-between gap-3">
                             <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
@@ -143,10 +143,10 @@ const Recents: React.FC = () => {
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                                        className="group text-destructive hover:bg-destructive/10 cursor-pointer "
                                         onClick={(e) => e.stopPropagation()} // prevent card click
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 className="w-4 h-4 group-hover:animate-wiggle" />
                                     </Button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent onClick={(e) => e.stopPropagation()}>
