@@ -4,7 +4,7 @@ from .content_draft import create_draft
 from .refine_structure import refine_structure
 from .renderer import create_html
 from pydantic import BaseModel
-from app.config import index, embeddings, INDEX_NAME
+from app.config import index, cfEmbeddings, INDEX_NAME
 
 class PromptRequest(BaseModel):
     userPrompt: str
@@ -15,7 +15,7 @@ class PromptRequest(BaseModel):
 
 from langchain_pinecone import PineconeVectorStore
 vector_store = PineconeVectorStore(
-    embedding=embeddings,
+    embedding=cfEmbeddings,
     index=index
 )
 

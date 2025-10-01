@@ -6,7 +6,7 @@ import tempfile
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_pinecone import PineconeVectorStore
-from app.config import embeddings, INDEX_NAME
+from app.config import cfEmbeddings, INDEX_NAME
 
 router = APIRouter(prefix='/context', tags=["context"])
 
@@ -42,7 +42,7 @@ async def upload_context(
 
         vectorStore = PineconeVectorStore.from_documents(
             documents=chunks,
-            embedding=embeddings,
+            embedding=cfEmbeddings,
             index_name=INDEX_NAME
         )
 
