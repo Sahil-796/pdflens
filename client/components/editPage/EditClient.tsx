@@ -77,7 +77,7 @@ export default function EditClient({ id }: { id: string }) {
                     <EditPDF />
 
                     {/* Context Files */}
-                    <div className="max-h-35 bg-card border border-border rounded-xl p-4 shadow overflow-y-auto">
+                    <div className="max-h-46 bg-card border border-border rounded-xl p-4 shadow overflow-y-auto">
                         <h2 className="font-medium mb-2">Context Files</h2>
 
                         {loading ? (

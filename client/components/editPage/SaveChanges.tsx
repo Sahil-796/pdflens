@@ -37,7 +37,7 @@ const SaveChanges = () => {
             disabled={loading}
             className="group flex items-center bg-primary text-primary-foreground font-medium rounded-lg py-2 px-4 shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
         >
-            <Save className={`w-4 h-4 shrink-0 ${loading && 'animate-caret-blink'}`} />
+            <Save className={`w-4 h-4 shrink-0 group-hover:scale-120 transition-all duration-200 ${loading && 'animate-caret-blink scale-120'}`} />
 
             <span
                 className="ml-2 max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden"

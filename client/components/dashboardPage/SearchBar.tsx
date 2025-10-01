@@ -116,7 +116,7 @@ export default function PdfSearch() {
                     className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary"
                 />
                 {/* Shortcut Badge */}
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
+                <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
                     ⌘ K
                 </span>
             </div>
