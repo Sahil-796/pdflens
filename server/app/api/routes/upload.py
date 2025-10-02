@@ -1,116 +1,80 @@
 import os
+import tempfile
+import logging
 from fastapi import APIRouter, UploadFile, File, Form, Header
 from fastapi.responses import JSONResponse
-import logging
-logger = logging.getLogger(__name__)
-import tempfile
+from langchain.text_splitter import MarkdownTextSplitter
 from langchain_pinecone import PineconeVectorStore
-
 from app.config import cfEmbeddings, INDEX_NAME
+import pymupdf4llm  # for PDF → Markdown conversion
 
-import fitz  # this is  PyMuPDF
-from langchain.text_splitter import MarkdownHeaderTextSplitter 
-
-# from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix='/context', tags=["context"])
-
 
 @router.post('/upload')
 async def upload_context(
     secret1: str = Header(...),
     file: UploadFile = File(...),
     userId: str = Form(...),
-    pdfId: str = Form(...)
+    pdfId: str = Form(...),
 ):
-    try:      
 
-        await process_and_index_pdf(file, pdfId, userId)
+    contents = await file.read()
 
+    # Save temp file
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+    tmp_path = tmp_file.name
+    tmp_file.write(contents)
+    tmp_file.close()
+
+    try:
+        # Process PDF and index
+        process_and_index_pdf(tmp_path, file.filename, pdfId, userId)
         return {"message": "File uploaded and indexed"}
-    
     except Exception as e:
-        logger.error(
-            f"Error processing request for user {userId}: {str(e)}", 
-            exc_info=True
-        )
+        logger.error(f"Error processing PDF {pdfId}: {str(e)}", exc_info=True)
         return JSONResponse(status_code=500, content={"message": str(e)})
-    
+    finally:
+        # Ensure temp file is deleted
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
-    # PDF TO MD FUNCTION. It uses PYMUPDF. 
 
-async def process_and_index_pdf(file: UploadFile, pdfId: str, userId: str):
+def process_and_index_pdf(tmp_path, filename: str, pdfId: str, userId: str):
     """
-     A function to do the heavy lifting i.e split/chunk and index pdf by converting it to markdown.
-     did this to ensure formatting consistency as much as possible. 
-
+    Converts PDF → Markdown → chunks → Pinecone indexing.
     """
     try:
-        logger.info(f"Starting background processing for PDF: {pdfId}")
+        logger.info(f"Starting processing for PDF: {pdfId}")
 
-        extension = file.filename.split('.')[-1].lower()
+        # PDF → Markdown
+        md_text = pymupdf4llm.to_markdown(tmp_path)
 
-        if extension != "pdf":
-            return {"error": "Unsupported file type"}
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix=f".{extension}") as tmp:
-            contents = await file.read()
-            tmp.write(contents)
-            tmp_path = tmp.name
-        
-        # PDF to Markdown
-        doc = fitz.open(tmp_path)
-        markdown_text = ""
-        for page in doc:
-            markdown_text += page.get_text("markdown")
-        doc.close()
-
-        # chunk the markdown 
-        # This splitter is aware of Markdown headers and creates structured chunks.
-        headers_to_split_on = [
-            ("#", "Header 1"),
-            ("##", "Header 2"),
-            ("###", "Header 3"),
-        ]
-        
-        splitter = MarkdownHeaderTextSplitter(headers_to_split_on=headers_to_split_on)
-        md_chunks = splitter.split_text(markdown_text) 
-
+        # Split Markdown into manageable chunks
         chunk_size = 250
         chunk_overlap = 30
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=chunk_size, chunk_overlap=chunk_overlap
-        )
+        splitter = MarkdownTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+        docs = splitter.create_documents([md_text])
 
-        final_chunks = []
-        for chunk in md_chunks: 
-            if len(chunk) > chunk_size:
-                sub_chunks = text_splitter.split_documents([chunk])
-                final_chunks.extend(sub_chunks)
-            else:
-                final_chunks.append(chunk)
-
-        # langchain metadata updates
-        for i, chunk in enumerate(final_chunks):
-            chunk.metadata.update({
+        # Add metadata
+        for i, doc in enumerate(docs):
+            doc.metadata.update({
                 "pdfId": pdfId,
                 "userId": userId,
-                "filename": file.filename,
+                "filename": filename,
                 "chunkId": i
             })
 
+        # Index in Pinecone
         PineconeVectorStore.from_documents(
-            documents=final_chunks,
-            embedding=embeddings,
+            documents=docs,
+            embedding=cfEmbeddings,
             index_name=INDEX_NAME
         )
-        logger.info(f"Successfully indexed PDF via Markdown: {pdfId}")
+
+        logger.info(f"Successfully indexed PDF: {pdfId}")
 
     except Exception as e:
-        logger.error(f"Background task failed for pdfId {pdfId}: {str(e)}", exc_info=True)
-    finally:
-        # Clean up the temporary file
-        os.unlink(tmp_path)
+        logger.error(f"Failed processing PDF {pdfId}: {str(e)}", exc_info=True)
+        raise e
