@@ -26,6 +26,7 @@ import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { useUserStore } from "@/app/store/useUserStore"
+import { duration } from "drizzle-orm/gel-core"
 
 const formSchema = z.object({
     name: z.string().min(3, {
@@ -63,7 +64,6 @@ export function SignupForm({
             provider: "google",
             callbackURL: "/dashboard",
             errorCallbackURL: "/",
-            // errorCallbackURL: "/error",
             newUserCallbackURL: "/dashboard",
             disableRedirect: true,
         });
@@ -86,6 +86,7 @@ export function SignupForm({
                 userAvatar: image
             })
             toast.success("Signed Up Successfully")
+            toast.info("Please check your email to verify your account.", { duration: 10000 })
             router.push('/dashboard')
         } else {
             toast.error(error?.message || "Failed to sign up.")
