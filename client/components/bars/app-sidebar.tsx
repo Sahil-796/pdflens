@@ -19,6 +19,7 @@ import {
 import LogoutButton from "../auth/logout-button"
 import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
+import SearchBar from "../dashboardPage/SearchBar"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
@@ -63,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           { "title": "Merge PDF", "url": "/tools/merge-pdf" },
           { "title": "Split PDF", "url": "/tools/split-pdf" },
           { "title": "Organize Pages", "url": "/tools/organize-pdf" },
-          { "title": "Edit PDF", "url": "/tools/edit-pdf" }, // edit here -----
+          { "title": "Edit PDF", "url": "/tools/edit-pdf" },
         ]
       },
     ]
@@ -75,6 +76,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={data.user} />
       </SidebarHeader>
       <SidebarContent>
+        <SearchBar />
         <NavProjects projects={data.super} />
         <NavMain items={data.tools} />
       </SidebarContent>

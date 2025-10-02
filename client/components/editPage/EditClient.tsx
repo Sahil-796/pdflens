@@ -44,7 +44,7 @@ export default function EditClient({ id }: { id: string }) {
                     router.push("/dashboard")
                 }
             } catch (err) {
-                toast.error("Error fetching PDF")
+                toast.error(err || "Error fetching PDF")
                 router.push('/dashboard')
             }
         }
@@ -74,12 +74,10 @@ export default function EditClient({ id }: { id: string }) {
             <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
                 <div className='flex flex-col gap-6 w-1/3'>
-                    <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
                     <EditPDF />
-                    <SaveChanges />
 
                     {/* Context Files */}
-                    <div className="bg-card border border-border rounded-xl p-4 shadow">
+                    <div className="max-h-46 bg-card border border-border rounded-xl p-4 shadow overflow-y-auto">
                         <h2 className="font-medium mb-2">Context Files</h2>
 
                         {loading ? (
@@ -109,15 +107,21 @@ export default function EditClient({ id }: { id: string }) {
                     </div>
                 </div>
 
-                <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 30 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
-                >
-                    <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
-                </motion.div>
+                <div className='flex-1 flex flex-col gap-4'>
+                    <div className='flex items-center justify-between gap-3 px-10'>
+                        <SaveChanges />
+                        <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 30 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
+                    >
+                        <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
+                    </motion.div>
+                </div>
             </div>
         </div>
     )

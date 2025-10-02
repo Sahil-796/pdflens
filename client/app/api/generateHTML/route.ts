@@ -41,26 +41,25 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 userId,
                 userPrompt,
-                pdfId, 
+                pdfId,
                 isContext
             })
         })
         if (!res.ok) {
-            let errorBody: any = {};
             try {
-                errorBody = await res.json();
+                const body = await res.json();
+                return NextResponse.json(
+                    { error: body.message || "Python API failed" },
+                    { status: res.status }
+                );
             } catch {
                 // in case Python returns non-JSON error
 
             }
+        }
 
-        return NextResponse.json(
-            { error: errorBody.message || "Python API failed" },
-            { status: res.status }
-        );}
-        
         const data = await res.json()
-        return NextResponse.json({data, creditsLeft, status: 200})
+        return NextResponse.json({ data, creditsLeft, status: 200 })
 
     } catch (err) {
         console.log("API Error:", err)
@@ -72,8 +71,8 @@ export async function POST(req: Request) {
             )
         }
         return NextResponse.json(
-        { success: false, message: err.message || "Internal Server Error" },
-        { status: 500 }
-    );
+            { success: false, message: err.message || "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

@@ -1,7 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
 
-import { Loader2, LogOut, UserIcon } from "lucide-react"
+import { Loader2, LogOut } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {

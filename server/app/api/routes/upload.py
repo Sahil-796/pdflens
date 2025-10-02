@@ -5,12 +5,15 @@ import logging
 logger = logging.getLogger(__name__)
 import tempfile
 from langchain_pinecone import PineconeVectorStore
-from app.config import embeddings, INDEX_NAME
+
+from app.config import cfEmbeddings, INDEX_NAME
+
 import fitz  # this is  PyMuPDF
 from langchain.text_splitter import MarkdownHeaderTextSplitter 
 
 # from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 
 
 router = APIRouter(prefix='/context', tags=["context"])

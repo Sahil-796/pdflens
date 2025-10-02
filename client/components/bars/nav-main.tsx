@@ -40,7 +40,7 @@ export function NavMain({
           <Collapsible
             key={item.title}
             asChild
-            defaultOpen={item.isActive}
+            defaultOpen={true} // change to item.isActive to keep open if active
             className="group/collapsible group-data-[collapsible=icon]:hidden"
           >
             <SidebarMenuItem>

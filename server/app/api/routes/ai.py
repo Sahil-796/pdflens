@@ -33,7 +33,7 @@ async def generate(req: PromptRequest, secret1: str = Header(...)):
 
     try:
         html = await workflow(req)
-        return {"html": html}
+        return html
     
     except ValueError as ve:
         logger.error(f"Validation error: {str(ve)}", exc_info=True)

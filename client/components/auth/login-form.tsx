@@ -45,7 +45,7 @@ export function LoginForm({
   const router = useRouter()
 
   const { setUser, userId } = useUserStore()
-  if (userId) router.push('/dashboard')
+  // if (userId) router.push('/dashboard')
 
   const { data: session, isPending } = authClient.useSession()
 

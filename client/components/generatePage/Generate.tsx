@@ -108,7 +108,7 @@ const Generate = () => {
 
   const handleSend = async () => {
     if (!input.trim()) {
-      toast.error("Prompt cannot be empty️")
+      toast.error("Prompt cannot be empty")
       return
     }
     setLoading(true)
@@ -158,13 +158,13 @@ const Generate = () => {
 
   return (
     <div className="flex h-full p-4 text-foreground bg-background">
-      <div className="relative flex w-full flex-col gap-6 rounded-xl border border-border bg-card p-6 shadow-lg">
+      <div className="relative flex-1 flex w-full flex-col gap-6 rounded-xl border border-border bg-card p-6 shadow-lg">
         <motion.div
           key="initial"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="flex flex-col gap-6"
+          className="flex flex-col flex-1 gap-6"
         >
           {/* File Name Input */}
           <div className="relative">
@@ -175,24 +175,19 @@ const Generate = () => {
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-muted p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground mt-1">Filename can't be changed later</p>
+            <p className="text-xs text-muted-foreground mt-1">Filename can&apos;t be changed later</p>
           </div>
 
           {/* Prompt Textarea */}
-          <div className="relative">
-            <textarea
-              id="inputMessage"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Describe what you want..."
-              className="h-40 w-full resize-none rounded-md border border-border bg-muted p-3 
+          <textarea
+            id="inputMessage"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Describe what you want..."
+            className="flex-1 max-h-68 w-full resize-none rounded-md border border-border bg-muted p-3 
                          text-foreground placeholder-muted-foreground 
                          focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <span className="absolute bottom-2 right-3 text-xs text-muted-foreground">
-              {input.length}/500
-            </span>
-          </div>
+          />
 
           {/* Generate Button */}
           <button
