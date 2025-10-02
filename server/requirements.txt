@@ -12,3 +12,4 @@ bs4
 markdown-it-py
 pydantic
 pypdf
+langchain-cloudflare
