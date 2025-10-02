@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
-import { Loader2, X } from 'lucide-react'
+import { Loader2, Search, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { useSidebar } from '../ui/sidebar'
 
 interface Pdf {
     id: string
@@ -23,6 +24,7 @@ export default function SearchBar() {
     const router = useRouter()
     const inputRef = useRef<HTMLInputElement>(null)
     const itemRefs = useRef<(HTMLDivElement | null)[]>([])
+    const { state } = useSidebar()
 
     // Fetch PDFs
     useEffect(() => {
@@ -95,22 +97,35 @@ export default function SearchBar() {
     return (
         <>
             {/* Sidebar Search Input */}
-            <div className="relative w-7/8 mx-auto mt-2">
-                <motion.div whileFocus={{ scale: 1.02, boxShadow: '0px 5px 15px rgba(0,0,0,0.1)' }}>
-                    <Input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onFocus={() => setShowList(true)}
-                        placeholder="Search PDFs"
-                        className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary transition-all duration-200"
-                    />
-                </motion.div>
-                <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
-                    ⌘ K
-                </span>
-            </div>
+            {
+                state === 'collapsed' ?
+                    <div
+                        className="mt-2 mx-auto cursor-pointer h-10 w-10 flex items-center justify-center rounded-lg hover:bg-accent"
+                        onClick={() => {
+                            setShowList(true)
+                            setTimeout(() => inputRef.current?.focus(), 50)
+                        }}
+                    >
+                        <Search className="size-4 text-white" />
+                    </div>
+                    :
+                    <div className="relative w-7/8 mx-auto mt-2">
+                        <motion.div whileFocus={{ scale: 1.02, boxShadow: '0px 5px 15px rgba(0,0,0,0.1)' }}>
+                            <Input
+                                ref={inputRef}
+                                type="text"
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onFocus={() => setShowList(true)}
+                                placeholder="Search PDFs"
+                                className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary transition-all duration-200"
+                            />
+                        </motion.div>
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
+                            ⌘ K
+                        </span>
+                    </div>
+            }
 
             {/* Modal Search */}
             <AnimatePresence>

@@ -17,14 +17,9 @@ const LogoutButton = () => {
     const handleLogout = async () => {
         try {
             setIsLoading(true)
-            await authClient.signOut({
-                fetchOptions: {
-                    onSuccess: () => {
-                        router.push("/");
-                    },
-                },
-            });
+            await authClient.signOut()
             clearUser()
+            router.push('/')
         } finally {
             setIsLoading(false)
         }
