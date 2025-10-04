@@ -22,7 +22,7 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
-        requireEmailVerification: true,
+        // requireEmailVerification: true,
     },
     socialProviders: {
         google: {
@@ -39,7 +39,7 @@ export const auth = betterAuth({
                 react: EmailVerification({ userEmail: user.email!, emailUrl: url }),
             });
         },
-        sendOnSignUp: true,
+        // sendOnSignUp: true,
     },
     session: {
         expiresIn: 60 * 60 * 24 * 7,
