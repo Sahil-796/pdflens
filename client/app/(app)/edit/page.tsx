@@ -1,5 +1,5 @@
 import TitleNav from '@/components/bars/title-nav'
-import Recents from '@/components/dashboardPage/Recents'
+import PdfSelector from '@/components/shared/PdfSelector'
 import React from 'react'
 
 const Page = () => {
@@ -15,7 +15,7 @@ const Page = () => {
                         Select one of your recent PDFs below to continue editing, or create a new one from the dashboard.
                     </p>
                     <div className="flex-1 overflow-y-scroll p-2">
-                        <Recents />
+                        <PdfSelector />
                     </div>
                 </div>
             </div>

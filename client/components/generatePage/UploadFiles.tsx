@@ -126,77 +126,73 @@ export default function UploadFiles() {
     }
 
     return (
-        <div className="w-full">
-            <label className="block font-medium mb-2">Upload Files</label>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between">
+                <label className="text-sm font-medium">Reference Files</label>
+                <span className="text-xs text-muted-foreground">{files.length} uploaded</span>
+            </div>
 
+            {/* Drag & Drop Area */}
             <div
-                className={`flex gap-4 transition-all duration-200 
-      ${files.length > 0 ? "flex-row" : "flex-col"} 
-    `}
+                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition
+                    ${dragActive ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"}
+                    ${loading ? "opacity-50 cursor-wait" : ""}
+                `}
+                onDragOver={(e) => {
+                    if (!loading) {
+                        e.preventDefault();
+                        setDragActive(true);
+                    }
+                }}
+                onDragLeave={() => {
+                    if (!loading) setDragActive(false);
+                }}
+                onDrop={handleDrop}
+                onClick={() => {
+                    if (!loading) document.getElementById("fileInput")?.click();
+                }}
             >
-                {/* Drag & Drop Area */}
-                <div
-                    className={`flex-1 min-w-0 border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition
-        ${dragActive ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:bg-muted/50"}
-        ${loading ? "opacity-50 cursor-wait" : ""}
-      `}
-                    onDragOver={(e) => {
-                        if (!loading) {
-                            e.preventDefault();
-                            setDragActive(true);
-                        }
-                    }}
-                    onDragLeave={() => {
-                        if (!loading) setDragActive(false);
-                    }}
-                    onDrop={handleDrop}
-                    onClick={() => {
-                        if (!loading) document.getElementById("fileInput")?.click();
-                    }}
-                >
-                    <div className="h-full w-full flex flex-col items-center justify-center">
-                        <Upload className={`mx-auto mb-2 text-muted-foreground ${loading && 'animate-bounce'}`} size={32} />
-                        <p className="text-sm text-muted-foreground">
-                            Drag & drop a file here, or{" "}
-                            <span className="text-primary font-medium">browse</span>
-                        </p>
-                        <input
-                            disabled={loading}
-                            id="fileInput"
-                            type="file"
-                            className="hidden"
-                            onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
-                        />
-                    </div>
-                </div>
+                <Upload className={`mx-auto mb-2 text-muted-foreground ${loading && 'animate-bounce'}`} size={24} />
+                <p className="text-sm text-muted-foreground">
+                    {loading ? "Uploading..." : "Drop files here or click to browse"}
+                </p>
+                <input
+                    disabled={loading}
+                    id="fileInput"
+                    type="file"
+                    className="hidden"
+                    onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
+                />
+            </div>
 
-                {/* Files List */}
-                {files.length > 0 && (
-                    <ul className="flex-1 min-w-0 max-h-56 overflow-auto space-y-2 text-sm text-muted-foreground border rounded-md p-2 bg-muted/30">
+            {/* Files List */}
+            {files.length > 0 && (
+                <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Uploaded Files:</h4>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
                         {files.map((fileItem, idx) => (
-                            <li
+                            <div
                                 key={idx}
-                                className="flex items-center justify-between truncate"
+                                className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm"
                             >
                                 <span className="flex items-center gap-2 truncate">
                                     📄 <span className="truncate">{fileItem.name}</span>
                                 </span>
                                 <button
                                     onClick={() => removeFile(fileItem.name, idx)}
-                                    className="bg-destructive/10 hover:bg-destructive/20 text-destructive p-1 rounded-full transition"
+                                    className="text-destructive hover:bg-destructive/10 p-1 rounded transition"
                                 >
-                                    {
-                                        isRemoving ?
-                                            <LoaderCircle size={16} className="animate-spin" />
-                                            :
-                                            <X size={16} />
-                                    }
+                                    {isRemoving ? (
+                                        <LoaderCircle size={14} className="animate-spin" />
+                                    ) : (
+                                        <X size={14} />
+                                    )}
                                 </button>
-                            </li>
+                            </div>
                         ))}
-                    </ul>
-                )}
-            </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
