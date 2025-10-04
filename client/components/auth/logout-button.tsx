@@ -11,8 +11,7 @@ import { useUserStore } from '@/app/store/useUserStore'
 const LogoutButton = () => {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    const { state } = useSidebar()
-    const {clearUser} = useUserStore()
+    const { clearUser } = useUserStore()
 
     const handleLogout = async () => {
         try {
@@ -30,7 +29,7 @@ const LogoutButton = () => {
             variant="destructive"
             onClick={handleLogout}
             disabled={isLoading}
-            className="flex items-center m-2 gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
+            className="w-full flex items-center mt-2 gap-2 px-4 py-2 rounded-lg font-medium transition-colors duration-200 cursor-pointer"
         >
             {isLoading ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -38,9 +37,7 @@ const LogoutButton = () => {
                 <LogOut className="size-4" />
             )}
 
-            {state === 'expanded' && (
-                <span>{isLoading ? 'Logging out...' : 'Logout'}</span>
-            )}
+            <span>{isLoading ? 'Logging out...' : 'Logout'}</span>
         </Button>
     )
 }

@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  FileSearch,
   LayoutGrid,
   Pen,
   Plus,
@@ -13,17 +14,23 @@ import { NavUser } from "@/components/bars/nav-user"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
-import LogoutButton from "../auth/logout-button"
 import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 import SearchBar from "../dashboardPage/SearchBar"
+import { cn } from "@/lib/utils"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
   const { userName, userEmail, userAvatar } = useUserStore()
+  const { state } = useSidebar();
   const data = {
     user: {
       name: userName || 'Loading',
@@ -69,19 +76,69 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
     ]
   }
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavUser user={data.user} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className={cn(
+                "group/header relative",
+                "hover:bg-sidebar-accent/50 transition-all duration-200",
+                isCollapsed ? "justify-center px-2" : "px-3"
+              )}
+              tooltip={isCollapsed ? "Flowt" : undefined}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-3 transition-all duration-200",
+                  isCollapsed && "justify-center"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex items-center justify-center rounded-lg",
+                    "bg-gradient-to-br from-primary to-primary/80",
+                    "text-primary-foreground shadow-sm",
+                    "transition-all duration-200",
+                    "group-hover/header:shadow-md group-hover/header:scale-105",
+                    isCollapsed ? "size-8" : "size-9"
+                  )}
+                >
+                  <FileSearch
+                    className={cn(
+                      "transition-all duration-200",
+                      isCollapsed ? "size-4" : "size-5"
+                    )}
+                  />
+                </div>
+                {!isCollapsed && (
+                  <div className="flex flex-col">
+                    <span className="text-base font-bold tracking-tight">
+                      PDF Lens
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      AI PDF Assistant
+                    </span>
+                  </div>
+                )}
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <SearchBar />
         <NavProjects projects={data.super} />
         <NavMain items={data.tools} />
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
       <SidebarRail />
-      <LogoutButton />
     </Sidebar>
   )
 }

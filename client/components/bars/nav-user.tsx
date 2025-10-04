@@ -27,6 +27,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import ThemeStyle from "../theme/ThemeStyle"
+import LogoutButton from "../auth/logout-button"
 
 
 export function NavUser({
@@ -92,7 +93,7 @@ export function NavUser({
             <DropdownMenuSeparator />
 
             {/* Theme Options */}
-            <DropdownMenuGroup className="flex items-center justify-between " asChild>
+            <DropdownMenuGroup className="flex items-center justify-between" asChild>
 
               <div>
                 <span className="text-sm ml-3">Style:</span>
@@ -100,6 +101,9 @@ export function NavUser({
               </div>
             </DropdownMenuGroup>
 
+            <DropdownMenuGroup className="w-full">
+              <LogoutButton />
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
