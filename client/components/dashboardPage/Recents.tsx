@@ -14,8 +14,16 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+    Empty,
+    EmptyContent,
+    EmptyDescription,
+    EmptyHeader,
+    EmptyMedia,
+    EmptyTitle,
+} from "@/components/ui/empty"
 import { toast } from "sonner"
-import { FileText, Trash2, Calendar } from "lucide-react"
+import { FileText, Trash2, Calendar, Plus } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -113,23 +121,24 @@ const Recents: React.FC = () => {
             </div>
         )
 
-    if (pdfs.length === 0)
+    if (pdfs.length !== 0)
         return (
-            <div className='space-y-4'>
-                <motion.h2
-                    className="text-lg font-semibold text-primary"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                >
-                    Recent PDFs
-                </motion.h2>
-                <div className="flex flex-col items-center justify-center text-center p-10 border rounded-xl bg-muted/30">
-                    <FileText className="w-12 h-12 text-muted-foreground mb-3" />
-                    <p className="text-lg font-medium">No PDFs yet</p>
-                    <p className="text-sm text-muted-foreground">Create or upload one to get started!</p>
-                </div>
-            </div>
+            <Empty>
+                <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                        <FileText className="size-10 text-muted-foreground p-2" />
+                    </EmptyMedia>
+                    <EmptyTitle>No PDFs Yet</EmptyTitle>
+                    <EmptyDescription>
+                        Create or upload one to get started!
+                    </EmptyDescription>
+                </EmptyHeader>
+                <EmptyContent>
+                    <div className="flex gap-2 cursor-pointer">
+                        <Button onClick={() => router.push('/generate')}><Plus /> Create PDF</Button>
+                    </div>
+                </EmptyContent>
+            </Empty>
         )
 
     return (
