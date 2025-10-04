@@ -27,7 +27,7 @@ export const usePdfStore = create<PdfState>(set => ({
   originalHtml: '',
   setOriginalHtml: (html) => set({ originalHtml: html }),
   pdfId: null,
-  fileName: "",
+  fileName: "Untitled",
   htmlContent: "",
   isContext: false,
   setPdf: (data) => set((state) => ({ ...state, ...data })),

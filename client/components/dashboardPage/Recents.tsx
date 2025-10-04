@@ -100,28 +100,30 @@ const Recents: React.FC = () => {
 
     if (loading)
         return (
-            <div className='space-y-4'>
-                <motion.h2
-                    className="text-lg font-semibold text-primary"
+            <div className='space-y-6'>
+                <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                    Recent PDFs
-                </motion.h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+                    <h2 className="text-xl font-semibold text-foreground">Recent PDFs</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Your recently created and edited documents</p>
+                </motion.div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {Array.from({ length: 8 }).map((_, i) => (
-                        <div key={i} className="p-4 rounded-xl border border-border shadow-sm flex flex-col gap-3 overflow-hidden relative bg-card">
-                            <div className="h-6 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
-                            <div className="h-6 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
-                            <div className="h-4 w-1/2 rounded bg-muted relative overflow-hidden animate-pulse" />
+                        <div key={i} className="h-28 rounded-lg border border-border bg-card p-4 flex flex-col justify-between">
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-md bg-muted animate-pulse" />
+                                <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
+                            </div>
+                            <div className="h-3 w-1/2 rounded bg-muted animate-pulse" />
                         </div>
                     ))}
                 </div>
             </div>
         )
 
-    if (pdfs.length !== 0)
+    if (pdfs.length === 0)
         return (
             <Empty>
                 <EmptyHeader>
@@ -142,78 +144,91 @@ const Recents: React.FC = () => {
         )
 
     return (
-        <div className='space-y-4'>
-
-            <motion.h2
-                className="text-lg font-semibold text-primary"
+        <div className='space-y-6'>
+            <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
             >
-                Recent PDFs
-            </motion.h2>
-            <div className="flex flex-col gap-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 md:gap-7">
+                <h2 className="text-xl font-semibold text-foreground">Recent PDFs</h2>
+                <p className="text-sm text-muted-foreground mt-1">Your recently created and edited documents</p>
+            </motion.div>
+
+            <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <AnimatePresence>
                         {pdfs.map((pdf, idx) => (
                             <motion.div
                                 key={pdf.id}
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                                transition={{ delay: idx * 0.05, duration: 0.1, type: 'spring', stiffness: 300 }}
-                                whileHover={{ scale: 1.02, transition: { type: 'spring', stiffness: 400 } }}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ delay: idx * 0.03, duration: 0.2, ease: "easeOut" }}
+                                whileHover={{ y: -2 }}
                             >
                                 <Card
                                     onClick={() => router.push(`/edit/${pdf.id}`)}
-                                    className="flex flex-col rounded-xl border shadow-sm cursor-pointer transition-all duration-200 hover:shadow-md hover:border-primary/40"
+                                    className="group h-28 border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer"
                                 >
-                                    <CardHeader className="flex flex-row items-start justify-between gap-3">
-                                        <CardTitle className="truncate flex items-center gap-2 text-primary text-sm sm:text-base">
-                                            <FileText className="w-4 h-4 text-primary/80 shrink-0" />
-                                            {pdf.fileName}
-                                        </CardTitle>
+                                    <CardContent className="p-4 h-full flex flex-col justify-between">
+                                        <div className="flex items-start justify-between gap-2">
+                                            <div className="flex items-center gap-2 min-w-0 flex-1">
+                                                <div className="p-1.5 rounded-md bg-muted/50 group-hover:bg-muted transition-colors">
+                                                    <FileText className="w-4 h-4 text-primary" />
+                                                </div>
+                                                <div className="min-w-0 flex-1">
+                                                    <h3 className="font-medium text-sm text-foreground truncate">
+                                                        {pdf.fileName}
+                                                    </h3>
+                                                </div>
+                                            </div>
 
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button
-                                                    size="icon"
-                                                    variant="ghost"
-                                                    className="group text-destructive hover:bg-destructive/10 cursor-pointer"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                >
-                                                    <Trash2 className="w-4 h-4 group-hover:animate-wiggle" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-
-                                            <AlertDialogContent onClick={(e) => e.stopPropagation()}>
-                                                <AlertDialogHeader>
-                                                    <AlertDialogTitle>Delete PDF</AlertDialogTitle>
-                                                    <AlertDialogDescription>
-                                                        Are you sure you want to delete <strong>{pdf.fileName}</strong>? This action cannot be undone.
-                                                    </AlertDialogDescription>
-                                                </AlertDialogHeader>
-                                                <AlertDialogFooter>
-                                                    <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
-                                                    <AlertDialogAction
-                                                        className="bg-destructive hover:bg-destructive/80 cursor-pointer"
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            handleDelete(pdf.id, pdf.fileName)
-                                                        }}
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button
+                                                        size="icon"
+                                                        variant="ghost"
+                                                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                                                        onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        Delete
-                                                    </AlertDialogAction>
-                                                </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
-                                    </CardHeader>
+                                                        <Trash2 className="w-3.5 h-3.5" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
 
-                                    <CardContent className="mt-auto flex items-center gap-2 text-xs text-muted-foreground">
-                                        <Calendar className="w-3.5 h-3.5" />
-                                        {pdf.createdAt
-                                            ? `Created: ${new Date(pdf.createdAt).toLocaleDateString(undefined, { day: "2-digit", month: "short", year: "numeric" })}`
-                                            : "Created: N/A"}
+                                                <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Are you sure you want to delete <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction
+                                                            className="bg-destructive hover:bg-destructive/80"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                handleDelete(pdf.id, pdf.fileName)
+                                                            }}
+                                                        >
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
+
+                                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                            <Calendar className="w-3 h-3" />
+                                            <span>
+                                                {pdf.createdAt
+                                                    ? new Date(pdf.createdAt).toLocaleDateString(undefined, { 
+                                                        day: "2-digit", 
+                                                        month: "short" 
+                                                    })
+                                                    : "N/A"}
+                                            </span>
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </motion.div>
@@ -222,11 +237,11 @@ const Recents: React.FC = () => {
                 </div>
 
                 {!viewMore && pdfs.length >= 8 && (
-                    <div className="flex justify-center">
+                    <div className="flex justify-center pt-2">
                         <Button
                             onClick={handleViewMore}
                             variant="outline"
-                            className="cursor-pointer px-6 py-2 rounded-lg transition-colors hover:bg-primary/10"
+                            className="px-6 py-2 rounded-lg hover:bg-muted transition-colors"
                             disabled={loading}
                         >
                             {loading ? "Loading..." : "View More"}

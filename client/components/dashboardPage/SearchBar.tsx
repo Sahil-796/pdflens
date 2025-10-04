@@ -79,16 +79,16 @@ export default function SearchBar() {
 
     if (loading)
         return (
-            <div className="flex items-center justify-center w-7/8 mx-auto mt-2">
-                <div className="relative w-full max-w-md">
+            <div className="px-2 py-2">
+                <div className="relative">
                     <Input
                         type="text"
                         placeholder="Loading PDFs..."
                         disabled
-                        className="w-full rounded-xl border-border text-muted-foreground bg-card shadow-sm cursor-not-allowed"
+                        className="w-full h-8 rounded-md border-sidebar-border text-sidebar-foreground/60 bg-sidebar cursor-not-allowed"
                     />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <Loader2 className="animate-spin text-muted-foreground" />
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                        <Loader2 className="animate-spin size-4 text-sidebar-foreground/60" />
                     </div>
                 </div>
             </div>
@@ -97,35 +97,34 @@ export default function SearchBar() {
     return (
         <>
             {/* Sidebar Search Input */}
-            {
-                state === 'collapsed' ?
+            <div className="px-2 py-2">
+                {state === 'collapsed' ? (
                     <div
-                        className="mt-2 mx-auto cursor-pointer h-10 w-10 flex items-center justify-center rounded-lg hover:bg-accent"
+                        className="cursor-pointer h-8 w-8 flex items-center justify-center rounded-md hover:bg-sidebar-accent transition-colors"
                         onClick={() => {
                             setShowList(true)
                             setTimeout(() => inputRef.current?.focus(), 50)
                         }}
                     >
-                        <Search className="size-4 text-white" />
+                        <Search className="size-4 text-sidebar-foreground" />
                     </div>
-                    :
-                    <div className="relative w-7/8 mx-auto mt-2">
-                        <motion.div whileFocus={{ scale: 1.02, boxShadow: '0px 5px 15px rgba(0,0,0,0.1)' }}>
-                            <Input
-                                ref={inputRef}
-                                type="text"
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                onFocus={() => setShowList(true)}
-                                placeholder="Search PDFs"
-                                className="w-full rounded-xl border border-border bg-card shadow-md pr-20 text-primary transition-all duration-200"
-                            />
-                        </motion.div>
-                        <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground font-mono">
-                            ⌘ K
+                ) : (
+                    <div className="relative">
+                        <Input
+                            ref={inputRef}
+                            type="text"
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onFocus={() => setShowList(true)}
+                            placeholder="Search PDFs"
+                            className="w-full h-8 rounded-md border-sidebar-border bg-sidebar text-sidebar-foreground placeholder:text-sidebar-foreground/60 pr-16 focus:ring-2 focus:ring-sidebar-ring transition-all duration-200"
+                        />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 rounded bg-sidebar-accent px-1.5 py-0.5 text-xs text-sidebar-accent-foreground font-mono">
+                            ⌘K
                         </span>
                     </div>
-            }
+                )}
+            </div>
 
             {/* Modal Search */}
             <AnimatePresence>

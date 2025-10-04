@@ -187,6 +187,39 @@
   .selected {
     @apply bg-accent/30 rounded-md;
   }
+
+  /* Sidebar smooth transitions */
+  [data-slot="sidebar-wrapper"] {
+    transition: width 200ms ease-in-out;
+  }
+
+  [data-slot="sidebar-gap"] {
+    transition: width 200ms ease-in-out;
+  }
+
+  [data-slot="sidebar-container"] {
+    transition: left 200ms ease-in-out, right 200ms ease-in-out, width 200ms ease-in-out;
+  }
+
+  /* Prevent layout shifts */
+  [data-slot="sidebar-inset"] {
+    transition: margin-left 200ms ease-in-out, margin-right 200ms ease-in-out;
+  }
+
+  /* Smooth sidebar content transitions */
+  [data-sidebar="sidebar"] {
+    transition: all 200ms ease-in-out;
+  }
+
+  /* Prevent text overflow during transitions */
+  [data-sidebar="menu-button"] {
+    transition: all 200ms ease-in-out;
+  }
+
+  /* Smooth icon transitions */
+  [data-sidebar="menu-button"] svg {
+    transition: transform 200ms ease-in-out;
+  }
 }
 
 

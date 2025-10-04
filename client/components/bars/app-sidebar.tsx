@@ -2,6 +2,8 @@
 
 import * as React from "react"
 import {
+  ArrowLeftRight,
+  BetweenVerticalEnd,
   FileSearch,
   LayoutGrid,
   Pen,
@@ -37,41 +39,43 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       email: userEmail || 'Loading',
       avatar: userAvatar || ''
     },
-    super: [
+    main: [
       {
-        name: "Dashboard",
+        title: "Dashboard",
         url: '/dashboard',
-        icon: LayoutGrid
+        icon: LayoutGrid,
       },
       {
-        name: 'Generate',
+        title: 'Generate',
         url: '/generate',
         icon: Plus
       },
       {
-        name: 'Edit',
+        title: 'Edit',
         url: '/edit',
         icon: Pen
       },
     ],
-    tools: [
+    projects: [
       {
-        "title": "Convert",
-        "url": "#",
-        "items": [
-          { "title": "PDF to Word", "url": "/tools/pdf-to-word" },
-          { "title": "Word to PDF", "url": "/tools/word-to-pdf" },
-          { "title": "PDF to MD", "url": "/tools/pdf-to-md" }
+        name: "Convert",
+        url: "",
+        icon: ArrowLeftRight,
+        items: [
+          { title: "PDF to Word", url: "/tools/pdf-to-word" },
+          { title: "Word to PDF", url: "/tools/word-to-pdf" },
+          { title: "PDF to MD", url: "/tools/pdf-to-md" }
         ]
       },
       {
-        "title": "PDF Tools",
-        "url": "#",
-        "items": [
-          { "title": "Merge PDF", "url": "/tools/merge-pdf" },
-          { "title": "Split PDF", "url": "/tools/split-pdf" },
-          { "title": "Organize Pages", "url": "/tools/organize-pdf" },
-          { "title": "Edit PDF", "url": "/tools/edit-pdf" },
+        name: "PDF Tools",
+        url: "",
+        icon: BetweenVerticalEnd,
+        items: [
+          { title: "Merge PDF", url: "/tools/merge-pdf" },
+          { title: "Split PDF", url: "/tools/split-pdf" },
+          { title: "Organize Pages", url: "/tools/organize-pdf" },
+          { title: "Edit PDF", url: "/tools/edit-pdf" },
         ]
       },
     ]
@@ -87,10 +91,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               size="lg"
               className={cn(
                 "group/header relative",
-                "hover:bg-sidebar-accent/50 transition-all duration-200",
+                "hover:bg-sidebar-accent transition-all duration-200",
                 isCollapsed ? "justify-center px-2" : "px-3"
               )}
-              tooltip={isCollapsed ? "Flowt" : undefined}
+              tooltip={isCollapsed ? "PDF Lens" : undefined}
             >
               <div
                 className={cn(
@@ -132,8 +136,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SearchBar />
-        <NavProjects projects={data.super} />
-        <NavMain items={data.tools} />
+        <NavMain items={data.main} />
+        <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

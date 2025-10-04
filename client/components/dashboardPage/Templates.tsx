@@ -3,18 +3,42 @@
 import Link from 'next/link'
 import React from 'react'
 import { Button } from '../ui/button'
-import { Card } from '../ui/card'
-import { Plus } from 'lucide-react'
+import { Card, CardContent } from '../ui/card'
+import { Plus, FileText, Briefcase, Mail, BookOpen, FileCheck, BarChart3 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const Templates = () => {
     const templates = [
-        "Resume",
-        "Business-Proposal",
-        "Cover-Letter",
-        "Research-Paper",
-        "Agreement",
-        "Report",
+        {
+            name: "Resume",
+            description: "Professional resume template",
+            icon: FileText,
+        },
+        {
+            name: "Business Proposal",
+            description: "Comprehensive business proposal",
+            icon: Briefcase,
+        },
+        {
+            name: "Cover Letter",
+            description: "Professional cover letter",
+            icon: Mail,
+        },
+        {
+            name: "Research Paper",
+            description: "Academic research document",
+            icon: BookOpen,
+        },
+        {
+            name: "Agreement",
+            description: "Legal agreement template",
+            icon: FileCheck,
+        },
+        {
+            name: "Report",
+            description: "Business report template",
+            icon: BarChart3,
+        },
     ]
 
     return (
@@ -26,40 +50,56 @@ const Templates = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
             >
-                <h2 className="text-lg font-semibold text-primary">Templates</h2>
+                <div>
+                    <h2 className="text-xl font-semibold text-foreground">Templates</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Choose a template to get started</p>
+                </div>
                 <Link href="/generate">
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="flex items-center">
-                        <Button className="group bg-primary text-primary-foreground rounded-xl px-6 py-2 shadow-md hover:shadow-lg transition-all flex items-center gap-2">
-                            <Plus className='w-4 h-4 group-hover:scale-125 transition-transform duration-150' />
-                            <span>Create New PDF</span>
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                        <Button className="group bg-primary text-primary-foreground rounded-lg px-4 py-2 flex items-center gap-2 hover:bg-primary/90 transition-all">
+                            <Plus className='w-4 h-4' />
+                            <span>Create New</span>
                         </Button>
                     </motion.div>
                 </Link>
             </motion.div>
 
-            {/* Template Buttons */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {/* Template Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <AnimatePresence>
-                    {templates.map((template, idx) => (
-                        <motion.div
-                            key={template}
-                            initial={{ opacity: 0, y: 5, scale: 0.97 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -5, scale: 0.97 }}
-                            transition={{ delay: idx * 0.03, duration: 0.2, type: "spring", stiffness: 400, damping: 25 }}
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                        >
-                            <Link
-                                href={`/generate?template=${encodeURIComponent(template)}`}
-                                className="block"
+                    {templates.map((template, idx) => {
+                        const IconComponent = template.icon
+                        return (
+                            <motion.div
+                                key={template.name}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.05, duration: 0.3, ease: "easeOut" }}
+                                whileHover={{ y: -2 }}
                             >
-                                <Card className="h-14 flex items-center justify-center rounded-lg border border-border bg-card text-primary text-center font-medium cursor-pointer hover:bg-muted hover:text-primary transition overflow-hidden text-ellipsis">
-                                    {template}
-                                </Card>
-                            </Link>
-                        </motion.div>
-                    ))}
+                                <Link
+                                    href={`/generate?template=${encodeURIComponent(template.name)}`}
+                                    className="block"
+                                >
+                                    <Card className="group h-24 border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                                        <CardContent className="p-4 h-full flex items-center gap-3">
+                                            <div className={`p-2 rounded-lg bg-muted/50 group-hover:bg-muted transition-colors`}>
+                                                <IconComponent className={`w-5 h-5 text-primary`} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-medium text-sm text-foreground truncate">
+                                                    {template.name}
+                                                </h3>
+                                                <p className="text-xs text-muted-foreground truncate">
+                                                    {template.description}
+                                                </p>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+                                </Link>
+                            </motion.div>
+                        )
+                    })}
                 </AnimatePresence>
             </div>
         </div>
