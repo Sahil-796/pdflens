@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { ThemeStyleProvider } from "@/components/theme/ThemeStyleProvider";
 import { Toaster } from "sonner";
 
 const geistSans = Geist({
@@ -28,7 +27,7 @@ export default function RootLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased DarkVercel`}
+                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <ThemeProvider
                     attribute="class"
@@ -36,10 +35,8 @@ export default function RootLayout({
                     enableSystem
                     disableTransitionOnChange
                 >
-                    <ThemeStyleProvider>
-                        {children}
-                        <Toaster position="top-center" />
-                    </ThemeStyleProvider>
+                    {children}
+                    <Toaster position="top-center" />
                 </ThemeProvider>
             </body>
         </html>

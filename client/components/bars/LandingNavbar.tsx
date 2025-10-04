@@ -17,7 +17,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import Link from "next/link"
-import ThemeStyle from "../theme/ThemeStyle"
 import ThemeToggle from "../theme/ThemeToggle"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -213,9 +212,6 @@ export default function Navbar() {
                                         <div className="flex">
                                             <div className="scale-90">
                                                 <ThemeToggle />
-                                            </div>
-                                            <div className="scale-90">
-                                                <ThemeStyle />
                                             </div>
                                         </div>
                                         <Button

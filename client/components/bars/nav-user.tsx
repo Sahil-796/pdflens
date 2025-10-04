@@ -26,7 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import ThemeStyle from "../theme/ThemeStyle"
 import LogoutButton from "../auth/logout-button"
 
 
@@ -91,15 +90,6 @@ export function NavUser({
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
-
-            {/* Theme Options */}
-            <DropdownMenuGroup className="flex items-center justify-between" asChild>
-
-              <div>
-                <span className="text-sm ml-3">Style:</span>
-                <ThemeStyle />
-              </div>
-            </DropdownMenuGroup>
 
             <DropdownMenuGroup className="w-full">
               <LogoutButton />
