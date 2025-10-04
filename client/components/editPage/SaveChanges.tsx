@@ -35,15 +35,10 @@ const SaveChanges = () => {
         <button
             onClick={handleSave}
             disabled={loading}
-            className="group flex items-center bg-primary text-primary-foreground font-medium rounded-lg py-2 px-4 shadow-md hover:bg-primary/90 hover:shadow-lg hover:scale-105 transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden"
+            className="group flex items-center gap-2 bg-primary text-primary-foreground font-medium rounded-md px-3 py-2 text-sm shadow-sm hover:bg-primary/90 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            <Save className={`w-4 h-4 shrink-0 group-hover:scale-120 transition-all duration-200 ${loading && 'animate-caret-blink scale-120'}`} />
-
-            <span
-                className="ml-2 max-w-xs transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden"
-            >
-                Save Changes
-            </span>
+            <Save className={`w-4 h-4 ${loading ? 'animate-caret-blink' : ''}`} />
+            <span className="hidden sm:inline">Save</span>
         </button>
     )
 }

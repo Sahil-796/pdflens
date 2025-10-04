@@ -252,3 +252,116 @@
     transform: rotate(0deg);
   }
 }
+
+/* PDF Edit Styles */
+.selectable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectable:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 2px;
+}
+
+.selectable.selected {
+  background-color: rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+/* AI Response Inline Styles */
+.ai-response-container {
+  background: linear-gradient(135deg, var(--muted) 0%, var(--accent) 100%);
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 4px 0;
+  box-shadow: var(--shadow-md);
+}
+
+.ai-response-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-original, .ai-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ai-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-text {
+  font-size: 14px;
+  line-height: 1.4;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.original-text {
+  background-color: oklch(from var(--destructive) l c h / 0.1);
+  color: var(--destructive);
+  text-decoration: line-through;
+  border: 1px solid oklch(from var(--destructive) l c h / 0.3);
+}
+
+.suggestion-text {
+  background-color: oklch(from var(--primary) l c h / 0.1);
+  color: var(--primary);
+  border: 1px solid oklch(from var(--primary) l c h / 0.3);
+  font-weight: 500;
+}
+
+.ai-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.ai-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+}
+
+.accept-btn {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  flex: 1;
+}
+
+.accept-btn:hover {
+  background-color: oklch(from var(--primary) calc(l - 0.1) c h);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px oklch(from var(--primary) l c h / 0.3);
+}
+
+.reject-btn {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+  flex: 1;
+}
+
+.reject-btn:hover {
+  background-color: oklch(from var(--destructive) calc(l - 0.1) c h);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px oklch(from var(--destructive) l c h / 0.3);
+}

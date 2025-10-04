@@ -13,6 +13,10 @@ type PdfState = {
   fileName: string;
   htmlContent: string;
   isContext: boolean;
+  aiResponse: string;
+  setAiResponse: (response: string) => void;
+  showAiResponse: boolean;
+  setShowAiResponse: (show: boolean) => void;
   setPdf: (data: Partial<PdfState>) => void;
   clearPdf: () => void;
 };
@@ -30,6 +34,10 @@ export const usePdfStore = create<PdfState>(set => ({
   fileName: "Untitled",
   htmlContent: "",
   isContext: false,
+  aiResponse: '',
+  setAiResponse: (response) => set({ aiResponse: response }),
+  showAiResponse: false,
+  setShowAiResponse: (show) => set({ showAiResponse: show }),
   setPdf: (data) => set((state) => ({ ...state, ...data })),
-  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: "", isContext: false, selectedText: '', selectedId: '', renderedHtml: '', originalHtml: '' }),
+  clearPdf: () => set({ pdfId: null, fileName: "Untitled", htmlContent: "", isContext: false, selectedText: '', selectedId: '', renderedHtml: '', originalHtml: '', aiResponse: '', showAiResponse: false }),
 }));

@@ -5,27 +5,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { Button } from '@/components/ui/button'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import { Wand2 } from 'lucide-react'
+import { Wand2, Check, X, RotateCcw } from 'lucide-react'
 
 const EditPlaceholder = () => (
-    <div className="flex flex-col items-center justify-center h-48 text-center bg-muted/30 rounded-lg border-2 border-dashed">
-        <Wand2 className="w-10 h-10 mb-2 text-muted-foreground" />
-        <p className="text-lg font-medium text-muted-foreground">Select an element to edit</p>
-        <p className="text-sm text-muted-foreground/80">Click on any text block in the document to begin.</p>
+    <div className="flex flex-col items-center justify-center h-32 text-center">
+        <Wand2 className="w-6 h-6 mb-2 text-muted-foreground" />
+        <p className="text-sm font-medium text-muted-foreground">Select text to edit</p>
+        <p className="text-xs text-muted-foreground/60">Click on any text in the document</p>
     </div>
 )
 
 const SelectedTextView = ({ text }) => (
-    <div className="text-sm text-muted-foreground border rounded-md p-3 bg-muted/20 shadow-sm">
-        <p className="font-medium mb-1">Selected Text:</p>
-        <div className="p-2 rounded border bg-background max-h-42 overflow-y-auto">
-            <p className="italic">{text}</p>
-        </div>
+    <div className="text-sm text-muted-foreground border rounded p-3 bg-muted/30">
+        <p className="font-medium mb-2 text-sm">Selected Text:</p>
+        <p className="italic text-xs leading-relaxed max-h-20 overflow-y-auto">{text}</p>
     </div>
 )
 
+
 const EditPDF = () => {
-    const { selectedText, selectedId, originalHtml, renderedHtml, setRenderedHtml, pdfId } = usePdfStore()
+    const { 
+        selectedText, 
+        selectedId, 
+        originalHtml, 
+        renderedHtml, 
+        setRenderedHtml, 
+        pdfId,
+        aiResponse,
+        setAiResponse,
+        showAiResponse,
+        setShowAiResponse
+    } = usePdfStore()
 
     const [promptValue, setPromptValue] = useState("")
     const [status, setStatus] = useState<'prompt' | 'loading' | 'aiResult'>('prompt')
@@ -71,15 +81,31 @@ const EditPDF = () => {
                 })
                 if (!res.ok) throw new Error('API failed')
                 const data = await res.json()
-                setPromptValue(data.editedText || data) // handle API response
+                const response = data.editedText || data
+                setAiResponse(response)
+                setShowAiResponse(true)
                 setStatus('aiResult')
             } catch (err) {
                 console.error(err)
                 setStatus('prompt')
             }
-        } else if (status === 'aiResult') {
-            applyChanges(promptValue)
         }
+    }
+
+    const handleAccept = () => {
+        applyChanges(aiResponse)
+        setShowAiResponse(false)
+    }
+
+    const handleReject = () => {
+        setStatus('prompt')
+        setAiResponse("")
+        setShowAiResponse(false)
+    }
+
+    const handleRegenerate = () => {
+        setStatus('loading')
+        handleAiEdit()
     }
 
     const handleReplace = () => {
@@ -87,44 +113,58 @@ const EditPDF = () => {
     }
 
     return (
-        <div className='flex-1 overflow-y-auto bg-background'>
+        <div className='space-y-4'>
             <Tabs
                 value={activeTab}
                 onValueChange={(val) => setActiveTab(val as 'ai-edit' | 'replace')}
                 className="w-full"
             >
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="ai-edit">AI Edit</TabsTrigger>
-                    <TabsTrigger value="replace">Replace</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 h-8">
+                    <TabsTrigger value="ai-edit" className="text-xs">AI Edit</TabsTrigger>
+                    <TabsTrigger value="replace" className="text-xs">Replace</TabsTrigger>
                 </TabsList>
 
                 {/* AI Edit Tab */}
-                <TabsContent value="ai-edit" className="mt-4 px-2">
+                <TabsContent value="ai-edit" className="mt-3">
                     {selectedText ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             <SelectedTextView text={selectedText} />
 
                             {status === 'aiResult' ? (
-                                <div className="p-4 border rounded-md">
-                                    <p className="font-medium text-sm mb-2">AI Suggestion:</p>
-                                    <div className="p-2 rounded border max-h-32 overflow-y-auto text-sm">{promptValue}</div>
-                                    <div className="flex gap-2 mt-3">
-                                        <Button className="w-full" onClick={() => applyChanges(promptValue)}>Apply</Button>
-                                        <Button className="w-full" variant="outline" onClick={() => setStatus('prompt')}>Discard</Button>
-                                    </div>
+                                <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md">
+                                    <div className="text-xs font-medium text-green-700 dark:text-green-400 mb-2">AI Response Generated</div>
+                                    <div className="text-xs text-green-600 dark:text-green-300 mb-3">Check the PDF to see the suggestion and accept/reject it.</div>
+                                    <Button 
+                                        size="sm" 
+                                        variant="outline" 
+                                        className="w-full h-7 text-xs" 
+                                        onClick={handleRegenerate}
+                                    >
+                                        <RotateCcw className="w-3 h-3 mr-1" />
+                                        Regenerate
+                                    </Button>
                                 </div>
                             ) : (
-                                <div className="flex flex-col gap-2">
+                                <div className="space-y-2">
                                     <textarea
-                                        rows={6}
+                                        rows={8}
                                         value={promptValue}
                                         onChange={(e) => setPromptValue(e.target.value)}
                                         placeholder='e.g., "Make this sound more professional"'
-                                        className="w-full border rounded-md p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary transition"
+                                        className="w-full border rounded p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary transition"
                                         disabled={status === 'loading'}
                                     />
-                                    <Button onClick={handleAiEdit} disabled={status === 'loading' || !promptValue}>
-                                        {status === 'loading' ? <TextShimmerWave duration={1.5}>Generating...</TextShimmerWave> : (status === 'prompt' ? 'Ask AI' : 'Apply')}
+                                    <Button 
+                                        size="sm" 
+                                        className="w-full h-7 text-xs" 
+                                        onClick={handleAiEdit} 
+                                        disabled={status === 'loading' || !promptValue}
+                                    >
+                                        {status === 'loading' ? (
+                                            <TextShimmerWave duration={1.5}>Generating...</TextShimmerWave>
+                                        ) : (
+                                            'Ask AI'
+                                        )}
                                     </Button>
                                 </div>
                             )}
@@ -135,17 +175,22 @@ const EditPDF = () => {
                 </TabsContent>
 
                 {/* Replace Tab */}
-                <TabsContent value="replace" className="mt-4 px-2">
+                <TabsContent value="replace" className="mt-3">
                     {selectedText ? (
-                        <div className="space-y-4 flex flex-col gap-2">
+                        <div className="space-y-2">
                             <textarea
-                                rows={12}
+                                rows={10}
                                 value={promptValue}
                                 onChange={(e) => setPromptValue(e.target.value)}
                                 placeholder="Enter the new text..."
-                                className="w-full border rounded-md p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary transition"
+                                className="w-full border rounded p-3 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-primary transition"
                             />
-                            <Button onClick={handleReplace} disabled={!promptValue || promptValue === selectedText}>
+                            <Button 
+                                size="sm" 
+                                className="w-full h-7 text-xs" 
+                                onClick={handleReplace} 
+                                disabled={!promptValue || promptValue === selectedText}
+                            >
                                 Replace Text
                             </Button>
                         </div>

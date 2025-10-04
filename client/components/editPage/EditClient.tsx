@@ -69,55 +69,67 @@ export default function EditClient({ id }: { id: string }) {
     }, [id, router, setPdf])
 
     return (
-        <div className='h-screen flex flex-col'>
+        <div className='h-screen flex flex-col bg-background'>
+            {/* Standalone Title Navigation */}
             <TitleNav text={editPdf?.fileName || "Untitled"} />
-            <div className='flex-1 overflow-hidden flex gap-6 p-6'>
 
-                <div className='flex flex-col gap-6 w-1/3'>
-                    <EditPDF />
-
-                    {/* Context Files */}
-                    <div className="max-h-46 bg-card border border-border rounded-xl p-4 shadow overflow-y-auto">
-                        <h2 className="font-medium mb-2">Context Files</h2>
-
-                        {loading ? (
-                            <div className="space-y-2">
-                                <div className="h-4 w-full rounded bg-muted relative overflow-hidden animate-pulse" />
-                                <div className="h-4 w-3/4 rounded bg-muted relative overflow-hidden animate-pulse" />
-                                <div className="h-4 w-2/3 rounded bg-muted relative overflow-hidden animate-pulse" />
-                            </div>
-                        ) : contextFiles.length > 0 ? (
-                            // Files list
-                            <ul className="space-y-2">
-                                {contextFiles.map((file, i) => (
-                                    <li
-                                        key={i}
-                                        className="p-2 rounded bg-muted text-sm flex items-center justify-between"
-                                    >
-                                        <span className="truncate">{file}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            // Empty state
-                            <p className="text-muted-foreground text-sm">
-                                No context files uploaded
-                            </p>
-                        )}
+            <div className='flex-1 flex overflow-hidden'>
+                {/* Left Panel - Edit Tools */}
+                <div className='w-80 border-r border-border bg-card flex flex-col'>
+                    {/* Edit Tools - More Space */}
+                    <div className="flex-1 p-4">
+                        <h2 className="text-sm font-medium text-muted-foreground mb-3">Edit Tools</h2>
+                        <EditPDF />
+                    </div>
+                    
+                    {/* Context Files - Moved Down */}
+                    <div className="p-4 border-t border-border">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-medium text-muted-foreground">Context Files</h3>
+                            <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                                {contextFiles.length}
+                            </span>
+                        </div>
+                        <div className="max-h-32 overflow-y-auto">
+                            {loading ? (
+                                <div className="space-y-2">
+                                    <div className="h-3 w-full rounded bg-muted animate-pulse" />
+                                    <div className="h-3 w-3/4 rounded bg-muted animate-pulse" />
+                                </div>
+                            ) : contextFiles.length > 0 ? (
+                                <ul className="space-y-1">
+                                    {contextFiles.map((file, i) => (
+                                        <li key={i} className="text-xs text-muted-foreground truncate px-2 py-1 rounded bg-muted/50 hover:bg-muted/70 transition-colors">
+                                            {file}
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-xs text-muted-foreground">No context files</p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                <div className='flex-1 flex flex-col gap-4'>
-                    <div className='flex items-center justify-between gap-3 px-10'>
-                        <SaveChanges />
-                        <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                {/* Main PDF View with Action Buttons */}
+                <div className='flex-1 flex flex-col min-w-0'>
+                    {/* Action Buttons on Top of PDF */}
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-muted-foreground">Actions</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <SaveChanges />
+                            <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                        </div>
                     </div>
+
+                    {/* PDF Preview */}
                     <motion.div
-                        initial={{ opacity: 0, x: 30 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 30 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="flex-1 overflow-y-auto bg-card border border-border rounded-xl shadow-lg p-4"
+                        className="flex-1 h-full overflow-hidden"
                     >
                         <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
                     </motion.div>
