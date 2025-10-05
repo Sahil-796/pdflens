@@ -31,7 +31,7 @@ async def upload_context(
     try:
         # Process PDF and index
         process_and_index_pdf(tmp_path, file.filename, pdfId, userId)
-        return {"message": "File uploaded and indexed"}
+        return JSONResponse(content={"message": "Context Pdf uploaded"})
     except Exception as e:
         logger.error(f"Error processing PDF {pdfId}: {str(e)}", exc_info=True)
         return JSONResponse(status_code=500, content={"message": str(e)})
