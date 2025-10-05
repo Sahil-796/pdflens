@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, LogOut, User, Settings, FileSearch } from "lucide-react"
+import { Loader2, LogOut, User, FileSearch } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -23,6 +23,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
 import { authClient } from "@/lib/auth-client"
+import useUser from "@/hooks/useUser"
 
 // Navigation links array
 const navigationLinks = [
@@ -93,6 +94,7 @@ const navigationLinks = [
 export default function Navbar() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const {user} = useUser()
     const { clearUser } = useUserStore()
 
     const handleLogout = async () => {
@@ -111,15 +113,14 @@ export default function Navbar() {
         }
     }
 
-    const { data: session } = authClient.useSession()
-    const user = session?.user
-
     // Monogram (first letter of name or email fallback)
     const monogram =
-        user?.image ||
-        user?.name?.[0]?.toUpperCase() ||
-        user?.email?.[0]?.toUpperCase() ||
+        user.avatar ||
+        user.name?.[0]?.toUpperCase() ||
+        user.email?.[0]?.toUpperCase() ||
         "U"
+
+        console.log(user)
 
     return (
         <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
@@ -212,7 +213,7 @@ export default function Navbar() {
 
                     {/* Right: Auth/User */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        {!user ? (
+                        {!user.id ? (
                             <>
                                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">
                                     <a href="/login">Sign In</a>

@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { Button } from '@/components/ui/button'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import { Wand2, Check, X, RotateCcw } from 'lucide-react'
+import { Wand2, RotateCcw } from 'lucide-react'
 
 const EditPlaceholder = () => (
     <div className="flex flex-col items-center justify-center h-32 text-center">
@@ -33,7 +33,6 @@ const EditPDF = () => {
         pdfId,
         aiResponse,
         setAiResponse,
-        showAiResponse,
         setShowAiResponse
     } = usePdfStore()
 

@@ -26,7 +26,6 @@ import { useEffect, useState } from "react"
 import { Loader2 } from "lucide-react"
 import { authClient } from "@/lib/auth-client"
 import { useUserStore } from "@/app/store/useUserStore"
-import { duration } from "drizzle-orm/gel-core"
 
 const formSchema = z.object({
     name: z.string().min(3, {

@@ -2,8 +2,6 @@
 
 import React, { useEffect } from 'react'
 import { usePdfStore } from '@/app/store/usePdfStore'
-import { Button } from '@/components/ui/button'
-import { Check, X, RotateCcw } from 'lucide-react'
 
 interface PDFPreviewProps {
     loading: boolean
@@ -66,8 +64,6 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
         if (showAiResponse && selectedId && aiResponse) {
             const el = document.getElementById(selectedId)
             if (el) {
-                // Store original content
-                const originalContent = el.innerHTML
                 
                 // Create AI response display
                 const aiResponseDiv = document.createElement('div')

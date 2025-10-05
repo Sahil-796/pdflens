@@ -6,25 +6,22 @@ import { Command } from 'cmdk'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
-  X,
   FileText,
-  Plus,
   Edit,
-  Download,
   Settings,
   User,
   HelpCircle,
   Sparkles,
-  Upload,
   Home,
   BarChart3,
   BookOpen,
   Briefcase,
   Mail,
   FileCheck,
+  Circle,
+  Loader2,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
-import { useSidebar } from './sidebar'
 
 interface Pdf {
   id: string
@@ -39,7 +36,7 @@ interface CommandPaletteProps {
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
-  const {open} = useCommandPalette()
+  const { open } = useCommandPalette()
   const [query, setQuery] = useState('')
   const [pdfs, setPdfs] = useState<Pdf[]>([])
   const [loading, setLoading] = useState(false)
@@ -192,7 +189,16 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Group>
 
                 {/* PDFs */}
-                {filteredPdfs.length > 0 && (
+                {
+                  loading && (
+                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                      <Loader2 className='animate-spin' />
+                      Loading PDFs
+                    </div>
+                  )
+                }
+
+                {!loading && filteredPdfs.length > 0 && (
                   <Command.Group>
                     <div className="px-2 py-2 text-xs font-medium text-muted-foreground tracking-wide">
                       Your PDFs
@@ -230,7 +236,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     </Command.Item>
                   ))}
                 </Command.Group>
-
               </Command.List>
             </Command>
           </motion.div>

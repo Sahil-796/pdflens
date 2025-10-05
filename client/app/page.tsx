@@ -17,7 +17,7 @@ import {
 import Navbar from "@/components/bars/LandingNavbar";
 
 const LandingPage = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [ isScrolled, setIsScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -333,7 +333,7 @@ const LandingPage = () => {
                     ))}
                   </div>
                   <p className="text-muted-foreground mb-6 leading-relaxed italic">
-                    "{testimonial.quote}"
+                    &quot;{testimonial.quote}&quot;
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-semibold">

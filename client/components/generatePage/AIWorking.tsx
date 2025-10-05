@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
-    Bot,
     Eye,
     EyeOff,
     Sparkles,

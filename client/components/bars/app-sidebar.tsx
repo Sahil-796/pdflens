@@ -24,20 +24,20 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 import SearchBar from "../dashboardPage/SearchBar"
 import { cn } from "@/lib/utils"
+import useUser from "@/hooks/useUser"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const { userName, userEmail, userAvatar } = useUserStore()
+  const {user} = useUser()
   const { state } = useSidebar();
   const data = {
     user: {
-      name: userName || 'Loading',
-      email: userEmail || 'Loading',
-      avatar: userAvatar || ''
+      name: user.name || 'Loading',
+      email: user.email || 'Loading',
+      avatar: user.avatar || ''
     },
     main: [
       {
