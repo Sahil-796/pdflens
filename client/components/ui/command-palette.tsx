@@ -18,10 +18,13 @@ import {
   Briefcase,
   Mail,
   FileCheck,
-  Circle,
   Loader2,
+  LogOut,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
+import { authClient } from '@/lib/auth-client'
+import { useUserStore } from '@/app/store/useUserStore'
+import useUser from '@/hooks/useUser'
 
 interface Pdf {
   id: string
@@ -36,11 +39,13 @@ interface CommandPaletteProps {
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
-  const { open } = useCommandPalette()
+  const { open, setOpen } = useCommandPalette()
   const [query, setQuery] = useState('')
   const [pdfs, setPdfs] = useState<Pdf[]>([])
   const [loading, setLoading] = useState(false)
   const router = useRouter()
+  const { clearUser } = useUserStore()
+  const { user } = useUser()
 
   // Fetch PDFs when opened
   useEffect(() => {
@@ -63,6 +68,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if( !user.id ) return
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         onOpenChange(true)
@@ -79,8 +85,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
 
   // 🔗 Handle route logic
   const handleSelect = (value: string) => {
-    console.log('Selected:', value)
-
     if (value.startsWith('pdf-')) {
       const pdfName = value.replace('pdf-', '')
       const pdf = pdfs.find((p) => p.fileName === pdfName)
@@ -236,6 +240,21 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     </Command.Item>
                   ))}
                 </Command.Group>
+                <Command.Separator className="my-2 border-t border-border" />
+
+                <Command.Item
+                  key='logout'
+                  onSelect={async () => {
+                    setOpen(false)
+                    await authClient.signOut()
+                    clearUser()
+                    router.push('/')
+                  }}
+                  className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Logout</span>
+                </Command.Item>
               </Command.List>
             </Command>
           </motion.div>

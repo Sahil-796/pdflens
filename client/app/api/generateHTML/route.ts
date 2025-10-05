@@ -62,7 +62,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ data, creditsLeft, status: 200 })
 
     } catch (err) {
-        console.log("API Error:", err)
+        console.error("API Error:", err)
 
         if (err.message.includes("Insufficient credits")) {
             return NextResponse.json(

@@ -134,25 +134,30 @@ export default function UploadFiles() {
 
             {/* Drag & Drop Area */}
             <div
-                className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition
-                    ${dragActive ? "border-primary bg-primary/5" : "border-border hover:bg-muted/30"}
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200
+                    min-h-[160px] flex flex-col items-center justify-center
+                    ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
                     ${loading ? "opacity-50 cursor-wait" : ""}
-                `}
+                    `}
                 onDragOver={(e) => {
                     if (!loading) {
-                        e.preventDefault();
-                        setDragActive(true);
+                        e.preventDefault()
+                        setDragActive(true)
                     }
                 }}
                 onDragLeave={() => {
-                    if (!loading) setDragActive(false);
+                    if (!loading) setDragActive(false)
                 }}
                 onDrop={handleDrop}
                 onClick={() => {
-                    if (!loading) document.getElementById("fileInput")?.click();
+                    if (!loading) document.getElementById("fileInput")?.click()
                 }}
             >
-                <Upload className={`mx-auto mb-2 text-muted-foreground ${loading && 'animate-bounce'}`} size={24} />
+                <Upload
+                    className={`mx-auto mb-2 text-muted-foreground transition-transform ${loading ? "animate-bounce" : "group-hover:scale-110"
+                        }`}
+                    size={28}
+                />
                 <p className="text-sm text-muted-foreground">
                     {loading ? "Uploading..." : "Drop files here or click to browse"}
                 </p>
@@ -169,7 +174,7 @@ export default function UploadFiles() {
             {files.length > 0 && (
                 <div className="space-y-2">
                     <h4 className="text-sm font-medium">Uploaded Files:</h4>
-                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
                         {files.map((fileItem, idx) => (
                             <div
                                 key={idx}

@@ -95,7 +95,6 @@ export function SignupForm({
 
     useEffect(() => {
         if (!isPending && session?.user) {
-            toast.info(`You are already logged in as ${session.user.email}`)
             router.push('/dashboard')
         }
     }, [isPending, session, router])

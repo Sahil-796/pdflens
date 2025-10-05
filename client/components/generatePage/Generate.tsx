@@ -119,7 +119,7 @@ const Generate = () => {
       toast.error("Prompt cannot be empty")
       return
     }
-    
+
     setLoading(true)
     setShowAIWorking(true)
     setProgress(0)
@@ -193,15 +193,10 @@ const Generate = () => {
   return (
     <div className="h-full flex bg-background">
       {/* Left Panel - Generation Form */}
-      <div className="w-3/5 border-r border-border bg-card flex flex-col">
-        <div className="p-6 border-b border-border">
-          <h2 className="text-lg font-semibold mb-2">Generate PDF</h2>
-          <p className="text-sm text-muted-foreground">Create documents with AI assistance</p>
-        </div>
-
+      <div className="w-3/5 border-r border-border bg-card flex flex-col ">
         <div className="flex-1 p-6 space-y-6">
           {/* File Name Input */}
-          <div className="space-y-2">
+          <div className="space-y-1">
             <label className="text-sm font-medium">Document Name</label>
             <input
               type="text"
@@ -214,14 +209,14 @@ const Generate = () => {
           </div>
 
           {/* Prompt Textarea */}
-          <div className="space-y-2">
+          <div className=''>
             <label className="text-sm font-medium">Describe your document</label>
             <textarea
               id="inputMessage"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Describe what you want to create..."
-              className="w-full h-48 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <p className="text-xs text-muted-foreground">Be specific about the content, format, and style you want</p>
           </div>

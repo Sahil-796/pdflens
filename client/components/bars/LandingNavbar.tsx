@@ -120,8 +120,6 @@ export default function Navbar() {
         user.email?.[0]?.toUpperCase() ||
         "U"
 
-        console.log(user)
-
     return (
         <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
             <div className="bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-3 py-2.5">
