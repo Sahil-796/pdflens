@@ -131,7 +131,7 @@ const Generate = () => {
         if (prev >= 90) return prev
         return prev + Math.random() * 15
       })
-    }, 500)
+    }, 1000)
 
     try {
       let currentPdfId = pdfId
@@ -194,7 +194,7 @@ const Generate = () => {
   return (
     <div className="h-full flex bg-background">
       {/* Left Panel - Generation Form */}
-      <div className="w-96 border-r border-border bg-card flex flex-col">
+      <div className="w-3/5 border-r border-border bg-card flex flex-col">
         <div className="p-6 border-b border-border">
           <h2 className="text-lg font-semibold mb-2">Generate PDF</h2>
           <p className="text-sm text-muted-foreground">Create documents with AI assistance</p>

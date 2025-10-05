@@ -253,6 +253,7 @@
   }
 }
 
+
 /* PDF Edit Styles */
 .selectable {
   cursor: pointer;
@@ -287,7 +288,8 @@
   gap: 8px;
 }
 
-.ai-original, .ai-suggestion {
+.ai-original,
+.ai-suggestion {
   display: flex;
   flex-direction: column;
   gap: 4px;

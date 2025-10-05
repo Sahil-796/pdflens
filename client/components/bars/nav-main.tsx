@@ -25,7 +25,7 @@ export function NavMain({
   }[]
 }) {
   return (
-    <SidebarGroup>
+    <SidebarGroup className="-mt-4">
       <SidebarGroupLabel>Main</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
