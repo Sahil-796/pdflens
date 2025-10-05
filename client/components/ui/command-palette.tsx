@@ -45,7 +45,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { clearUser } = useUserStore()
-  const { user } = useUser()
+  const { user, isAuthenticated } = useUser() // Add isAuthenticated
 
   // Fetch PDFs when opened
   useEffect(() => {
@@ -68,7 +68,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if( !user.id ) return
+      // Check if user is authenticated first
+      if (!isAuthenticated) return;
+      
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         onOpenChange(true)
@@ -79,9 +81,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
       }
     }
 
+    // Add listener immediately after authentication
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onOpenChange])
+  }, [open, onOpenChange, setOpen, isAuthenticated]) // Add dependencies
 
   // 🔗 Handle route logic
   const handleSelect = (value: string) => {
