@@ -6,7 +6,7 @@ import { useSidebar } from '../ui/sidebar'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
 
 export default function SearchBar() {
-    const { state, toggleSidebar } = useSidebar()
+    const { state } = useSidebar()
     const { setOpen } = useCommandPalette()
 
     return (
@@ -24,7 +24,6 @@ export default function SearchBar() {
                         type="text"
                         placeholder={`Search or press ⌘K`}
                         onClick={() => {
-                            toggleSidebar()
                             setOpen(true)
                         }}
                         readOnly

@@ -26,6 +26,7 @@ import { toast } from "sonner"
 import { FileText, Trash2, Calendar, Plus } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { usePdf } from '@/hooks/usePdf';
 
 interface Pdf {
     id: string
@@ -57,68 +58,8 @@ const PdfList: React.FC<PdfListProps> = ({
     onPdfClick,
     className = ""
 }) => {
-    const [pdfs, setPdfs] = useState<Pdf[]>([])
-    const [loading, setLoading] = useState(true)
-    const [viewMore, setViewMore] = useState(false)
-    const router = useRouter()
-
-    useEffect(() => {
-        const fetchPdfs = async (fetchLimit = limit) => {
-            try {
-                setLoading(true)
-                const res = await fetch(`/api/getAll?limit=${fetchLimit}`)
-                const data: Pdf[] = await res.json()
-                data.forEach(pdf => {
-                    if (pdf.htmlContent === '') handleDelete(pdf.id)
-                })
-                setPdfs(data)
-            } catch (error) {
-                console.error("Error fetching PDFs:", error)
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchPdfs(limit)
-    }, [limit])
-
-    const handleViewMore = async () => {
-        try {
-            setLoading(true)
-            const res = await fetch(`/api/getAll`)
-            const data: Pdf[] = await res.json()
-            data.forEach(pdf => {
-                if (pdf.htmlContent === '') handleDelete(pdf.id)
-            })
-            setPdfs(data)
-            setViewMore(true)
-        } catch (err) {
-            console.error("Error fetching all PDFs:", err)
-        } finally {
-            setLoading(false)
-        }
-    }
-
-    const handleDelete = async (pdfId: string, pdfName?: string) => {
-        try {
-            const res = await fetch("/api/deletePdf", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pdfId }),
-            })
-
-            if (!res.ok) {
-                const err = await res.json()
-                throw new Error(err.error || "Failed to delete")
-            }
-
-            if (pdfName) toast.success(`${pdfName} deleted`)
-            setPdfs(prev => prev.filter(p => p.id !== pdfId))
-        } catch (error) {
-            console.error("Error deleting PDF:", error)
-            toast.error("Failed to delete PDF")
-        }
-    }
+    const { pdfs, loading, handleDelete, handleViewMore, showAll, totalCount } = usePdf(limit);
+    const router = useRouter();
 
     const handlePdfClick = (pdf: Pdf) => {
         if (onPdfClick) {
@@ -250,7 +191,7 @@ const PdfList: React.FC<PdfListProps> = ({
                 </AnimatePresence>
             </div>
 
-            {showViewMore && !viewMore && pdfs.length >= limit && (
+            {showViewMore && !showAll && pdfs.length < totalCount && (
                 <div className="flex justify-center pt-2">
                     <Button
                         onClick={handleViewMore}
@@ -258,7 +199,7 @@ const PdfList: React.FC<PdfListProps> = ({
                         className="px-6 py-2 rounded-lg hover:bg-muted transition-colors"
                         disabled={loading}
                     >
-                        {loading ? "Loading..." : "View More"}
+                        {loading ? "Loading..." : `View All (${totalCount})`}
                     </Button>
                 </div>
             )}
