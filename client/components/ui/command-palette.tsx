@@ -7,11 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search,
   FileText,
-  Edit,
-  Settings,
   User,
-  HelpCircle,
-  Sparkles,
   Home,
   BarChart3,
   BookOpen,
@@ -29,13 +25,6 @@ import { authClient } from '@/lib/auth-client'
 import { useUserStore } from '@/app/store/useUserStore'
 import useUser from '@/hooks/useUser'
 import { usePdfStore } from '@/app/store/usePdfStore'
-
-interface Pdf {
-  id: string
-  fileName: string
-  createdAt: string | null
-  htmlContent: string
-}
 
 interface CommandPaletteProps {
   open: boolean
@@ -90,22 +79,77 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
     setQuery('')
   }
 
-  // Template definitions
+  // Template definitions with keywords
   const templates = [
-    { name: 'Resume', value: 'Resume', icon: FileText },
-    { name: 'Business Proposal', value: 'Business-Proposal', icon: Briefcase },
-    { name: 'Cover Letter', value: 'Cover-Letter', icon: Mail },
-    { name: 'Research Paper', value: 'Research-Paper', icon: BookOpen },
-    { name: 'Agreement', value: 'Agreement', icon: FileCheck },
-    { name: 'Report', value: 'Report', icon: BarChart3 },
+    { 
+      name: 'Resume', 
+      value: 'Resume', 
+      icon: FileText,
+      keywords: ['cv', 'curriculum vitae', 'job', 'career', 'employment']
+    },
+    { 
+      name: 'Business Proposal', 
+      value: 'Business-Proposal', 
+      icon: Briefcase,
+      keywords: ['pitch', 'business plan', 'project', 'client', 'proposal']
+    },
+    { 
+      name: 'Cover Letter', 
+      value: 'Cover-Letter', 
+      icon: Mail,
+      keywords: ['job application', 'introduction', 'hiring', 'employment']
+    },
+    { 
+      name: 'Research Paper', 
+      value: 'Research-Paper', 
+      icon: BookOpen,
+      keywords: ['academic', 'study', 'thesis', 'paper', 'research']
+    },
+    { 
+      name: 'Agreement', 
+      value: 'Agreement', 
+      icon: FileCheck,
+      keywords: ['contract', 'legal', 'terms', 'conditions', 'document']
+    },
+    { 
+      name: 'Report', 
+      value: 'Report', 
+      icon: BarChart3,
+      keywords: ['analysis', 'summary', 'findings', 'statistics', 'data']
+    },
   ]
 
   const navigationItems = [
-    { name: 'Dashboard', value: '/dashboard', icon: Home },
-    { name: 'Generate PDF', value: '/generate', icon: Plus },
-    { name: 'Edit PDF', value: '/edit', icon: Pen },
-    { name: 'Profile', value: '/profile', icon: User },
-    { name: 'Landing Page', value: '/', icon: PlaneLanding },
+    { 
+      name: 'Dashboard', 
+      value: '/dashboard', 
+      icon: Home,
+      keywords: ['home', 'main', 'overview', 'start']
+    },
+    { 
+      name: 'Generate PDF', 
+      value: '/generate', 
+      icon: Plus,
+      keywords: ['create', 'new', 'make', 'generate']
+    },
+    { 
+      name: 'Edit PDF', 
+      value: '/edit', 
+      icon: Pen,
+      keywords: ['modify', 'change', 'update', 'edit']
+    },
+    { 
+      name: 'Account', 
+      value: '/account', 
+      icon: User,
+      keywords: ['profile', 'settings', 'user', 'personal']
+    },
+    { 
+      name: 'Landing Page', 
+      value: '/', 
+      icon: PlaneLanding,
+      keywords: ['home', 'welcome', 'start', 'landing']
+    },
   ]
 
   // 🔍 Filter PDFs by name (case-insensitive)
@@ -159,7 +203,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Empty>
 
                 {/* Navigation */}
-                <Command.Group>
+                <Command.Group className="mb-4">
                   <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                     Navigation
                   </div>
@@ -167,6 +211,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     <Command.Item
                       key={item.value}
                       value={item.value}
+                      keywords={item.keywords}
                       onSelect={() => handleSelect(item.value)}
                       className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
                     >
@@ -177,18 +222,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Group>
 
                 {/* PDFs */}
-                {
-                  loading && (
-                    <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
-                      <Loader2 className='animate-spin' />
-                      Loading PDFs
-                    </div>
-                  )
-                }
-
-                {!loading && filteredPdfs.length > 0 && (
-                  <Command.Group>
-                    <div className="px-2 py-2 text-xs font-medium text-muted-foreground tracking-wide">
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
+                    <Loader2 className='animate-spin' />
+                    Loading PDFs
+                  </div>
+                ) : filteredPdfs.length > 0 && (
+                  <Command.Group className="mb-4">
+                    <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                       Your PDFs
                     </div>
                     {filteredPdfs.slice(0, 10).map((pdf) => (
@@ -208,14 +249,15 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 )}
 
                 {/* Templates */}
-                <Command.Group>
-                  <div className="px-2 py-2 text-xs font-medium text-muted-foreground tracking-wide">
+                <Command.Group className="mb-4">
+                  <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                     Templates
                   </div>
                   {templates.map((template) => (
                     <Command.Item
                       key={template.value}
                       value={`template-${template.value}`}
+                      keywords={template.keywords}
                       onSelect={() => handleSelect(`template-${template.value}`)}
                       className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
                     >
@@ -224,21 +266,24 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     </Command.Item>
                   ))}
                 </Command.Group>
-                <Command.Separator className="my-2 border-t border-border" />
 
-                <Command.Item
-                  key='logout'
-                  onSelect={async () => {
-                    setOpen(false)
-                    await authClient.signOut()
-                    clearUser()
-                    router.push('/')
-                  }}
-                  className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Logout</span>
-                </Command.Item>
+                {/* Actions Group */}
+                <Command.Group>
+                  <Command.Item
+                    key='signout'
+                    onSelect={async () => {
+                      setOpen(false)
+                      await authClient.signOut()
+                      clearUser()
+                      router.push('/')
+                    }}
+                    keywords={['sign out', 'log out', 'exit', 'leave']}
+                    className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Sign Out</span>
+                  </Command.Item>
+                </Command.Group>
               </Command.List>
             </Command>
           </motion.div>
