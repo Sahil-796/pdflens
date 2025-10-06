@@ -127,18 +127,18 @@ export default function UploadFiles() {
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between flex-wrap gap-2">
                 <label className="text-sm font-medium">Reference Files</label>
                 <span className="text-xs text-muted-foreground">{files.length} uploaded</span>
             </div>
 
             {/* Drag & Drop Area */}
             <div
-                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200
-                    min-h-[160px] flex flex-col items-center justify-center
-                    ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
-                    ${loading ? "opacity-50 cursor-wait" : ""}
-                    `}
+                className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all duration-200
+      min-h-[140px] sm:min-h-[160px] flex flex-col items-center justify-center
+      ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
+      ${loading ? "opacity-50 cursor-wait" : ""}
+    `}
                 onDragOver={(e) => {
                     if (!loading) {
                         e.preventDefault()
@@ -158,8 +158,8 @@ export default function UploadFiles() {
                         }`}
                     size={28}
                 />
-                <p className="text-sm text-muted-foreground">
-                    {loading ? "Uploading..." : "Drop files here or click to browse"}
+                <p className="text-sm text-muted-foreground max-w-[80%] sm:max-w-none mx-auto">
+                    {loading ? "Uploading..." : "Drop files here or tap to browse"}
                 </p>
                 <input
                     disabled={loading}
@@ -178,7 +178,7 @@ export default function UploadFiles() {
                         {files.map((fileItem, idx) => (
                             <div
                                 key={idx}
-                                className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm"
+                                className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm gap-2"
                             >
                                 <span className="flex items-center gap-2 truncate">
                                     📄 <span className="truncate">{fileItem.name}</span>

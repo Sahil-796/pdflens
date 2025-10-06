@@ -4,11 +4,11 @@ import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
-import { 
-  Sparkles, 
-  Clock, 
+import {
+  Clock,
   TrendingUp,
-  FileText
+  FileText,
+  Plus
 } from 'lucide-react'
 
 const QuickActions = () => {
@@ -16,7 +16,7 @@ const QuickActions = () => {
     {
       title: "Create New PDF",
       description: "Generate a document with AI",
-      icon: Sparkles,
+      icon: Plus,
       href: "/generate",
       color: "bg-primary",
       iconColor: "text-primary-foreground"
@@ -45,21 +45,25 @@ const QuickActions = () => {
   ]
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <motion.div
-        className="text-center"
+        className="text-center px-2 sm:px-0"
         initial={{ opacity: 0, y: 5 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
       >
-        <h2 className="text-xl font-semibold text-foreground">Quick Actions</h2>
-        <p className="text-sm text-muted-foreground mt-1">Get started with your documents</p>
+        <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+          Quick Actions
+        </h2>
+        <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          Get started with your documents
+        </p>
       </motion.div>
 
-      {/* Quick Actions Grid - Centered */}
+      {/* Quick Actions Grid */}
       <div className="flex justify-center">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-sm sm:max-w-md md:max-w-lg space-y-3 sm:space-y-4 px-3 sm:px-0">
           {actions.map((action, idx) => {
             const IconComponent = action.icon
             return (
@@ -71,16 +75,20 @@ const QuickActions = () => {
                 whileHover={{ y: -2 }}
               >
                 <Link href={action.href} className="block">
-                  <Card className="group h-24 border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
-                    <CardContent className="p-4 h-full flex items-center gap-3">
-                      <div className={`p-2 rounded-lg ${action.color} group-hover:scale-110 transition-transform`}>
-                        <IconComponent className={`w-5 h-5 ${action.iconColor}`} />
+                  <Card className="group h-20 sm:h-24 border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                    <CardContent className="p-3 sm:p-4 h-full flex items-center gap-3 sm:gap-4">
+                      <div
+                        className={`p-2 sm:p-3 rounded-lg ${action.color} group-hover:scale-110 transition-transform`}
+                      >
+                        <IconComponent
+                          className={`w-4 h-4 sm:w-5 sm:h-5 ${action.iconColor}`}
+                        />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm text-foreground truncate">
+                        <h3 className="font-medium text-sm sm:text-base text-foreground truncate">
                           {action.title}
                         </h3>
-                        <p className="text-xs text-muted-foreground truncate">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           {action.description}
                         </p>
                       </div>
@@ -98,7 +106,7 @@ const QuickActions = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.3, ease: "easeOut" }}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 px-3 sm:px-0"
       >
         {stats.map((stat, idx) => {
           const IconComponent = stat.icon
@@ -110,15 +118,21 @@ const QuickActions = () => {
               transition={{ delay: 0.5 + idx * 0.1, duration: 0.3, ease: "easeOut" }}
             >
               <Card className="border border-border bg-card/50">
-                <CardContent className="p-4">
+                <CardContent className="p-3 sm:p-4">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">{stat.label}</p>
-                      <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                      <p className="text-xs text-muted-foreground">{stat.change}</p>
+                    <div className="min-w-0">
+                      <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                        {stat.label}
+                      </p>
+                      <p className="text-xl sm:text-2xl font-bold text-foreground truncate">
+                        {stat.value}
+                      </p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                        {stat.change}
+                      </p>
                     </div>
-                    <div className="p-2 rounded-lg bg-muted/50">
-                      <IconComponent className="w-4 h-4 text-primary" />
+                    <div className="p-2 rounded-lg bg-muted/50 flex-shrink-0">
+                      <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                     </div>
                   </div>
                 </CardContent>

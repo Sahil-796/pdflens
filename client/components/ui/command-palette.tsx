@@ -175,7 +175,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="w-full max-w-2xl mt-32 rounded-xl border border-border bg-card shadow-2xl"
+            className="w-full max-w-xs md:max-w-2xl mt-32 rounded-xl border border-border bg-card shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <Command className="rounded-xl px-2">

@@ -191,12 +191,13 @@ const Generate = () => {
   }
 
   return (
-    <div className="h-full flex bg-background">
-      <div className="w-3/5 border-r border-border bg-card flex flex-col">
-        <div className="flex-1 p-6 space-y-8">
+    <div className="h-full flex flex-col lg:flex-row bg-background overflow-auto">
+      {/* Left Panel */}
+      <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
+        <div className="flex-1 p-4 sm:p-6 space-y-8">
           {/* Document Name Input */}
-          <div className="">
-            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1.5">
+          <div>
+            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Document Name
             </div>
             <input
@@ -206,12 +207,14 @@ const Generate = () => {
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground mt-0.5">This name will be used for your PDF file</p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              This name will be used for your PDF file
+            </p>
           </div>
 
           {/* Document Description */}
-          <div className="">
-            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1.5">
+          <div>
+            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Describe your document
             </div>
             <textarea
@@ -219,16 +222,18 @@ const Generate = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Describe what you want to create..."
-              className="w-full h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full h-40 sm:h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground -mt-1">Be specific about the content, format, and style you want</p>
+            <p className="text-xs text-muted-foreground -mt-1">
+              Be specific about the content, format, and style you want
+            </p>
           </div>
 
           {/* Generate Button */}
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="w-full mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-2 sm:mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -241,22 +246,17 @@ const Generate = () => {
         </div>
 
         {/* File Upload Section */}
-        <div className="p-6 border-t border-border">
+        <div className="p-4 sm:p-6 border-t border-border">
           <UploadFiles />
         </div>
       </div>
 
       {/* Right Panel - Information */}
       <div className="flex-1 flex flex-col">
-        <div className="p-6 border-b border-border">
-          <h3 className="text-lg font-semibold mb-2">How it works</h3>
-          <p className="text-sm text-muted-foreground">AI-powered document generation</p>
-        </div>
-
-        <div className="flex-1 p-6 space-y-8"> {/* Increased spacing between sections */}
+        <div className="flex-1 p-4 sm:p-6 space-y-8 overflow-y-auto">
           {/* Template Info */}
           {template && (
-            <div className="bg-muted/30 rounded-lg p-4 mb-6"> {/* Added bottom margin */}
+            <div className="bg-muted/30 rounded-lg p-4 mb-6">
               <h4 className="font-medium mb-2">Using Template: {template}</h4>
               <p className="text-sm text-muted-foreground">
                 This template will help structure your document. You can modify the content as needed.
@@ -266,10 +266,8 @@ const Generate = () => {
 
           {/* Tips */}
           <div className="space-y-4">
-            <h4 className="font-medium mb-3"> {/* Added margin below heading */}
-              Tips for better results:
-            </h4>
-            <ul className="space-y-3"> {/* Increased spacing between list items */}
+            <h4 className="font-medium mb-3">Tips for better results:</h4>
+            <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
                 <span>Be specific about the document type and purpose</span>
@@ -290,9 +288,9 @@ const Generate = () => {
           </div>
 
           {/* Available Templates */}
-          <div className="space-y-4"> {/* Increased spacing */}
+          <div className="space-y-4">
             <h4 className="font-medium mb-3">Available Templates:</h4>
-            <div className="grid grid-cols-2 gap-3"> {/* Increased gap between template buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {Object.keys(templatePrompts).map((templateName) => (
                 <button
                   key={templateName}
