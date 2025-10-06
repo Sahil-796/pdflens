@@ -28,6 +28,7 @@ import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { authClient } from '@/lib/auth-client'
 import { useUserStore } from '@/app/store/useUserStore'
 import useUser from '@/hooks/useUser'
+import { usePdfStore } from '@/app/store/usePdfStore'
 
 interface Pdf {
   id: string
@@ -44,36 +45,17 @@ interface CommandPaletteProps {
 const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const { open, setOpen } = useCommandPalette()
   const [query, setQuery] = useState('')
-  const [pdfs, setPdfs] = useState<Pdf[]>([])
-  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { clearUser } = useUserStore()
   const { user, isAuthenticated } = useUser() // Add isAuthenticated
-
-  // Fetch PDFs when opened
-  useEffect(() => {
-    const fetchPdfs = async () => {
-      try {
-        setLoading(true)
-        const res = await fetch('/api/getAll')
-        const data: Pdf[] = await res.json()
-        setPdfs(data)
-      } catch (error) {
-        console.error('Error fetching PDFs:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    if (open) fetchPdfs()
-  }, [open])
+  const { pdfs, loading } = usePdfStore();
 
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if user is authenticated first
       if (!isAuthenticated) return;
-      
+
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         onOpenChange(true)
