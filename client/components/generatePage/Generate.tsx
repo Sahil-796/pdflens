@@ -192,11 +192,11 @@ const Generate = () => {
 
   return (
     <div className="h-full flex bg-background">
-      <div className="w-3/5 border-r border-border bg-card flex flex-col ">
-        <div className="flex-1 p-6 space-y-6">
-          {/* File Name Input */}
+      <div className="w-3/5 border-r border-border bg-card flex flex-col">
+        <div className="flex-1 p-6 space-y-8">
+          {/* Document Name Input */}
           <div className="">
-            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1">
+            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Document Name
             </div>
             <input
@@ -206,12 +206,12 @@ const Generate = () => {
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground">This name will be used for your PDF file</p>
+            <p className="text-xs text-muted-foreground mt-0.5">This name will be used for your PDF file</p>
           </div>
 
-          {/* Prompt Textarea */}
-          <div className=''>
-            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1">
+          {/* Document Description */}
+          <div className="">
+            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Describe your document
             </div>
             <textarea
@@ -228,7 +228,7 @@ const Generate = () => {
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="w-full bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -253,10 +253,10 @@ const Generate = () => {
           <p className="text-sm text-muted-foreground">AI-powered document generation</p>
         </div>
 
-        <div className="flex-1 p-6 space-y-6">
+        <div className="flex-1 p-6 space-y-8"> {/* Increased spacing between sections */}
           {/* Template Info */}
           {template && (
-            <div className="bg-muted/30 rounded-lg p-4">
+            <div className="bg-muted/30 rounded-lg p-4 mb-6"> {/* Added bottom margin */}
               <h4 className="font-medium mb-2">Using Template: {template}</h4>
               <p className="text-sm text-muted-foreground">
                 This template will help structure your document. You can modify the content as needed.
@@ -266,8 +266,10 @@ const Generate = () => {
 
           {/* Tips */}
           <div className="space-y-4">
-            <h4 className="font-medium">Tips for better results:</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <h4 className="font-medium mb-3"> {/* Added margin below heading */}
+              Tips for better results:
+            </h4>
+            <ul className="space-y-3"> {/* Increased spacing between list items */}
               <li className="flex items-start gap-2">
                 <span className="text-primary">•</span>
                 <span>Be specific about the document type and purpose</span>
@@ -288,9 +290,9 @@ const Generate = () => {
           </div>
 
           {/* Available Templates */}
-          <div className="space-y-3">
-            <h4 className="font-medium">Available Templates:</h4>
-            <div className="grid grid-cols-2 gap-2">
+          <div className="space-y-4"> {/* Increased spacing */}
+            <h4 className="font-medium mb-3">Available Templates:</h4>
+            <div className="grid grid-cols-2 gap-3"> {/* Increased gap between template buttons */}
               {Object.keys(templatePrompts).map((templateName) => (
                 <button
                   key={templateName}
