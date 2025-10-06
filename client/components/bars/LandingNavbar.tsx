@@ -94,7 +94,7 @@ const navigationLinks = [
 export default function Navbar() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    const {user} = useUser()
+    const { user } = useUser()
     const { clearUser } = useUserStore()
 
     const handleLogout = async () => {
@@ -260,9 +260,9 @@ export default function Navbar() {
                                                 className="w-full justify-start gap-2 h-9 text-sm font-normal"
                                                 asChild
                                             >
-                                                <Link href="/profile">
+                                                <Link href="/account">
                                                     <User className="h-4 w-4" />
-                                                    Profile Settings
+                                                    Account Settings
                                                 </Link>
                                             </Button>
                                             <div className="flex items-center justify-between px-3 py-2">

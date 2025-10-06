@@ -1,10 +1,10 @@
 "use client"
 
 import {
-  BadgeCheck,
   ChevronsUpDown,
   CreditCard,
   Sparkles,
+  User,
 } from "lucide-react"
 
 import {
@@ -82,8 +82,8 @@ export function NavUser({
             {/* Account + Billing */}
             <DropdownMenuGroup>
               <DropdownMenuItem onSelect={() => router.push('/account')}>
-                <BadgeCheck className="mr-2 h-4 w-4" />
-                Account
+                <User className="mr-2 h-4 w-4" />
+                Account Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard className="mr-2 h-4 w-4" />
