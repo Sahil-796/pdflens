@@ -15,6 +15,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import Navbar from "@/components/bars/LandingNavbar";
+import Link from "next/link";
 
 const LandingPage = () => {
   const [ isScrolled, setIsScrolled] = useState(false);
@@ -466,25 +467,25 @@ const LandingPage = () => {
             <div>
               <h4 className="font-semibold text-foreground mb-3">Product</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition">Features</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Pricing</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Templates</a></li>
+                <li><Link href="#" className="hover:text-foreground transition">Features</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Pricing</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Templates</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-3">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition">About</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Blog</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Contact</a></li>
+                <li><Link href="#" className="hover:text-foreground transition">About</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Blog</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Contact</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-semibold text-foreground mb-3">Legal</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><a href="#" className="hover:text-foreground transition">Privacy</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Terms</a></li>
-                <li><a href="#" className="hover:text-foreground transition">Security</a></li>
+                <li><Link href="#" className="hover:text-foreground transition">Privacy</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Terms</Link></li>
+                <li><Link href="#" className="hover:text-foreground transition">Security</Link></li>
               </ul>
             </div>
           </div>

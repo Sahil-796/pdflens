@@ -5,7 +5,7 @@ import {
   ArrowLeftRight,
   BetweenVerticalEnd,
   FileSearch,
-  LayoutGrid,
+  Home,
   Pen,
   Plus,
 } from "lucide-react"
@@ -43,7 +43,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {
         title: "Dashboard",
         url: '/dashboard',
-        icon: LayoutGrid,
+        icon: Home,
       },
       {
         title: 'Generate',

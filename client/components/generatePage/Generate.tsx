@@ -192,12 +192,13 @@ const Generate = () => {
 
   return (
     <div className="h-full flex bg-background">
-      {/* Left Panel - Generation Form */}
       <div className="w-3/5 border-r border-border bg-card flex flex-col ">
         <div className="flex-1 p-6 space-y-6">
           {/* File Name Input */}
-          <div className="space-y-1">
-            <label className="text-sm font-medium">Document Name</label>
+          <div className="">
+            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1">
+              Document Name
+            </div>
             <input
               type="text"
               value={fileName}
@@ -210,7 +211,9 @@ const Generate = () => {
 
           {/* Prompt Textarea */}
           <div className=''>
-            <label className="text-sm font-medium">Describe your document</label>
+            <div className="bg-card px-2 text-sm font-medium text-muted-foreground mb-1">
+              Describe your document
+            </div>
             <textarea
               id="inputMessage"
               value={input}
@@ -218,7 +221,7 @@ const Generate = () => {
               placeholder="Describe what you want to create..."
               className="w-full h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <p className="text-xs text-muted-foreground">Be specific about the content, format, and style you want</p>
+            <p className="text-xs text-muted-foreground -mt-1">Be specific about the content, format, and style you want</p>
           </div>
 
           {/* Generate Button */}

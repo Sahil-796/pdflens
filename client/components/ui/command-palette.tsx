@@ -20,6 +20,9 @@ import {
   FileCheck,
   Loader2,
   LogOut,
+  PlaneLanding,
+  Plus,
+  Pen,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { authClient } from '@/lib/auth-client'
@@ -117,14 +120,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
 
   const navigationItems = [
     { name: 'Dashboard', value: '/dashboard', icon: Home },
-    { name: 'Generate PDF', value: '/generate', icon: Sparkles },
-    { name: 'Edit PDF', value: '/edit', icon: Edit },
-  ]
-
-  const toolItems = [
-    { name: 'Settings', value: '/settings', icon: Settings },
+    { name: 'Generate PDF', value: '/generate', icon: Plus },
+    { name: 'Edit PDF', value: '/edit', icon: Pen },
     { name: 'Profile', value: '/profile', icon: User },
-    { name: 'Help', value: '/help', icon: HelpCircle },
+    { name: 'Landing Page', value: '/', icon: PlaneLanding },
   ]
 
   // 🔍 Filter PDFs by name (case-insensitive)

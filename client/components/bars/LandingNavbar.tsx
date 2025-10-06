@@ -214,16 +214,16 @@ export default function Navbar() {
                         {!user.id ? (
                             <>
                                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">
-                                    <a href="/login">Sign In</a>
+                                    <Link href="/login">Sign In</Link>
                                 </Button>
                                 <Button asChild size="sm" className="text-sm h-8 rounded-md">
-                                    <a href="/signup">Get Started</a>
+                                    <Link href="/signup">Get Started</Link>
                                 </Button>
                             </>
                         ) : (
                             <div className="flex items-center gap-2">
                                 <Button asChild variant="ghost" size="sm" className="h-8 rounded-md">
-                                    <a href="/dashboard">Dashboard</a>
+                                    <Link href="/dashboard">Dashboard</Link>
                                 </Button>
                                 <Popover>
                                     <PopoverTrigger asChild>
@@ -260,10 +260,10 @@ export default function Navbar() {
                                                 className="w-full justify-start gap-2 h-9 text-sm font-normal"
                                                 asChild
                                             >
-                                                <a href="/profile">
+                                                <Link href="/profile">
                                                     <User className="h-4 w-4" />
                                                     Profile Settings
-                                                </a>
+                                                </Link>
                                             </Button>
                                             <div className="flex items-center justify-between px-3 py-2">
                                                 <span className="text-sm text-muted-foreground">Theme</span>
