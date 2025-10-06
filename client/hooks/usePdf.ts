@@ -14,7 +14,7 @@ export function usePdf(initialLimit?: number) {
                 setLoading(true);
                 setStatus('loading');
                 // Always fetch all PDFs, but display limited amount initially
-                const res = await fetch('/api/getAll');
+                const res = await fetch('/api/getALL');
                 const data = await res.json();
                 
                 const validPdfs = data.filter((pdf: any) => pdf.htmlContent !== '');

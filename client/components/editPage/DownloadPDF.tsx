@@ -20,7 +20,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         wrapper.style.padding = "16px";
         wrapper.innerHTML = renderedHtml;
 
-        const res = await fetch("/api/downloadPdf", {
+        const res = await fetch("/api/downloadPDF", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ html: wrapper.outerHTML }),
