@@ -22,7 +22,6 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from "@/components/ui/empty"
-import { toast } from "sonner"
 import { FileText, Trash2, Calendar, Plus } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'

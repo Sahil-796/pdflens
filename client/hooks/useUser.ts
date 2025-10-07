@@ -20,7 +20,6 @@ export default function useUser() {
                         userName: session.user.name,
                         userEmail: session.user.email,
                         userAvatar: session.user.image,
-                        userPlan: (session.user as any).plan ?? null,
                     });
 
                     // Fetch authoritative plan from DB

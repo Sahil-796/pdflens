@@ -38,7 +38,8 @@ const AccountSettings = () => {
             toast.success("Account deleted!")
             router.push('/goodbye')
         } catch (error) {
-            toast.error(error.message || "Confirmation text incorrect.")
+            console.error(error)
+            toast.error("Confirmation text incorrect.")
         } finally {
             setDeleteLoading(false)
         }
@@ -60,7 +61,8 @@ const AccountSettings = () => {
             })
             toast.success('Profile updated successfully')
         } catch (error) {
-            toast.error(error.message || 'Failed to update profile')
+            console.error(error)
+            toast.error('Failed to update profile')
         } finally {
             setUpdating(false)
         }
@@ -71,6 +73,7 @@ const AccountSettings = () => {
             // Add your email verification API call here
             toast.success('Verification email sent')
         } catch (error) {
+            console.error(error)
             toast.error('Failed to send verification email')
         }
     }
@@ -99,8 +102,9 @@ const AccountSettings = () => {
             setNewPassword("")
             setConfirmPassword("")
             toast.success('Password changed successfully')
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to change password')
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to change password')
         } finally {
             setChangingPassword(false)
         }

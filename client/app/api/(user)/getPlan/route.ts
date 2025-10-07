@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm"
 export async function GET(request: Request) {
     try {
         // Get session from auth (reads cookies via better-auth next plugin)
-        // @ts-ignore - api surface from better-auth
+        // @ts-expect-error - api surface from better-auth
         const { data: session } = await auth.api.getSession({ headers: request.headers })
 
         if (!session?.user?.id) {
@@ -25,8 +25,8 @@ export async function GET(request: Request) {
         }
 
         return NextResponse.json({ plan: rows[0].plan }, { status: 200 })
-    } catch (e) {
-        return NextResponse.json({ error: "Failed to fetch plan" }, { status: 500 })
+    } catch (error) {
+        return NextResponse.json({ error: error.message || "Failed to fetch plan" }, { status: 500 })
     }
 }
 

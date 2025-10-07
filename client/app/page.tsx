@@ -18,7 +18,7 @@ import Navbar from "@/components/bars/LandingNavbar";
 import Link from "next/link";
 
 const LandingPage = () => {
-  const [ , setIsScrolled] = useState(false);
+  const [, setIsScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
