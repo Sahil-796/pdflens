@@ -13,10 +13,11 @@ import { toast } from "sonner"
 import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
+import { authClient } from "@/lib/auth-client"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
-    const {clearUser} = useUserStore()
+    const { clearUser } = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
@@ -28,36 +29,16 @@ const AccountSettings = () => {
         try {
             setDeleteLoading(true)
             if (confirmText.trim().toLowerCase() !== "delete my account") return
-            const res = await fetch('/api/deleteAccount', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ confirmText })
-            })
-
-            if (!res.ok) {
-                const error = await res.json()
-                throw new Error(error.message || 'Failed to update profile')
-            }
+            await authClient.deleteUser()
             clearUser()
             toast.success("Account deleted!")
-            router.push('/')
+            router.push('/goodbye')
         } catch (error: any) {
             toast.error(error.message || "Confirmation text incorrect.")
         } finally {
             setDeleteLoading(false)
         }
     }
-
-    useEffect(() => {
-        if (user?.name) {
-            setName(user.name)
-        }
-        if (user?.email) {
-            setEmail(user.email)
-        }
-    }, [user?.name, user?.email])
 
     const handleUpdateProfile = async () => {
         try {
@@ -70,20 +51,9 @@ const AccountSettings = () => {
                 toast.error('Name cannot be empty')
                 return
             }
-
-            const res = await fetch('/api/updateProfile', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name })
+            await authClient.updateUser({
+                name: name.trim()
             })
-
-            if (!res.ok) {
-                const error = await res.json()
-                throw new Error(error.message || 'Failed to update profile')
-            }
-
             toast.success('Profile updated successfully')
         } catch (error: any) {
             toast.error(error.message || 'Failed to update profile')
@@ -100,6 +70,15 @@ const AccountSettings = () => {
             toast.error('Failed to send verification email')
         }
     }
+
+    useEffect(() => {
+        if (user?.name) {
+            setName(user.name)
+        }
+        if (user?.email) {
+            setEmail(user.email)
+        }
+    }, [user?.name, user?.email])
 
     if (loading) {
         return (

@@ -7,7 +7,6 @@ import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
 import EmailVerification from "@/components/emails/verify-email";
 
-
 export const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -20,6 +19,11 @@ export const auth = betterAuth({
         provider: "pg",
         schema,
     }),
+    user: {
+        deleteUser: {
+            enabled: true,
+        }
+    },
     emailAndPassword: {
         enabled: true,
         // requireEmailVerification: true,
