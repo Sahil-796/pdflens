@@ -82,7 +82,7 @@ export const pdf = pgTable("pdf", {
 
 export const context = pgTable("context", {
   id: text("id").primaryKey().notNull(),
-  pdfId: text("pdf_id").notNull().references(() => pdf.id),
+  pdfId: text("pdf_id").notNull().references(() => pdf.id, { onDelete: "cascade" }),
   files: text('files').array(),
 })
 

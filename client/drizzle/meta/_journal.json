@@ -15,6 +15,20 @@
       "when": 1758909141160,
       "tag": "0001_open_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759838294416,
+      "tag": "0002_abnormal_rogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759838332800,
+      "tag": "0003_noisy_hellion",
+      "breakpoints": true
     }
   ]
 }
