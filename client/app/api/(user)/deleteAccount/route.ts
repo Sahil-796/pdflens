@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
             success: true,
             message: 'Account deleted successfully',
         });
-    } catch (error: any) {
+    } catch (error) {
         console.error('Delete account error:', error);
         return NextResponse.json(
             { 

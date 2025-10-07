@@ -36,7 +36,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const [query, setQuery] = useState('')
   const router = useRouter()
   const { clearUser } = useUserStore()
-  const { user, isAuthenticated } = useUser() // Add isAuthenticated
+  const { isAuthenticated } = useUser() // Add isAuthenticated
   const { pdfs, loading } = usePdfStore();
 
   // Keyboard shortcut (Ctrl/Cmd + K)

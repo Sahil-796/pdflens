@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, CheckCircle2, Dot, Mail, Router, User } from "lucide-react"
+import { AlertCircle, CheckCircle2, Dot, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "./ui/alert"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
@@ -22,7 +22,7 @@ const AccountSettings = () => {
     const [email, setEmail] = useState(user?.email || "")
     const [updating, setUpdating] = useState(false)
     const [confirmText, setConfirmText] = useState("")
-    const [deleteLoading, setDeleteLoading] = useState(false)
+    const [, setDeleteLoading] = useState(false)
 
     const handleDeleteAccount = async () => {
         try {
@@ -43,7 +43,7 @@ const AccountSettings = () => {
             clearUser()
             toast.success("Account deleted!")
             router.push('/')
-        } catch (error: any) {
+        } catch (error) {
             toast.error(error.message || "Confirmation text incorrect.")
         } finally {
             setDeleteLoading(false)
@@ -85,7 +85,7 @@ const AccountSettings = () => {
             }
 
             toast.success('Profile updated successfully')
-        } catch (error: any) {
+        } catch (error) {
             toast.error(error.message || 'Failed to update profile')
         } finally {
             setUpdating(false)
@@ -97,7 +97,7 @@ const AccountSettings = () => {
             // Add your email verification API call here
             toast.success('Verification email sent')
         } catch (error) {
-            toast.error('Failed to send verification email')
+            toast.error(`Failed to send verification email`, error)
         }
     }
 
@@ -164,7 +164,7 @@ const AccountSettings = () => {
                             >
                                 <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
                                 <AlertDescription className="text-sm font-medium">
-                                    Your email has been verified. You're all set!
+                                    Your email has been verified. You&apos;re all set!
                                 </AlertDescription>
                             </Alert>
                         ) : (
@@ -234,7 +234,7 @@ const AccountSettings = () => {
                                         Are you absolutely sure?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription className="text-muted-foreground">
-                                        This action cannot be undone. Type <span className="font-semibold text-destructive">"delete my account"</span> below to confirm.
+                                        This action cannot be undone. Type <span className="font-semibold text-destructive">&quot;delete my account&quot;</span> below to confirm.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
 
