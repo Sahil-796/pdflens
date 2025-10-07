@@ -13,51 +13,36 @@ import { toast } from "sonner"
 import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
+import { authClient } from "@/lib/auth-client"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
-    const {clearUser} = useUserStore()
+    const { clearUser } = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
     const [updating, setUpdating] = useState(false)
     const [confirmText, setConfirmText] = useState("")
     const [, setDeleteLoading] = useState(false)
+    const [currentPassword, setCurrentPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [changingPassword, setChangingPassword] = useState(false)
 
     const handleDeleteAccount = async () => {
         try {
             setDeleteLoading(true)
             if (confirmText.trim().toLowerCase() !== "delete my account") return
-            const res = await fetch('/api/deleteAccount', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ confirmText })
-            })
-
-            if (!res.ok) {
-                const error = await res.json()
-                throw new Error(error.message || 'Failed to update profile')
-            }
+            await authClient.deleteUser()
             clearUser()
             toast.success("Account deleted!")
-            router.push('/')
+            router.push('/goodbye')
         } catch (error) {
             toast.error(error.message || "Confirmation text incorrect.")
         } finally {
             setDeleteLoading(false)
         }
     }
-
-    useEffect(() => {
-        if (user?.name) {
-            setName(user.name)
-        }
-        if (user?.email) {
-            setEmail(user.email)
-        }
-    }, [user?.name, user?.email])
 
     const handleUpdateProfile = async () => {
         try {
@@ -70,20 +55,9 @@ const AccountSettings = () => {
                 toast.error('Name cannot be empty')
                 return
             }
-
-            const res = await fetch('/api/updateProfile', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name })
+            await authClient.updateUser({
+                name: name.trim()
             })
-
-            if (!res.ok) {
-                const error = await res.json()
-                throw new Error(error.message || 'Failed to update profile')
-            }
-
             toast.success('Profile updated successfully')
         } catch (error) {
             toast.error(error.message || 'Failed to update profile')
@@ -97,9 +71,49 @@ const AccountSettings = () => {
             // Add your email verification API call here
             toast.success('Verification email sent')
         } catch (error) {
-            toast.error(`Failed to send verification email`, error)
+            toast.error('Failed to send verification email')
         }
     }
+
+    const handleChangePassword = async () => {
+        try {
+            setChangingPassword(true)
+            if (!isAuthenticated) {
+                toast.error('You must be authenticated to change your password')
+                return
+            }
+            if (!currentPassword || !newPassword) {
+                toast.error('Please fill in all password fields')
+                return
+            }
+            if (newPassword.length < 8) {
+                toast.error('New password must be at least 8 characters')
+                return
+            }
+            if (newPassword !== confirmPassword) {
+                toast.error('Passwords do not match')
+                return
+            }
+            await authClient.changePassword({ currentPassword, newPassword })
+            setCurrentPassword("")
+            setNewPassword("")
+            setConfirmPassword("")
+            toast.success('Password changed successfully')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to change password')
+        } finally {
+            setChangingPassword(false)
+        }
+    }
+
+    useEffect(() => {
+        if (user?.name) {
+            setName(user.name)
+        }
+        if (user?.email) {
+            setEmail(user.email)
+        }
+    }, [user?.name, user?.email])
 
     if (loading) {
         return (
@@ -203,12 +217,49 @@ const AccountSettings = () => {
                     {/* Password Section */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-foreground">Password</h3>
+                        <div className="space-y-2">
+                            <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
+                            <Input
+                                id="current-password"
+                                type="password"
+                                placeholder="Current password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
+                            <Input
+                                id="new-password"
+                                type="password"
+                                placeholder="New password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
+                            <Input
+                                id="confirm-password"
+                                type="password"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
                         <Button
+                            onClick={handleChangePassword}
                             variant="outline"
-                            disabled={!isAuthenticated}
+                            disabled={!isAuthenticated || changingPassword}
                             className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                         >
-                            Change Password
+                            {changingPassword ? 'Changing...' : 'Change Password'}
                         </Button>
                     </div>
 

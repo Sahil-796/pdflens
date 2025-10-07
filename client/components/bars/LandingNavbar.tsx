@@ -27,7 +27,7 @@ import useUser from "@/hooks/useUser"
 
 // Navigation links array
 const navigationLinks = [
-    { href: "#", label: "Home" },
+    { href: "/", label: "Home" },
     {
         label: "Features",
         href: "#features"
@@ -38,7 +38,7 @@ const navigationLinks = [
     },
     {
         label: "Pricing",
-        href: "#pricing"
+        href: "/pricing"
     },
     {
         label: "Convert",

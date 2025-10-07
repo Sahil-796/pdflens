@@ -7,6 +7,7 @@ type UserState = {
     userName: string | null
     userEmail: string | null
     userAvatar: string | null
+    userPlan: 'free' | 'premium' | null
     status: AuthStatus
     setUser: (data: Partial<UserState>) => void
     clearUser: () => void
@@ -18,6 +19,7 @@ export const useUserStore = create<UserState>((set) => ({
     userName: null,
     userEmail: null,
     userAvatar: null,
+    userPlan: null,
     status: "loading",
     setUser: (data) => set((state) => ({ ...state, ...data, status: "authenticated" })),
     clearUser: () =>
@@ -26,6 +28,7 @@ export const useUserStore = create<UserState>((set) => ({
             userName: null,
             userEmail: null,
             userAvatar: null,
+            userPlan: null,
             status: "unauthenticated",
         }),
     setStatus: (status) => set({ status }),
