@@ -92,7 +92,7 @@ const Generate = () => {
   const [progress, setProgress] = useState(0)
 
   const { userId } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
+  const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf, pdfs } = usePdfStore()
 
   const template = searchParams.get('template') // Check for template param
 
@@ -106,11 +106,7 @@ const Generate = () => {
 
   useEffect(() => {
     if (success) {
-      // Add a small delay to show the success state before redirecting
-      const timer = setTimeout(() => {
-        router.push(`/edit/${pdfId}`)
-      }, 2000)
-      return () => clearTimeout(timer)
+      router.push(`/edit/${pdfId}`)
     }
   }, [success, pdfId, router])
 
@@ -164,6 +160,16 @@ const Generate = () => {
       const updateData = await updateRes.json()
 
       if (updateData.status === 200) {
+        // Optimistically add to the dashboard list if not present
+        const exists = pdfs.some((p) => p.id === currentPdfId)
+        if (!exists) {
+          addPdf({
+            id: currentPdfId!,
+            fileName: fileName || 'Untitled',
+            createdAt: new Date().toISOString(),
+            htmlContent: generateData.data,
+          })
+        }
         setProgress(100)
         setSuccess(true)
         toast.success("PDF Generated Successfully!")

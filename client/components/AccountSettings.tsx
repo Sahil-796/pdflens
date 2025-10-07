@@ -24,6 +24,10 @@ const AccountSettings = () => {
     const [updating, setUpdating] = useState(false)
     const [confirmText, setConfirmText] = useState("")
     const [deleteLoading, setDeleteLoading] = useState(false)
+    const [currentPassword, setCurrentPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [changingPassword, setChangingPassword] = useState(false)
 
     const handleDeleteAccount = async () => {
         try {
@@ -68,6 +72,37 @@ const AccountSettings = () => {
             toast.success('Verification email sent')
         } catch (error) {
             toast.error('Failed to send verification email')
+        }
+    }
+
+    const handleChangePassword = async () => {
+        try {
+            setChangingPassword(true)
+            if (!isAuthenticated) {
+                toast.error('You must be authenticated to change your password')
+                return
+            }
+            if (!currentPassword || !newPassword) {
+                toast.error('Please fill in all password fields')
+                return
+            }
+            if (newPassword.length < 8) {
+                toast.error('New password must be at least 8 characters')
+                return
+            }
+            if (newPassword !== confirmPassword) {
+                toast.error('Passwords do not match')
+                return
+            }
+            await authClient.changePassword({ currentPassword, newPassword })
+            setCurrentPassword("")
+            setNewPassword("")
+            setConfirmPassword("")
+            toast.success('Password changed successfully')
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to change password')
+        } finally {
+            setChangingPassword(false)
         }
     }
 
@@ -182,12 +217,49 @@ const AccountSettings = () => {
                     {/* Password Section */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-foreground">Password</h3>
+                        <div className="space-y-2">
+                            <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
+                            <Input
+                                id="current-password"
+                                type="password"
+                                placeholder="Current password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
+                            <Input
+                                id="new-password"
+                                type="password"
+                                placeholder="New password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
+                            <Input
+                                id="confirm-password"
+                                type="password"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
                         <Button
+                            onClick={handleChangePassword}
                             variant="outline"
-                            disabled={!isAuthenticated}
+                            disabled={!isAuthenticated || changingPassword}
                             className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                         >
-                            Change Password
+                            {changingPassword ? 'Changing...' : 'Change Password'}
                         </Button>
                     </div>
 
