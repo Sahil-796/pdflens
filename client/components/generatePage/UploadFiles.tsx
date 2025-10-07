@@ -1,19 +1,19 @@
 'use client'
 import { useState } from "react"
 import { toast } from "sonner"
-import { Upload, X } from "lucide-react"
+import { LoaderCircle, Upload, X } from "lucide-react"
 import { usePdfStore } from "@/app/store/usePdfStore"
-import { TextShimmerWave } from "@/components/motion-primitives/text-shimmer-wave"
 
 interface UploadedFile {
     name: string
 }
 
 export default function UploadFiles() {
-    const { pdfId, setPdf, fileName, isContext } = usePdfStore()
+    const { pdfId, setPdf, fileName } = usePdfStore()
     const [files, setFiles] = useState<UploadedFile[]>([])
     const [loading, setLoading] = useState(false)
     const [dragActive, setDragActive] = useState(false)
+    const [isRemoving, setIsRemoving] = useState(false)
 
     const uploadFile = async (newFile: File) => {
         if (!newFile || loading) return
@@ -41,21 +41,17 @@ export default function UploadFiles() {
 
             if (!currentPdfId) throw new Error("PDF ID is missing")
 
-            // Step 2: Choose API endpoint
             const apiEndpoint = files.length === 0 ? "/api/addContext" : "/api/updateContext"
 
-            // Step 3: Prepare upload data
             const formData = new FormData()
             formData.append("file", newFile, newFile.name)
             formData.append("pdfId", currentPdfId)
 
-            // Step 4: Upload file
             const res = await fetch(apiEndpoint, { method: "POST", body: formData })
             if (!res.ok) {
                 const errText = await res.text()
                 console.error("Upload failed:", errText)
 
-                // Rollback orphan PDF if addContext failed
                 if (createdPdfId) {
                     try {
                         await fetch(`/api/deletePdf`, {
@@ -74,7 +70,6 @@ export default function UploadFiles() {
 
             await res.json()
 
-            // Step 5: Update state
             setFiles(prev => [...prev, { name: newFile.name }])
             setPdf({ isContext: true })
             toast.success(`${newFile.name} uploaded successfully`)
@@ -89,6 +84,7 @@ export default function UploadFiles() {
     const removeFile = async (fileName: string, idx: number) => {
         if (!pdfId) return
         try {
+            setIsRemoving(true)
             const res = await fetch("/api/removeContext", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -104,15 +100,17 @@ export default function UploadFiles() {
             await res.json()
             setFiles(prev => prev.filter((_, i) => i !== idx))
 
-            // if no files left, reset store context
             if (files.length === 1) {
                 setPdf({ isContext: false })
             }
 
             toast.success(`${fileName} removed successfully`)
+
         } catch (err) {
             console.error("Remove error:", err)
             toast.error("Failed to remove file")
+        } finally {
+            setIsRemoving(false)
         }
     }
 
@@ -128,21 +126,40 @@ export default function UploadFiles() {
     }
 
     return (
-        <div className="w-full">
-            <label className="block font-medium mb-2">Upload Files</label>
+        <div className="space-y-4">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+                <label className="text-sm font-medium">Reference Files</label>
+                <span className="text-xs text-muted-foreground">{files.length} uploaded</span>
+            </div>
 
+            {/* Drag & Drop Area */}
             <div
-                className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer transition 
-          ${dragActive ? "border-primary bg-primary/10" : "border-border bg-muted/30 hover:bg-muted/50"}
-          ${loading ? "opacity-50 cursor-wait" : ""}`} // disable interaction
-                onDragOver={(e) => { if (!loading) { e.preventDefault(); setDragActive(true) } }}
-                onDragLeave={() => { if (!loading) setDragActive(false) }}
+                className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all duration-200
+      min-h-[140px] sm:min-h-[160px] flex flex-col items-center justify-center
+      ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
+      ${loading ? "opacity-50 cursor-wait" : ""}
+    `}
+                onDragOver={(e) => {
+                    if (!loading) {
+                        e.preventDefault()
+                        setDragActive(true)
+                    }
+                }}
+                onDragLeave={() => {
+                    if (!loading) setDragActive(false)
+                }}
                 onDrop={handleDrop}
-                onClick={() => { if (!loading) document.getElementById("fileInput")?.click() }}
+                onClick={() => {
+                    if (!loading) document.getElementById("fileInput")?.click()
+                }}
             >
-                <Upload className="mx-auto mb-2 text-muted-foreground" size={32} />
-                <p className="text-sm text-muted-foreground">
-                    Drag & drop a file here, or <span className="text-primary font-medium">browse</span>
+                <Upload
+                    className={`mx-auto mb-2 text-muted-foreground transition-transform ${loading ? "animate-bounce" : "group-hover:scale-110"
+                        }`}
+                    size={28}
+                />
+                <p className="text-sm text-muted-foreground max-w-[80%] sm:max-w-none mx-auto">
+                    {loading ? "Uploading..." : "Drop files here or tap to browse"}
                 </p>
                 <input
                     disabled={loading}
@@ -153,26 +170,33 @@ export default function UploadFiles() {
                 />
             </div>
 
-            {loading && (
-                <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <TextShimmerWave duration={1.2}>Uploading file...</TextShimmerWave>
-                </div>
-            )}
-
+            {/* Files List */}
             {files.length > 0 && (
-                <ul className="mt-3 space-y-2 text-sm text-muted-foreground border rounded-md p-2 bg-muted/30">
-                    {files.map((fileItem, idx) => (
-                        <li key={idx} className="flex items-center justify-between truncate">
-                            <span className="flex items-center gap-2 truncate">📄 <span className="truncate">{fileItem.name}</span></span>
-                            <button
-                                onClick={() => removeFile(fileItem.name, idx)}
-                                className="bg-destructive/10 hover:bg-destructive/20 text-destructive p-1 rounded-full transition"
+                <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Uploaded Files:</h4>
+                    <div className="space-y-1 max-h-40 overflow-y-auto">
+                        {files.map((fileItem, idx) => (
+                            <div
+                                key={idx}
+                                className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm gap-2"
                             >
-                                <X size={16} />
-                            </button>
-                        </li>
-                    ))}
-                </ul>
+                                <span className="flex items-center gap-2 truncate">
+                                    📄 <span className="truncate">{fileItem.name}</span>
+                                </span>
+                                <button
+                                    onClick={() => removeFile(fileItem.name, idx)}
+                                    className="text-destructive hover:bg-destructive/10 p-1 rounded transition"
+                                >
+                                    {isRemoving ? (
+                                        <LoaderCircle size={14} className="animate-spin" />
+                                    ) : (
+                                        <X size={14} />
+                                    )}
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             )}
         </div>
     )

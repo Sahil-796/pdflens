@@ -3,14 +3,14 @@
 import { usePdfStore } from '@/app/store/usePdfStore'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
+import { Save } from 'lucide-react'
 
 const SaveChanges = () => {
     const { renderedHtml, pdfId } = usePdfStore()
     const [loading, setLoading] = useState(false)
 
     async function handleSave() {
-        if (!renderedHtml) return;
+        if (!renderedHtml) return
 
         setLoading(true)
         const res = await fetch("/api/updatePdf", {
@@ -20,22 +20,25 @@ const SaveChanges = () => {
                 html: renderedHtml,
                 id: pdfId
             }),
-        });
+        })
 
         if (res.ok) {
             setLoading(false)
             toast.success("Changes Saved.")
         } else {
+            setLoading(false)
             toast.error("Error while Saving.")
         }
     }
+
     return (
         <button
             onClick={handleSave}
-            className="bg-secondary text-secondary-foreground rounded-md py-2 px-4 hover:bg-secondary/90 transition cursor-pointer"
             disabled={loading}
+            className="group flex items-center gap-2 bg-primary text-primary-foreground font-medium rounded-md px-3 py-2 text-sm shadow-sm hover:bg-primary/90 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-            {loading ? <TextShimmerWave>Saving...</TextShimmerWave> : "Save Changes"}
+            <Save className={`w-4 h-4 ${loading ? 'animate-caret-blink' : ''}`} />
+            <span className="hidden sm:inline">Save</span>
         </button>
     )
 }

@@ -2,7 +2,10 @@
 
 import * as React from "react"
 import {
-  LayoutGrid,
+  ArrowLeftRight,
+  BetweenVerticalEnd,
+  FileSearch,
+  Home,
   Pen,
   Plus,
 } from "lucide-react"
@@ -13,111 +16,133 @@ import { NavUser } from "@/components/bars/nav-user"
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar"
-import LogoutButton from "../auth/logout-button"
-import { useUserStore } from "@/app/store/useUserStore"
 import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
+import SearchBar from "../dashboardPage/SearchBar"
+import { cn } from "@/lib/utils"
+import useUser from "@/hooks/useUser"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const { userName, userEmail, userAvatar } = useUserStore()
+  const {user} = useUser()
+  const { state } = useSidebar();
   const data = {
     user: {
-      name: userName || 'Loading',
-      email: userEmail || 'Loading',
-      avatar: userAvatar || ''
+      name: user.name || 'Loading',
+      email: user.email || 'Loading',
+      avatar: user.avatar || ''
     },
-    super: [
+    main: [
       {
-        name: "Dashboard",
+        title: "Dashboard",
         url: '/dashboard',
-        icon: LayoutGrid
+        icon: Home,
       },
       {
-        name: 'Generate',
+        title: 'Generate',
         url: '/generate',
         icon: Plus
       },
       {
-        name: 'Edit',
+        title: 'Edit',
         url: '/edit',
         icon: Pen
       },
     ],
-    tools: [
+    projects: [
       {
-        "title": "Convert",
-        "url": "#",
-        "items": [
-          { "title": "PDF to Word", "url": "/tools/pdf-to-word" },
-          { "title": "PDF to PPT", "url": "/tools/pdf-to-ppt" },
-          { "title": "PDF to Excel", "url": "/tools/pdf-to-excel" },
-          { "title": "PDF to JPG", "url": "/tools/pdf-to-jpg" },
-          { "title": "JPG to PDF", "url": "/tools/jpg-to-pdf" },
-          { "title": "Word to PDF", "url": "/tools/word-to-pdf" },
-          { "title": "PPT to PDF", "url": "/tools/ppt-to-pdf" },
-          { "title": "Excel to PDF", "url": "/tools/excel-to-pdf" },
-          { "title": "HTML to PDF", "url": "/tools/html-to-pdf" }
+        name: "Convert",
+        url: "",
+        icon: ArrowLeftRight,
+        items: [
+          { title: "PDF to Word", url: "/tools/pdf-to-word" },
+          { title: "Word to PDF", url: "/tools/word-to-pdf" },
+          { title: "PDF to MD", url: "/tools/pdf-to-md" }
         ]
       },
       {
-        "title": "Organize",
-        "url": "#",
-        "items": [
-          { "title": "Merge PDF", "url": "/tools/merge-pdf" },
-          { "title": "Split PDF", "url": "/tools/split-pdf" },
-          { "title": "Organize Pages", "url": "/tools/organize-pdf" },
-          { "title": "Compress PDF", "url": "/tools/compress-pdf" }
+        name: "PDF Tools",
+        url: "",
+        icon: BetweenVerticalEnd,
+        items: [
+          { title: "Merge PDF", url: "/tools/merge-pdf" },
+          { title: "Split PDF", url: "/tools/split-pdf" },
+          { title: "Organize Pages", url: "/tools/organize-pdf" },
+          { title: "Edit PDF", url: "/tools/edit-pdf" },
         ]
       },
-      {
-        "title": "Edit",
-        "url": "#",
-        "items": [
-          { "title": "Edit PDF", "url": "/tools/edit-pdf" },
-          { "title": "Add Text", "url": "/tools/add-text" },
-          { "title": "Add Image", "url": "/tools/add-image" },
-          { "title": "Fill & Sign", "url": "/tools/fill-sign" },
-          { "title": "Annotate PDF", "url": "/tools/annotate" }
-        ]
-      },
-      {
-        "title": "Security",
-        "url": "#",
-        "items": [
-          { "title": "Protect PDF (Password)", "url": "/tools/protect-pdf" },
-          { "title": "Unlock PDF", "url": "/tools/unlock-pdf" },
-          { "title": "Watermark PDF", "url": "/tools/watermark-pdf" },
-          { "title": "E-signature", "url": "/tools/esign-pdf" }
-        ]
-      },
-      {
-        "title": "View & Utilities",
-        "url": "#",
-        "items": [
-          { "title": "PDF Reader", "url": "/tools/pdf-reader" },
-          { "title": "Rotate PDF", "url": "/tools/rotate-pdf" },
-          { "title": "Extract Images", "url": "/tools/extract-images" },
-          { "title": "Extract Text", "url": "/tools/extract-text" },
-          { "title": "Compare PDFs", "url": "/tools/compare-pdfs" }
-        ]
-      }
     ]
   }
+  const isCollapsed = state === "collapsed";
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <NavUser user={data.user} />
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              size="lg"
+              className={cn(
+                "group/header relative",
+                "hover:bg-sidebar-accent transition-all duration-200",
+                isCollapsed ? "justify-center px-2" : "px-3"
+              )}
+              tooltip={isCollapsed ? "PDF Lens" : undefined}
+            >
+              <div
+                className={cn(
+                  "flex items-center gap-3 transition-all duration-200",
+                  isCollapsed && "justify-center"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex items-center justify-center rounded-lg",
+                    "bg-gradient-to-br from-primary to-primary/80",
+                    "text-primary-foreground shadow-sm",
+                    "transition-all duration-200",
+                    "group-hover/header:shadow-md group-hover/header:scale-105",
+                    isCollapsed ? "size-8" : "size-9"
+                  )}
+                >
+                  <FileSearch
+                    className={cn(
+                      "transition-all duration-200",
+                      isCollapsed ? "size-4" : "size-5"
+                    )}
+                  />
+                </div>
+                {!isCollapsed && (
+                  <div className="flex flex-col">
+                    <span className="text-base font-bold tracking-tight">
+                      PDF Lens
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium">
+                      AI PDF Assistant
+                    </span>
+                  </div>
+                )}
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavProjects projects={data.super} />
-        <NavMain items={data.tools} />
+        <SearchBar />
+        <NavMain items={data.main} />
+        <NavProjects projects={data.projects} />
       </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
       <SidebarRail />
-      <LogoutButton />
     </Sidebar>
   )
 }

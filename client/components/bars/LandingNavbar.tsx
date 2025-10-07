@@ -1,6 +1,7 @@
-"use client"
+'use client'
 
-import Link from "next/link"
+import { Loader2, LogOut, User, FileSearch } from "lucide-react"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
     NavigationMenu,
@@ -10,150 +11,290 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
-import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
+import ThemeToggle from "../theme/ThemeToggle"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
+import { authClient } from "@/lib/auth-client"
+import useUser from "@/hooks/useUser"
 
-const tools = [
+// Navigation links array
+const navigationLinks = [
+    { href: "#", label: "Home" },
     {
-        title: "Convert",
-        items: [
-            { title: "PDF to Word", url: "/tools/pdf-to-word" },
-            { title: "PDF to PPT", url: "/tools/pdf-to-ppt" },
-            { title: "PDF to Excel", url: "/tools/pdf-to-excel" },
-            { title: "PDF to JPG", url: "/tools/pdf-to-jpg" },
-            { title: "JPG to PDF", url: "/tools/jpg-to-pdf" },
-            { title: "Word to PDF", url: "/tools/word-to-pdf" },
-            { title: "PPT to PDF", url: "/tools/ppt-to-pdf" },
-            { title: "Excel to PDF", url: "/tools/excel-to-pdf" },
-            { title: "HTML to PDF", url: "/tools/html-to-pdf" },
-        ],
+        label: "Features",
+        href: "#features"
     },
     {
-        title: "Organize",
-        items: [
-            { title: "Merge PDF", url: "/tools/merge-pdf" },
-            { title: "Split PDF", url: "/tools/split-pdf" },
-            { title: "Organize Pages", url: "/tools/organize-pdf" },
-            { title: "Compress PDF", url: "/tools/compress-pdf" },
-        ],
+        label: "Working",
+        href: "#steps"
     },
     {
-        title: "Edit",
-        items: [
-            { title: "Edit PDF", url: "/tools/edit-pdf" },
-            { title: "Add Text", url: "/tools/add-text" },
-            { title: "Add Image", url: "/tools/add-image" },
-            { title: "Fill & Sign", url: "/tools/fill-sign" },
-            { title: "Annotate PDF", url: "/tools/annotate" },
-        ],
+        label: "Pricing",
+        href: "#pricing"
     },
     {
-        title: "Security",
+        label: "Convert",
+        submenu: true,
+        type: "description",
         items: [
-            { title: "Protect PDF (Password)", url: "/tools/protect-pdf" },
-            { title: "Unlock PDF", url: "/tools/unlock-pdf" },
-            { title: "Watermark PDF", url: "/tools/watermark-pdf" },
-            { title: "E-signature", url: "/tools/esign-pdf" },
-        ],
+            {
+                "href": "/tools/merge-pdf",
+                "label": "Merge PDF",
+                "description": "Combine multiple PDF documents into one seamless, organized file."
+            },
+            {
+                "href": "/tools/split-pdf",
+                "label": "Split PDF",
+                "description": "Extract and split pages from large PDFs into smaller, separate files."
+            },
+            {
+                "href": "/tools/organize-pdf",
+                "label": "Organize Pages",
+                "description": "Reorder, rotate, or delete pages in your PDF for better structure."
+            },
+            {
+                "href": "/tools/edit-pdf",
+                "label": "Edit PDF",
+                "description": "Modify text, images, and layout directly within your PDF files."
+            }
+        ]
     },
     {
-        title: "View & Utilities",
+        label: "Tools",
+        submenu: true,
+        type: "description",
         items: [
-            { title: "PDF Reader", url: "/tools/pdf-reader" },
-            { title: "Rotate PDF", url: "/tools/rotate-pdf" },
-            { title: "Extract Images", url: "/tools/extract-images" },
-            { title: "Extract Text", url: "/tools/extract-text" },
-            { title: "Compare PDFs", url: "/tools/compare-pdfs" },
-        ],
+            {
+                "href": "/tools/pdf-to-word",
+                "label": "PDF to Word",
+                "description": "Convert your PDF files into editable Word documents with high accuracy."
+            },
+            {
+                "href": "/tools/word-to-pdf",
+                "label": "Word to PDF",
+                "description": "Turn Word documents into secure, shareable PDF files in seconds."
+            },
+            {
+                "href": "/tools/pdf-to-md",
+                "label": "PDF to MD",
+                "description": "Extract content from PDFs and convert it into clean Markdown format."
+            }
+        ]
     },
 ]
 
 export default function Navbar() {
-    useAuthRehydrate()
-    const { userName } = useUserStore()
+    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter()
+    const { user } = useUser()
+    const { clearUser } = useUserStore()
+
+    const handleLogout = async () => {
+        try {
+            setIsLoading(true)
+            await authClient.signOut({
+                fetchOptions: {
+                    onSuccess: () => {
+                        router.push("/");
+                    },
+                },
+            });
+            clearUser()
+        } finally {
+            setIsLoading(false)
+        }
+    }
+
+    // Monogram (first letter of name or email fallback)
+    const monogram =
+        user.avatar ||
+        user.name?.[0]?.toUpperCase() ||
+        user.email?.[0]?.toUpperCase() ||
+        "U"
+
     return (
-        <header className="sticky top-0 z-50 border-b bg-background/70 backdrop-blur-md">
-            <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-8">
-                {/* Logo + Left Nav */}
-                <div className="flex items-center gap-6">
-                    <Link href="/" className="text-xl font-bold text-primary">
-                        PDF Lens
-                    </Link>
-                    <NavigationMenu className="hidden md:flex">
-                        <NavigationMenuList className="gap-6">
-                            <NavigationMenuItem>
-                                <NavigationMenuLink href="/" className="font-medium hover:text-primary">
-                                    Home
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink href="#features" className="font-medium hover:text-primary">
-                                    Features
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink href="#step" className="font-medium hover:text-primary">
-                                    Working
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
-                            <NavigationMenuItem>
-                                <NavigationMenuLink href="#pricing" className="font-medium hover:text-primary">
-                                    Pricing
-                                </NavigationMenuLink>
-                            </NavigationMenuItem>
+        <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
+            <div className="bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-3 py-2.5">
 
-                            {/* Tools Dropdown */}
-                            <NavigationMenuItem>
-                                <NavigationMenuTrigger className="font-medium hover:text-primary bg-transparent">
-                                    Tools
-                                </NavigationMenuTrigger>
-                                <NavigationMenuContent className="grid grid-cols-2 gap-6 p-6 min-w-[600px]">
-                                    {tools.map((category, i) => (
-                                        <div key={i} className="space-y-2">
-                                            <p className="text-sm font-semibold text-foreground">
-                                                {category.title}
-                                            </p>
-                                            <ul className="space-y-1 text-sm">
-                                                {category.items.map((item, j) => (
-                                                    <li key={j}>
-                                                        <NavigationMenuLink
-                                                            href={item.url}
-                                                            className="block rounded-md px-2 py-1 hover:bg-accent hover:text-accent-foreground"
-                                                        >
-                                                            {item.title}
-                                                        </NavigationMenuLink>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    ))}
-                                </NavigationMenuContent>
-                            </NavigationMenuItem>
-                        </NavigationMenuList>
-                    </NavigationMenu>
-                </div>
-
-                {/* Right side buttons */}
-                {
-                    !userName ?
-                        <div className="flex items-center gap-3">
-                            <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
-                                <Link href="/login">Sign In</Link>
-                            </Button>
-                            <Button asChild size="sm" className="rounded-full bg-primary px-5 text-white shadow hover:bg-primary/90">
-                                <Link href="/signup">Get Started</Link>
-                            </Button>
-                        </div>
-                        :
-                        <div className="flex items-center gap-3">
-                            <Button asChild variant="ghost" size="sm" className="rounded-full px-4">
-                                <Link href="/dashboard">Dashboard</Link>
-                            </Button>
-                            <div>
-                                Welcome back {userName}
+                <div className="flex items-center justify-between">
+                    {/* Left: Logo */}
+                    <Link href="/"
+                        className={cn(
+                            "group/header relative text-lg font-bold text-primary flex-shrink-0",
+                            "justify-center"
+                        )}
+                    >
+                        <div
+                            className={cn(
+                                "flex items-center gap-3",
+                            )}
+                        >
+                            <div
+                                className={cn(
+                                    "flex items-center justify-center rounded-lg",
+                                    "bg-gradient-to-br from-primary to-primary/80",
+                                    "text-primary-foreground shadow-sm",
+                                    "transition-all duration-200",
+                                    "group-hover/header:shadow-md5",
+                                    "size-9"
+                                )}
+                            >
+                                <FileSearch className="size-5" />
+                            </div>
+                            <div className="flex flex-col">
+                                <span className="text-base font-bold tracking-tight">
+                                    PDF Lens
+                                </span>
+                                <span className="text-[10px] text-muted-foreground font-medium">
+                                    AI PDF Assistant
+                                </span>
                             </div>
                         </div>
-                }
+                    </Link>
+
+                    {/* Center: Navigation */}
+                    <NavigationMenu viewport={false} className="hidden md:flex">
+                        <NavigationMenuList className="gap-1">
+                            {navigationLinks.map((link, index) => (
+                                <NavigationMenuItem key={index}>
+                                    {link.submenu ? (
+                                        <>
+                                            <NavigationMenuTrigger className="text-sm text-foreground hover:text-primary bg-transparent px-3 py-1.5 font-medium h-8">
+                                                {link.label}
+                                            </NavigationMenuTrigger>
+                                            <NavigationMenuContent className="z-50 p-2">
+                                                <ul
+                                                    className={cn(
+                                                        link.type === "description"
+                                                            ? "min-w-64"
+                                                            : "min-w-48"
+                                                    )}
+                                                >
+                                                    {link.items.map((item, itemIndex) => (
+                                                        <li key={itemIndex}>
+                                                            <NavigationMenuLink
+                                                                href={item.href}
+                                                                className="block rounded-md px-3 py-2 hover:bg-muted"
+                                                            >
+                                                                <div className="font-medium text-sm">
+                                                                    {item.label}
+                                                                </div>
+                                                                <p className="text-muted-foreground text-xs">
+                                                                    {item.description}
+                                                                </p>
+                                                            </NavigationMenuLink>
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </NavigationMenuContent>
+                                        </>
+                                    ) : (
+                                        <NavigationMenuLink
+                                            href={link.href}
+                                            className="text-sm text-foreground hover:text-primary px-3 py-1.5 font-medium"
+                                        >
+                                            {link.label}
+                                        </NavigationMenuLink>
+                                    )}
+                                </NavigationMenuItem>
+                            ))}
+                        </NavigationMenuList>
+                    </NavigationMenu>
+
+                    {/* Right: Auth/User */}
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {!user.id ? (
+                            <>
+                                <Button asChild variant="ghost" size="sm" className="text-sm h-8">
+                                    <Link href="/login">Sign In</Link>
+                                </Button>
+                                <Button asChild size="sm" className="text-sm h-8 rounded-md">
+                                    <Link href="/signup">Get Started</Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <Button asChild variant="ghost" size="sm" className="h-8 rounded-md">
+                                    <Link href="/dashboard">Dashboard</Link>
+                                </Button>
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="secondary"
+                                            size="icon"
+                                            className="rounded-lg h-9 w-9 font-semibold cursor-pointer transition-transform"
+                                        >
+                                            {monogram}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64 p-0 mr-4" align="end">
+                                        {/* User Info Section */}
+                                        <div className="p-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                                                    <span className="text-lg font-semibold text-primary">
+                                                        {monogram}
+                                                    </span>
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-semibold text-sm truncate">{user.name}</p>
+                                                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <Separator />
+
+                                        {/* Actions Section */}
+                                        <div className="p-2">
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full justify-start gap-2 h-9 text-sm font-normal"
+                                                asChild
+                                            >
+                                                <Link href="/account">
+                                                    <User className="h-4 w-4" />
+                                                    Account Settings
+                                                </Link>
+                                            </Button>
+                                            <div className="flex items-center justify-between px-3 py-2">
+                                                <span className="text-sm text-muted-foreground">Theme</span>
+                                                <ThemeToggle />
+                                            </div>
+                                        </div>
+
+                                        <Separator />
+
+                                        {/* Logout Section */}
+                                        <div className="p-2">
+                                            <Button
+                                                variant="ghost"
+                                                onClick={handleLogout}
+                                                disabled={isLoading}
+                                                className="w-full justify-start gap-2 h-9 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10"
+                                            >
+                                                {isLoading ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : (
+                                                    <LogOut className="h-4 w-4" />
+                                                )}
+                                                <span>{isLoading ? "Logging out..." : "Log out"}</span>
+                                            </Button>
+                                        </div>
+                                    </PopoverContent>
+                                </Popover>
+                            </div>
+                        )}
+                    </div>
+                </div>
             </div>
         </header>
     )

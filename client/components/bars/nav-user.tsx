@@ -1,10 +1,10 @@
 "use client"
 
 import {
-  BadgeCheck,
   ChevronsUpDown,
   CreditCard,
   Sparkles,
+  User,
 } from "lucide-react"
 
 import {
@@ -26,7 +26,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import ThemeStyle from "../theme/ThemeStyle"
+import LogoutButton from "../auth/logout-button"
+import { useRouter } from "next/navigation"
 
 
 export function NavUser({
@@ -39,6 +40,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
   return (
     <SidebarMenu>
@@ -79,9 +81,9 @@ export function NavUser({
 
             {/* Account + Billing */}
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck className="mr-2 h-4 w-4" />
-                Account
+              <DropdownMenuItem onSelect={() => router.push('/account')}>
+                <User className="mr-2 h-4 w-4" />
+                Account Settings
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard className="mr-2 h-4 w-4" />
@@ -91,15 +93,9 @@ export function NavUser({
 
             <DropdownMenuSeparator />
 
-            {/* Theme Options */}
-            <DropdownMenuGroup className="flex items-center justify-between " asChild>
-
-              <div>
-                <span className="text-sm ml-3">Style:</span>
-                <ThemeStyle />
-              </div>
+            <DropdownMenuGroup className="w-full">
+              <LogoutButton />
             </DropdownMenuGroup>
-
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
