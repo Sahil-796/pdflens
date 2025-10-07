@@ -19,15 +19,8 @@
     {
       "idx": 2,
       "version": "7",
-      "when": 1759838294416,
-      "tag": "0002_abnormal_rogue",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1759838332800,
-      "tag": "0003_noisy_hellion",
+      "when": 1759821921906,
+      "tag": "0002_lame_iron_man",
       "breakpoints": true
     }
   ]
