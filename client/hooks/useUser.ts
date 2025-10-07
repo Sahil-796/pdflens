@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 
 export default function useUser() {
-    const { userId, userName, userEmail, userAvatar, status, setUser, clearUser } = useUserStore();
+    const { userId, userName, userEmail, userAvatar, userPlan, status, setUser, clearUser } = useUserStore();
     const [loading, setLoading] = useState(status === "loading");
 
     useEffect(() => {
@@ -20,7 +20,17 @@ export default function useUser() {
                         userName: session.user.name,
                         userEmail: session.user.email,
                         userAvatar: session.user.image,
+                        userPlan: (session.user as any).plan ?? null,
                     });
+
+                    // Fetch authoritative plan from DB
+                    try {
+                        const res = await fetch('/api/getPlan', { cache: 'no-store' })
+                        if (res.ok) {
+                            const { plan } = await res.json()
+                            if (plan) setUser({ userPlan: plan })
+                        }
+                    } catch {}
                 } else {
                     clearUser();
                 }
@@ -41,9 +51,11 @@ export default function useUser() {
             name: userName,
             email: userEmail,
             avatar: userAvatar,
+            plan: userPlan,
         },
         loading,
         status,
         isAuthenticated: status === "authenticated",
+        isPro: userPlan === 'premium'
     };
 }

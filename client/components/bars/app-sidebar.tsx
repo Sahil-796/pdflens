@@ -31,13 +31,14 @@ import useUser from "@/hooks/useUser"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const {user} = useUser()
+  const { user, isPro } = useUser()
   const { state } = useSidebar();
   const data = {
     user: {
       name: user.name || 'Loading',
       email: user.email || 'Loading',
-      avatar: user.avatar || ''
+      avatar: user.avatar || '',
+      isPro
     },
     main: [
       {

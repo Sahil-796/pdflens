@@ -37,6 +37,7 @@ export function NavUser({
     name: string
     email: string
     avatar: string
+    isPro: boolean
   }
 }) {
   const { isMobile } = useSidebar()
@@ -70,12 +71,15 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles className="mr-2 h-4 w-4" />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+            {
+              !user.isPro && (
+                <DropdownMenuGroup>
+                  <DropdownMenuItem onSelect={() => router.push('/pricing')}>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Upgrade to Pro
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              )}
 
             <DropdownMenuSeparator />
 
