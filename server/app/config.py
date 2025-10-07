@@ -27,7 +27,7 @@ embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
 
 from langchain_cloudflare import CloudflareWorkersAIEmbeddings
 
-account_id = os.environ.get("ACCOUNT_ID")
+account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
 api_token = os.environ.get("CLOUDFLARE_AUTH_TOKEN")
 model_name =  "@cf/baai/bge-m3"
 
