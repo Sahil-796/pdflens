@@ -12,23 +12,41 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner"
 import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
+import { useUserStore } from "@/app/store/useUserStore"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
+    const {clearUser} = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
     const [updating, setUpdating] = useState(false)
     const [confirmText, setConfirmText] = useState("")
+    const [deleteLoading, setDeleteLoading] = useState(false)
 
-    const handleDeleteAccount = () => {
-        if (confirmText.trim().toLowerCase() === "delete my account") {
-            // your delete logic here
+    const handleDeleteAccount = async () => {
+        try {
+            setDeleteLoading(true)
+            if (confirmText.trim().toLowerCase() !== "delete my account") return
+            const res = await fetch('/api/deleteAccount', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ confirmText })
+            })
+
+            if (!res.ok) {
+                const error = await res.json()
+                throw new Error(error.message || 'Failed to update profile')
+            }
+            clearUser()
             toast.success("Account deleted!")
             router.push('/')
-        } else {
-            // optional toast or alert
-            toast.error("Confirmation text incorrect.")
+        } catch (error: any) {
+            toast.error(error.message || "Confirmation text incorrect.")
+        } finally {
+            setDeleteLoading(false)
         }
     }
 
@@ -216,7 +234,7 @@ const AccountSettings = () => {
                                         Are you absolutely sure?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription className="text-muted-foreground">
-                                        This action cannot be undone. Type <span className="font-semibold text-destructive">"Delete my account"</span> below to confirm.
+                                        This action cannot be undone. Type <span className="font-semibold text-destructive">"delete my account"</span> below to confirm.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
 
@@ -225,7 +243,7 @@ const AccountSettings = () => {
                                         type="text"
                                         value={confirmText}
                                         onChange={(e) => setConfirmText(e.target.value)}
-                                        placeholder='Type "Delete my account"'
+                                        placeholder='Type "delete my account"'
                                         className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
                                     />
                                 </div>
