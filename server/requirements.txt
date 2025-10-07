@@ -13,3 +13,4 @@ markdown-it-py
 pydantic
 pypdf
 langchain-cloudflare
+pdf2docx

@@ -5,18 +5,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, CheckCircle2, Dot, Mail, User } from "lucide-react"
+import { AlertCircle, CheckCircle2, Dot, Mail, Router, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "./ui/alert"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 import { toast } from "sonner"
 import useUser from "@/hooks/useUser"
+import { useRouter } from "next/navigation"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
+    const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
     const [updating, setUpdating] = useState(false)
+    const [confirmText, setConfirmText] = useState("")
+
+    const handleDeleteAccount = () => {
+        if (confirmText.trim().toLowerCase() === "delete my account") {
+            // your delete logic here
+            toast.success("Account deleted!")
+            router.push('/')
+        } else {
+            // optional toast or alert
+            toast.error("Confirmation text incorrect.")
+        }
+    }
 
     useEffect(() => {
         if (user?.name) {
@@ -57,14 +71,6 @@ const AccountSettings = () => {
             toast.error(error.message || 'Failed to update profile')
         } finally {
             setUpdating(false)
-        }
-    }
-    const handleDeleteAccount = async () => {
-        try {
-            // Add your delete account API call here
-            toast.success('Account deleted successfully')
-        } catch (error) {
-            toast.error('Failed to delete account')
         }
     }
 
@@ -108,6 +114,7 @@ const AccountSettings = () => {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         className="pl-9 bg-background border-border focus:ring-primary"
+                                        disabled={!isAuthenticated}
                                     />
                                 </div>
                             </div>
@@ -125,6 +132,7 @@ const AccountSettings = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="pl-9 bg-background border-border focus:ring-primary"
+                                        disabled={true}
                                     />
                                 </div>
                             </div>
@@ -132,21 +140,31 @@ const AccountSettings = () => {
 
                         {/* Email Verification Status */}
                         {isAuthenticated ? (
-                            <Alert variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">
-                                <CheckCircle2 className="h-4 w-4" />
-                                <AlertDescription>Your email is verified</AlertDescription>
+                            <Alert
+                                variant="default"
+                                className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
+                            >
+                                <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                                <AlertDescription className="text-sm font-medium">
+                                    Your email has been verified. You're all set!
+                                </AlertDescription>
                             </Alert>
                         ) : (
-                            <Alert variant="destructive" className="bg-destructive/10">
-                                <AlertCircle className="h-4 w-4" />
-                                <AlertDescription className="flex-1">
-                                    Please verify your email address
-                                </AlertDescription>
+                            <Alert
+                                variant="default"
+                                className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                                    <AlertDescription className="text-sm font-medium">
+                                        Please verify your email address to unlock all features.
+                                    </AlertDescription>
+                                </div>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={handleVerifyEmail}
-                                    className="ml-2"
+                                    className="border-destructive/40 text-destructive hover:bg-destructive/10"
                                 >
                                     Verify Email
                                 </Button>
@@ -156,9 +174,9 @@ const AccountSettings = () => {
                         <Button
                             onClick={handleUpdateProfile}
                             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                            disabled={updating}
+                            disabled={updating || !isAuthenticated}
                         >
-                            {updating ? 'Updating...' : 'Update Profile'}
+                            {updating ? 'Updating...' : 'Update Name'}
                         </Button>
                     </div>
 
@@ -169,6 +187,7 @@ const AccountSettings = () => {
                         <h3 className="text-lg font-medium text-foreground">Password</h3>
                         <Button
                             variant="outline"
+                            disabled={!isAuthenticated}
                             className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                         >
                             Change Password
@@ -180,6 +199,7 @@ const AccountSettings = () => {
                     {/* Danger Zone */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-destructive">Danger Zone</h3>
+
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <Button
@@ -189,19 +209,35 @@ const AccountSettings = () => {
                                     Delete Account
                                 </Button>
                             </AlertDialogTrigger>
+
                             <AlertDialogContent className="bg-card border-border">
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle className="text-foreground">Are you sure?</AlertDialogTitle>
+                                    <AlertDialogTitle className="text-foreground">
+                                        Are you absolutely sure?
+                                    </AlertDialogTitle>
                                     <AlertDialogDescription className="text-muted-foreground">
-                                        This action cannot be undone. This will permanently delete your
-                                        account and remove all your data from our servers.
+                                        This action cannot be undone. Type <span className="font-semibold text-destructive">"Delete my account"</span> below to confirm.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
+
+                                <div className="py-3">
+                                    <input
+                                        type="text"
+                                        value={confirmText}
+                                        onChange={(e) => setConfirmText(e.target.value)}
+                                        placeholder='Type "Delete my account"'
+                                        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
+                                    />
+                                </div>
+
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel className="border-border hover:bg-accent">Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel className="border-border hover:bg-accent">
+                                        Cancel
+                                    </AlertDialogCancel>
                                     <AlertDialogAction
                                         onClick={handleDeleteAccount}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        disabled={confirmText.trim().toLowerCase() !== "delete my account"}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Delete Account
                                     </AlertDialogAction>
