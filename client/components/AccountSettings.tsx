@@ -14,6 +14,7 @@ import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
 import { authClient } from "@/lib/auth-client"
+import LumaSpin from "./21st/LumaSpin"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
@@ -122,7 +123,7 @@ const AccountSettings = () => {
     if (loading) {
         return (
             <div className="h-full w-full flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground">Loading...</div>
+                <LumaSpin />
             </div>
         )
     }
@@ -136,7 +137,42 @@ const AccountSettings = () => {
                         Manage your account settings and set email preferences.
                     </CardDescription>
                 </CardHeader>
+
                 <CardContent className="space-y-6">
+
+                    {/* Email Verification Status */}
+                    {isAuthenticated ? (
+                        <Alert
+                            variant="default"
+                            className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
+                        >
+                            <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                            <AlertDescription className="text-sm font-medium">
+                                Your email has been verified. You&apos;re all set!
+                            </AlertDescription>
+                        </Alert>
+                    ) : (
+                        <Alert
+                            variant="default"
+                            className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
+                        >
+                            <div className="flex items-center gap-3">
+                                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                                <AlertDescription className="text-sm font-medium">
+                                    Please verify your email address to unlock all features.
+                                </AlertDescription>
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleVerifyEmail}
+                                className="border-destructive/40 text-destructive hover:bg-destructive/10"
+                            >
+                                Verify Email
+                            </Button>
+                        </Alert>
+                    )}
+
                     {/* Profile Section */}
                     <div className="space-y-4">
                         <div className="space-y-2">
@@ -174,38 +210,6 @@ const AccountSettings = () => {
                             </div>
                         </div>
 
-                        {/* Email Verification Status */}
-                        {isAuthenticated ? (
-                            <Alert
-                                variant="default"
-                                className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
-                            >
-                                <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
-                                <AlertDescription className="text-sm font-medium">
-                                    Your email has been verified. You&apos;re all set!
-                                </AlertDescription>
-                            </Alert>
-                        ) : (
-                            <Alert
-                                variant="default"
-                                className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                    <AlertDescription className="text-sm font-medium">
-                                        Please verify your email address to unlock all features.
-                                    </AlertDescription>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleVerifyEmail}
-                                    className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                                >
-                                    Verify Email
-                                </Button>
-                            </Alert>
-                        )}
 
                         <Button
                             onClick={handleUpdateProfile}
