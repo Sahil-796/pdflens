@@ -1,12 +1,31 @@
 "use client"
 
 import * as React from "react"
+import useUser from "@/hooks/useUser"
+import { useRouter } from "next/navigation"
 import { PricingCard, type PricingTier } from "./pricing-card"
 import { Tab } from "./pricing-tab"
 
 export default function Pricing() {
+  const router = useRouter()
+  const { user, isAuthenticated } = useUser()
   const frequencies = ["monthly", "yearly"] as const
   const [selectedFrequency, setSelectedFrequency] = React.useState<typeof frequencies[number]>("monthly")
+
+  const handlePlanSelect = (planName: string) => {
+    if (!isAuthenticated) {
+      router.push('/signup')
+      return
+    }
+
+    if (planName === "Pro") {
+      router.push('/account/billing')
+      return
+    }
+
+    // If user is already authenticated and selecting free plan
+    router.push('/dashboard')
+  }
 
   const tiers: PricingTier[] = [
     {
@@ -19,9 +38,10 @@ export default function Pricing() {
         "Edit and download PDFs",
         "Community support",
       ],
-      cta: "Get Started",
+      cta: isAuthenticated ? "Access Dashboard" : "Get Started",
       popular: false,
       highlighted: false,
+      onSelect: () => handlePlanSelect("Free"),
     },
     {
       name: "Pro",
@@ -35,9 +55,11 @@ export default function Pricing() {
         "Advanced formatting & styling",
         "Email support",
       ],
-      cta: "Upgrade to Pro",
+      cta: user?.plan === "premium" ? "Current Plan" : "Upgrade to Pro",
       popular: true,
       highlighted: true,
+      onSelect: () => handlePlanSelect("Pro"),
+      disabled: user?.plan === "premium",
     },
   ]
 

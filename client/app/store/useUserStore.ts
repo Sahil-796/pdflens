@@ -1,6 +1,7 @@
 import { create } from "zustand"
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated"
+type VerificationStatus = "unverified" | "verified"
 
 type UserState = {
     userId: string | null
@@ -8,6 +9,7 @@ type UserState = {
     userEmail: string | null
     userAvatar: string | null
     userPlan: 'free' | 'premium' | null
+    emailVerified: boolean
     status: AuthStatus
     setUser: (data: Partial<UserState>) => void
     clearUser: () => void
@@ -20,8 +22,13 @@ export const useUserStore = create<UserState>((set) => ({
     userEmail: null,
     userAvatar: null,
     userPlan: null,
+    emailVerified: false,
     status: "loading",
-    setUser: (data) => set((state) => ({ ...state, ...data, status: "authenticated" })),
+    setUser: (data) => set((state) => ({ 
+        ...state, 
+        ...data, 
+        status: "authenticated"
+    })),
     clearUser: () =>
         set({
             userId: null,
@@ -29,6 +36,7 @@ export const useUserStore = create<UserState>((set) => ({
             userEmail: null,
             userAvatar: null,
             userPlan: null,
+            emailVerified: false,
             status: "unauthenticated",
         }),
     setStatus: (status) => set({ status }),

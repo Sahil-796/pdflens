@@ -17,6 +17,8 @@ export interface PricingTier {
     cta: string
     highlighted?: boolean
     popular?: boolean
+    onSelect?: () => void
+    disabled?: boolean
 }
 
 interface PricingCardProps {
@@ -92,7 +94,13 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
 
             <Button
                 variant={isHighlighted ? "default" : "default"}
-                className="w-full"
+                className={cn(
+                    "w-full",
+                    !tier.disabled && "cursor-pointer",
+                    tier.disabled && "cursor-not-allowed"
+                )}
+                onClick={tier.onSelect}
+                disabled={tier.disabled}
             >
                 {tier.cta}
                 <ArrowRight className="ml-2 h-4 w-4" />
