@@ -13,7 +13,7 @@ export default function Pricing() {
   const [selectedFrequency, setSelectedFrequency] = React.useState<typeof frequencies[number]>("monthly")
 
   const handlePlanSelect = (planName: string) => {
-    if (!isAuthenticated) {
+    if (!user.id) {
       router.push('/signup')
       return
     }
@@ -38,7 +38,7 @@ export default function Pricing() {
         "Edit and download PDFs",
         "Community support",
       ],
-      cta: isAuthenticated ? "Access Dashboard" : "Get Started",
+      cta: user.id ? "Access Dashboard" : "Get Started",
       popular: false,
       highlighted: false,
       onSelect: () => handlePlanSelect("Free"),

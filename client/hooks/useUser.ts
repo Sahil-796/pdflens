@@ -24,7 +24,7 @@ export default function useUser() {
 
                     // Fetch authoritative plan and email verification status from DB
                     try {
-                        const res = await fetch('/api/getPlan', { cache: 'no-store' })
+                        const res = await fetch('/api/getUserDetails', { cache: 'no-store' })
                         if (res.ok) {
                             const { plan, emailVerified } = await res.json()
                             setUser({ 
@@ -58,7 +58,7 @@ export default function useUser() {
         },
         loading,
         status,
-        isAuthenticated: status === "authenticated" && emailVerified,
+        isAuthenticated: emailVerified,
         isPro: userPlan === 'premium'
     };
 }

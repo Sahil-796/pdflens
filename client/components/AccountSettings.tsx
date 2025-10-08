@@ -49,7 +49,7 @@ const AccountSettings = () => {
         try {
             setUpdating(true)
             if (!isAuthenticated) {
-                toast.error('You must be authenticated to update your profile')
+                toast.error('You must be verify your email.')
                 return
             }
             if (name.trim().length === 0) {
