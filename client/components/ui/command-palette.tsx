@@ -58,7 +58,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
     // Add listener immediately after authentication
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onOpenChange, setOpen]) // Add dependencies
+  }, [open, onOpenChange, setOpen, user.id]) // Add dependencies
 
   // 🔗 Handle route logic
   const handleSelect = (value: string) => {
