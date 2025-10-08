@@ -4,11 +4,10 @@ import { db } from "@/db/client"
 import { user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
-export async function GET(request: Request) {
+export async function GET(req: Request) {
     try {
         // Get session from auth (reads cookies via better-auth next plugin)
-        // @ts-expect-error - api surface from better-auth
-        const { data: session } = await auth.api.getSession({ headers: request.headers })
+        const session = await auth.api.getSession({ headers: req.headers })
 
         if (!session?.user?.id) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
