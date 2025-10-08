@@ -150,7 +150,7 @@ export default function Navbar() {
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-base font-bold tracking-tight">
-                                    PDF Lens
+                                    Zendra
                                 </span>
                                 <span className="text-[10px] text-muted-foreground font-medium">
                                     AI PDF Assistant

@@ -95,7 +95,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 "hover:bg-sidebar-accent transition-all duration-200",
                 isCollapsed ? "justify-center px-2" : "px-3"
               )}
-              tooltip={isCollapsed ? "PDF Lens" : undefined}
+              tooltip={isCollapsed ? "Zendra" : undefined}
             >
               <div
                 className={cn(
@@ -123,7 +123,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 {!isCollapsed && (
                   <div className="flex flex-col">
                     <span className="text-base font-bold tracking-tight">
-                      PDF Lens
+                      Zendra
                     </span>
                     <span className="text-[10px] text-muted-foreground font-medium">
                       AI PDF Assistant
