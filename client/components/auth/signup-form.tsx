@@ -173,14 +173,19 @@ export function SignupForm({
                                         {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Sign Up"}
                                     </Button>
                                 </div>
-
+                                <div className="text-center text-sm">
+                                    Already have an account?{" "}
+                                    <Link href="/login" className="underline underline-offset-4">
+                                        Login
+                                    </Link>
+                                </div>
                             </div>
                         </form>
                     </Form>
                 </CardContent>
             </Card>
             <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-                By clicking continue, you agree to our <Link href="#">Terms of Service</Link>{" "}
+                By clicking Sign Up, you agree to our <Link href="#">Terms of Service</Link>{" "}
                 and <Link href="#">Privacy Policy</Link>.
             </div>
         </div>

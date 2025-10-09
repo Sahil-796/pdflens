@@ -28,10 +28,13 @@ import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 import SearchBar from "../dashboardPage/SearchBar"
 import { cn } from "@/lib/utils"
 import useUser from "@/hooks/useUser"
+import { Button } from "../ui/button"
+import Link from "next/link"
+import { Spinner } from "../ui/spinner"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const { user, isPro } = useUser()
+  const { user, isPro, loading } = useUser()
   const { state } = useSidebar();
   const data = {
     user: {
@@ -141,7 +144,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {loading ? (
+          <Button variant="outline" disabled size="sm" className="m-1">
+            <Spinner />
+            Please wait
+          </Button>
+        ) : user?.id ? (
+          <NavUser user={data.user} />
+        ) : (
+          <Button asChild className="m-1 cursor-pointer">
+            <Link href="/login">Log In</Link>
+          </Button>
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
