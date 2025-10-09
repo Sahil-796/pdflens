@@ -29,8 +29,8 @@ async def edit_tool(
         md_text = pymupdf4llm.to_markdown(tmp_path)
         return JSONResponse(status_code=200, 
                             content={"message": "Pdf Converted to Md",
-                                     "Md content" : md_text
-                                })
+                                        "Md content" : md_text
+                                    })
     
     except Exception as e:
         logger.error(f"Error processing PDF in edit-tool: {str(e)}", exc_info=True)
@@ -39,6 +39,3 @@ async def edit_tool(
         # Ensure temp file is deleted
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)
-
-
-

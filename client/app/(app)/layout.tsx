@@ -4,7 +4,6 @@ import { AppSidebar } from "@/components/bars/app-sidebar";
 import StickyBanner from "@/components/ui/sticky-banner";
 import {
     AlertDialog,
-    AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
