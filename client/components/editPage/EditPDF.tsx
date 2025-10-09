@@ -31,7 +31,6 @@ const EditPDF = () => {
         renderedHtml, 
         setRenderedHtml, 
         pdfId,
-        aiResponse,
         setAiResponse,
         setShowAiResponse
     } = usePdfStore()
@@ -89,17 +88,6 @@ const EditPDF = () => {
                 setStatus('prompt')
             }
         }
-    }
-
-    const handleAccept = () => {
-        applyChanges(aiResponse)
-        setShowAiResponse(false)
-    }
-
-    const handleReject = () => {
-        setStatus('prompt')
-        setAiResponse("")
-        setShowAiResponse(false)
     }
 
     const handleRegenerate = () => {

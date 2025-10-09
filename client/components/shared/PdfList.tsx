@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import {
@@ -22,7 +22,6 @@ import {
     EmptyMedia,
     EmptyTitle,
 } from "@/components/ui/empty"
-import { toast } from "sonner"
 import { FileText, Trash2, Calendar, Plus } from "lucide-react"
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'

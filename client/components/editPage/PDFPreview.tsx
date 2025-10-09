@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { usePdfStore } from '@/app/store/usePdfStore'
 
 interface PDFPreviewProps {
@@ -10,12 +10,12 @@ interface PDFPreviewProps {
 }
 
 const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
-    const { 
-        renderedHtml, 
-        setRenderedHtml, 
-        setSelectedId, 
-        setSelectedText, 
-        setOriginalHtml, 
+    const {
+        renderedHtml,
+        setRenderedHtml,
+        setSelectedId,
+        setSelectedText,
+        setOriginalHtml,
         selectedId,
         selectedText,
         aiResponse,
@@ -29,25 +29,19 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
         if (html) setRenderedHtml(html)
     }, [html, setRenderedHtml])
 
-    const applyChanges = (newContent: string) => {
-        if (!selectedId || !renderedHtml) return
-        const parser = new DOMParser()
-        const doc = parser.parseFromString(renderedHtml, "text/html")
-        const el = doc.getElementById(selectedId)
-        if (el) el.innerHTML = newContent
-        setRenderedHtml(doc.documentElement.outerHTML)
-        setShowAiResponse(false)
-        setAiResponse("")
-    }
-
-    const handleAccept = () => {
-        applyChanges(aiResponse)
-    }
-
-    const handleReject = () => {
-        setShowAiResponse(false)
-        setAiResponse("")
-    }
+    const applyChanges = useCallback(
+        (newContent: string) => {
+            if (!selectedId || !renderedHtml) return
+            const parser = new DOMParser()
+            const doc = parser.parseFromString(renderedHtml, 'text/html')
+            const el = doc.getElementById(selectedId)
+            if (el) el.innerHTML = newContent
+            setRenderedHtml(doc.documentElement.outerHTML)
+            setShowAiResponse(false)
+            setAiResponse('')
+        },
+        [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse]
+    )
 
     useEffect(() => {
         if (renderedHtml && selectedId) {
@@ -64,7 +58,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
         if (showAiResponse && selectedId && aiResponse) {
             const el = document.getElementById(selectedId)
             if (el) {
-                
+
                 // Create AI response display
                 const aiResponseDiv = document.createElement('div')
                 aiResponseDiv.className = 'ai-response-container'
@@ -95,27 +89,28 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                         </div>
                     </div>
                 `
-                
+
                 // Replace content with AI response
                 el.innerHTML = ''
                 el.appendChild(aiResponseDiv)
-                
+
                 // Add event listeners
                 const acceptBtn = el.querySelector('.accept-btn')
                 const rejectBtn = el.querySelector('.reject-btn')
-                
+
                 acceptBtn?.addEventListener('click', (e) => {
                     e.stopPropagation()
-                    handleAccept()
+                    applyChanges(aiResponse)
                 })
-                
+
                 rejectBtn?.addEventListener('click', (e) => {
                     e.stopPropagation()
-                    handleReject()
+                    setShowAiResponse(false)
+                    setAiResponse("")
                 })
             }
         }
-    }, [showAiResponse, selectedId, aiResponse, selectedText, handleAccept, handleReject])
+    }, [showAiResponse, selectedId, aiResponse, selectedText, applyChanges, setAiResponse, setShowAiResponse])
 
 
     return (

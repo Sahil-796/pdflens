@@ -5,30 +5,109 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, CheckCircle2, Dot, Mail, Router, User } from "lucide-react"
+import { AlertCircle, CheckCircle2, Dot, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "./ui/alert"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
 import { toast } from "sonner"
 import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
+import { useUserStore } from "@/app/store/useUserStore"
+import { authClient } from "@/lib/auth-client"
+import LumaSpin from "./21st/LumaSpin"
 
 const AccountSettings = () => {
     const { user, loading, isAuthenticated } = useUser()
+    const { clearUser } = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
     const [updating, setUpdating] = useState(false)
     const [confirmText, setConfirmText] = useState("")
+    const [, setDeleteLoading] = useState(false)
+    const [currentPassword, setCurrentPassword] = useState("")
+    const [newPassword, setNewPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
+    const [changingPassword, setChangingPassword] = useState(false)
 
-    const handleDeleteAccount = () => {
-        if (confirmText.trim().toLowerCase() === "delete my account") {
-            // your delete logic here
+    const handleDeleteAccount = async () => {
+        try {
+            setDeleteLoading(true)
+            if (confirmText.trim().toLowerCase() !== "delete my account") return
+            await authClient.deleteUser()
+            clearUser()
             toast.success("Account deleted!")
-            router.push('/')
-        } else {
-            // optional toast or alert
+            router.push('/goodbye')
+        } catch (error) {
+            console.error(error)
             toast.error("Confirmation text incorrect.")
+        } finally {
+            setDeleteLoading(false)
+        }
+    }
+
+    const handleUpdateProfile = async () => {
+        try {
+            setUpdating(true)
+            if (!isAuthenticated) {
+                toast.error('You must be verify your email.')
+                return
+            }
+            if (name.trim().length === 0) {
+                toast.error('Name cannot be empty')
+                return
+            }
+            await authClient.updateUser({
+                name: name.trim()
+            })
+            toast.success('Profile updated successfully')
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to update profile')
+        } finally {
+            setUpdating(false)
+        }
+    }
+
+    const handleVerifyEmail = async () => {
+        try {
+            // Add your email verification API call here
+            toast.success('Verification email sent')
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to send verification email')
+        }
+    }
+
+    const handleChangePassword = async () => {
+        try {
+            setChangingPassword(true)
+            if (!isAuthenticated) {
+                toast.error('You must be authenticated to change your password')
+                return
+            }
+            if (!currentPassword || !newPassword) {
+                toast.error('Please fill in all password fields')
+                return
+            }
+            if (newPassword.length < 8) {
+                toast.error('New password must be at least 8 characters')
+                return
+            }
+            if (newPassword !== confirmPassword) {
+                toast.error('Passwords do not match')
+                return
+            }
+            await authClient.changePassword({ currentPassword, newPassword })
+            setCurrentPassword("")
+            setNewPassword("")
+            setConfirmPassword("")
+            toast.success('Password changed successfully')
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to change password')
+        } finally {
+            setChangingPassword(false)
         }
     }
 
@@ -41,52 +120,10 @@ const AccountSettings = () => {
         }
     }, [user?.name, user?.email])
 
-    const handleUpdateProfile = async () => {
-        try {
-            setUpdating(true)
-            if (!isAuthenticated) {
-                toast.error('You must be authenticated to update your profile')
-                return
-            }
-            if (name.trim().length === 0) {
-                toast.error('Name cannot be empty')
-                return
-            }
-
-            const res = await fetch('/api/updateProfile', {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ name })
-            })
-
-            if (!res.ok) {
-                const error = await res.json()
-                throw new Error(error.message || 'Failed to update profile')
-            }
-
-            toast.success('Profile updated successfully')
-        } catch (error: any) {
-            toast.error(error.message || 'Failed to update profile')
-        } finally {
-            setUpdating(false)
-        }
-    }
-
-    const handleVerifyEmail = async () => {
-        try {
-            // Add your email verification API call here
-            toast.success('Verification email sent')
-        } catch (error) {
-            toast.error('Failed to send verification email')
-        }
-    }
-
     if (loading) {
         return (
             <div className="h-full w-full flex items-center justify-center">
-                <div className="animate-pulse text-muted-foreground">Loading...</div>
+                <LumaSpin />
             </div>
         )
     }
@@ -100,7 +137,42 @@ const AccountSettings = () => {
                         Manage your account settings and set email preferences.
                     </CardDescription>
                 </CardHeader>
+
                 <CardContent className="space-y-6">
+
+                    {/* Email Verification Status */}
+                    {isAuthenticated ? (
+                        <Alert
+                            variant="default"
+                            className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
+                        >
+                            <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+                            <AlertDescription className="text-sm font-medium">
+                                Your email has been verified. You&apos;re all set!
+                            </AlertDescription>
+                        </Alert>
+                    ) : (
+                        <Alert
+                            variant="default"
+                            className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
+                        >
+                            <div className="flex items-center gap-3">
+                                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                                <AlertDescription className="text-sm font-medium">
+                                    Please verify your email address to unlock all features.
+                                </AlertDescription>
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={handleVerifyEmail}
+                                className="border-destructive/40 text-destructive hover:bg-destructive/10"
+                            >
+                                Verify Email
+                            </Button>
+                        </Alert>
+                    )}
+
                     {/* Profile Section */}
                     <div className="space-y-4">
                         <div className="space-y-2">
@@ -138,38 +210,6 @@ const AccountSettings = () => {
                             </div>
                         </div>
 
-                        {/* Email Verification Status */}
-                        {isAuthenticated ? (
-                            <Alert
-                                variant="default"
-                                className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
-                            >
-                                <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
-                                <AlertDescription className="text-sm font-medium">
-                                    Your email has been verified. You're all set!
-                                </AlertDescription>
-                            </Alert>
-                        ) : (
-                            <Alert
-                                variant="default"
-                                className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                    <AlertDescription className="text-sm font-medium">
-                                        Please verify your email address to unlock all features.
-                                    </AlertDescription>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleVerifyEmail}
-                                    className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                                >
-                                    Verify Email
-                                </Button>
-                            </Alert>
-                        )}
 
                         <Button
                             onClick={handleUpdateProfile}
@@ -185,12 +225,49 @@ const AccountSettings = () => {
                     {/* Password Section */}
                     <div className="space-y-4">
                         <h3 className="text-lg font-medium text-foreground">Password</h3>
+                        <div className="space-y-2">
+                            <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
+                            <Input
+                                id="current-password"
+                                type="password"
+                                placeholder="Current password"
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
+                            <Input
+                                id="new-password"
+                                type="password"
+                                placeholder="New password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
+                            <Input
+                                id="confirm-password"
+                                type="password"
+                                placeholder="Confirm new password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                className="bg-background border-border focus:ring-primary"
+                                disabled={!isAuthenticated}
+                            />
+                        </div>
                         <Button
+                            onClick={handleChangePassword}
                             variant="outline"
-                            disabled={!isAuthenticated}
+                            disabled={!isAuthenticated || changingPassword}
                             className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                         >
-                            Change Password
+                            {changingPassword ? 'Changing...' : 'Change Password'}
                         </Button>
                     </div>
 
@@ -216,7 +293,7 @@ const AccountSettings = () => {
                                         Are you absolutely sure?
                                     </AlertDialogTitle>
                                     <AlertDialogDescription className="text-muted-foreground">
-                                        This action cannot be undone. Type <span className="font-semibold text-destructive">"Delete my account"</span> below to confirm.
+                                        This action cannot be undone. Type <span className="font-semibold text-destructive">&quot;delete my account&quot;</span> below to confirm.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
 
@@ -225,7 +302,7 @@ const AccountSettings = () => {
                                         type="text"
                                         value={confirmText}
                                         onChange={(e) => setConfirmText(e.target.value)}
-                                        placeholder='Type "Delete my account"'
+                                        placeholder='Type "delete my account"'
                                         className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
                                     />
                                 </div>

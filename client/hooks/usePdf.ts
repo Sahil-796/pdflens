@@ -2,6 +2,13 @@ import { useEffect, useState } from 'react';
 import { usePdfStore } from '@/app/store/usePdfStore';
 import { toast } from 'sonner';
 
+interface Pdf {
+    id: string;
+    fileName: string;
+    createdAt: string | null;
+    htmlContent: string;
+}
+
 export function usePdf(initialLimit?: number) {
     const { pdfs, loading, status, setPdfs, removePdf, setLoading, setStatus } = usePdfStore();
     const [showAll, setShowAll] = useState(false);
@@ -9,15 +16,15 @@ export function usePdf(initialLimit?: number) {
     useEffect(() => {
         const fetchPdfs = async () => {
             if (status !== 'idle') return;
-            
+
             try {
                 setLoading(true);
                 setStatus('loading');
                 // Always fetch all PDFs, but display limited amount initially
                 const res = await fetch('/api/getALL');
                 const data = await res.json();
-                
-                const validPdfs = data.filter((pdf: any) => pdf.htmlContent !== '');
+
+                const validPdfs = data.filter((pdf: Pdf) => pdf.htmlContent !== '');
                 setPdfs(validPdfs);
             } catch (error) {
                 console.error('Error fetching PDFs:', error);

@@ -15,6 +15,13 @@
       "when": 1758909141160,
       "tag": "0001_open_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759821921906,
+      "tag": "0002_lame_iron_man",
+      "breakpoints": true
     }
   ]
 }

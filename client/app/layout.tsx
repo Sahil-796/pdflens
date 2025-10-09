@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "PDF Lens",
-    description: "PDF Lens - Create, edit, and manage your PDFs with ease.",
+    title: "Zendra",
+    description: "Zendra - Create, edit, and manage your PDFs with ease.",
 };
 
 export default function RootLayout({

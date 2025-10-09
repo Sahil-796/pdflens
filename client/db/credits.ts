@@ -8,7 +8,7 @@ const DAILY_ALLOWANCE = {
     premium: 50, 
 };
 
-export const useCredits = async (userId: string, cost: number) => {
+export const deduceCredits = async (userId: string, cost: number) => {
     try {
         const result = await db.transaction(async (tx) => {
             const [currentUser] = await tx.select().from(user).where(eq(user.id, userId));
