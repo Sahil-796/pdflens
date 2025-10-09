@@ -1,6 +1,6 @@
 import TitleNav from '@/components/bars/title-nav'
+import Pdf2Word from '@/components/toolPages/PDF2Word'
 import React from 'react'
-
 
 const page = () => {
     return (
@@ -16,15 +16,7 @@ const page = () => {
                         Select one of your recent PDFs below to continue editing, or create a new one from the dashboard.
                     </p>
                     <div className="flex-1 overflow-y-scroll p-2">
-                        {/* <PdfList
-                            limit={12}
-                            showDelete={false}
-                            showViewMore={true}
-                            emptyTitle="No PDFs to Edit"
-                            emptyDescription="Create a new PDF to get started with editing."
-                            emptyActionText="Create PDF"
-                            emptyActionPath="/generate"
-                        /> */}
+                        <Pdf2Word />
                     </div>
                 </div>
             </div>
