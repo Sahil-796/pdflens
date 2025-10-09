@@ -63,9 +63,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: ArrowLeftRight,
         items: [
+          { title: "PDF to MD", url: "/tools/pdf-to-md" },
           { title: "PDF to Word", url: "/tools/pdf-to-word" },
           { title: "Word to PDF", url: "/tools/word-to-pdf" },
-          { title: "PDF to MD", url: "/tools/pdf-to-md" }
         ]
       },
       {
@@ -73,10 +73,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: BetweenVerticalEnd,
         items: [
+          { title: "Edit PDF", url: "/tools/edit-pdf" },
           { title: "Merge PDF", url: "/tools/merge-pdf" },
           { title: "Split PDF", url: "/tools/split-pdf" },
           { title: "Organize Pages", url: "/tools/organize-pdf" },
-          { title: "Edit PDF", url: "/tools/edit-pdf" },
         ]
       },
     ]
