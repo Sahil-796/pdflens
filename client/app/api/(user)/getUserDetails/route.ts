@@ -27,19 +27,16 @@ export async function GET(req: Request) {
             return NextResponse.json({ 
                 plan: null,
                 emailVerified: null,
-                status: 'unauthenticated',
             })
         }
 
         return NextResponse.json({
-            status: "authenticated",
             plan: userDetails.plan,
             emailVerified: userDetails.emailVerified,
         }, {status: 200})
     } catch (error: any) {
         console.error('Error fetching user details:', error)
         return NextResponse.json({ 
-            status: "unauthenticated",
             error: "Internal server error",
             message: error.message 
         }, { 

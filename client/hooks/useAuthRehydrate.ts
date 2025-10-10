@@ -8,16 +8,11 @@ import { toast } from "sonner"
 export function useAuthRehydrate() {
     const setUser = useUserStore((s) => s.setUser)
     const clearUser = useUserStore((s) => s.clearUser)
-    const setStatus = useUserStore((s) => s.setStatus)
-
     const { data: session, isPending } = authClient.useSession()
     const user = session?.user
 
     useEffect(() => {
-        if (isPending) {
-            setStatus("loading")
-            return
-        }
+        if (isPending) return // still loading from auth
 
         try {
             if (user) {
@@ -36,5 +31,5 @@ export function useAuthRehydrate() {
             toast.error("Kindly log in again.")
             clearUser()
         }
-    }, [user, isPending, setUser, clearUser, setStatus])
+    }, [user, isPending, setUser, clearUser])
 }

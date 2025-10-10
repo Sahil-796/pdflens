@@ -1,7 +1,5 @@
 import { create } from "zustand"
 
-type AuthStatus = "loading" | "authenticated" | "unauthenticated"
-
 type UserState = {
     userId: string | null
     userName: string | null
@@ -9,10 +7,8 @@ type UserState = {
     userAvatar: string | null
     userPlan: 'free' | 'premium' | null
     emailVerified: boolean
-    status: AuthStatus
     setUser: (data: Partial<UserState>) => void
     clearUser: () => void
-    setStatus: (status: AuthStatus) => void
 }
 
 export const useUserStore = create<UserState>((set) => ({
@@ -22,7 +18,6 @@ export const useUserStore = create<UserState>((set) => ({
     userAvatar: null,
     userPlan: null,
     emailVerified: false,
-    status: "loading",
     setUser: (data) => set((state) => ({ 
         ...state, 
         ...data, 
@@ -36,7 +31,5 @@ export const useUserStore = create<UserState>((set) => ({
             userAvatar: null,
             userPlan: null,
             emailVerified: false,
-            status: "unauthenticated",
         }),
-    setStatus: (status) => set({ status }),
 }))
