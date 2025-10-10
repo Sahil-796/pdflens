@@ -13,7 +13,7 @@ const page = () => {
                         PDF to MD Converter
                     </h2>
                     <p className="text-muted-foreground mb-6">
-                        Select one of your recent PDFs below to continue editing, or create a new one from the dashboard.
+                        Effortlessly convert your PDFs into clean, editable Markdown files. Perfect for developers, writers, and note-takers who prefer working in text-based formats.
                     </p>
                     <div className="flex-1 overflow-y-scroll p-2">
                         <PDF2MD />
