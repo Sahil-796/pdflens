@@ -70,7 +70,7 @@ const PDF2Word = () => {
             setConvertedBlob(blob)
             setSuccess(true)
 
-            // Auto download
+            // Auto-download
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
             a.href = url
@@ -100,14 +100,14 @@ const PDF2Word = () => {
             {success ? (
                 <Card className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl border-border bg-background p-6 sm:p-8 flex flex-col items-center justify-center rounded-2xl shadow-md space-y-6">
                     {/* Success Message */}
-                    <div className="flex flex-col sm:flex-row items-center gap-2 text-primary font-medium text-center sm:text-left text-lg sm:text-xl">
+                    <div className="flex flex-col sm:flex-row items-center gap-2 text-blue-500 font-medium text-center sm:text-left text-lg sm:text-xl">
                         <CheckCircle2 className="size-5 sm:size-6" />
                         <span>Your PDF has been converted successfully!</span>
                     </div>
 
                     {/* File Icon */}
                     <div className="flex flex-col items-center space-y-2">
-                        <FileText size={48} className="text-primary" />
+                        <FileText size={48} className="text-blue-500" />
                         <div>
                             <p className="font-semibold text-lg sm:text-xl text-foreground">
                                 {file?.name.replace('.pdf', '.docx')}
@@ -125,7 +125,7 @@ const PDF2Word = () => {
                             }}
                             variant="outline"
                             size="lg"
-                            className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center"
+                            className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center cursor-pointer"
                         >
                             <ArrowLeftCircle className="size-5" /> Convert More
                         </Button>
@@ -134,7 +134,7 @@ const PDF2Word = () => {
                             onClick={handleDownload}
                             variant="default"
                             size="lg"
-                            className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center"
+                            className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center bg-gradient-to-br from-blue-500 to-blue-400 cursor-pointer"
                         >
                             <Download className="size-5" /> Download
                         </Button>
@@ -145,7 +145,7 @@ const PDF2Word = () => {
                     {!file ? (
                         <div
                             className={`border-2 border-dashed rounded-xl w-full py-16 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${dragActive
-                                ? 'border-primary bg-primary/5 scale-[1.02]'
+                                ? 'border-blue-500 bg-blue-100 scale-[1.02]'
                                 : 'border-border hover:bg-muted/30'
                                 }`}
                             onDragOver={(e) => {
@@ -156,8 +156,8 @@ const PDF2Word = () => {
                             onDrop={handleDrop}
                             onClick={() => document.getElementById('fileInput')?.click()}
                         >
-                            <Upload className="text-primary mb-3" size={40} />
-                            <p className="text-sm sm:text-base text-primary text-center">
+                            <Upload className="text-blue-500 mb-3" size={40} />
+                            <p className="text-sm sm:text-base text-blue-500 text-center">
                                 Drop your PDF here or click to upload
                             </p>
                             <input
@@ -170,7 +170,7 @@ const PDF2Word = () => {
                         </div>
                     ) : (
                         <div className="flex flex-col items-center text-center space-y-5 w-full">
-                            <FileText size={44} className="text-primary" />
+                            <FileText size={44} className="text-blue-500" />
                             <div>
                                 <p className="text-lg sm:text-xl font-medium text-foreground">{file.name}</p>
                                 <p className="text-base sm:text-lg text-muted-foreground">
@@ -181,10 +181,10 @@ const PDF2Word = () => {
                             {isConverting ? (
                                 <Empty className="w-full">
                                     <EmptyHeader>
-                                        <EmptyMedia variant="icon" className="text-primary">
+                                        <EmptyMedia variant="icon" className="text-blue-500">
                                             <Spinner />
                                         </EmptyMedia>
-                                        <EmptyTitle className="text-primary text-lg sm:text-xl">Converting to Word</EmptyTitle>
+                                        <EmptyTitle className="text-blue-500 text-lg sm:text-xl">Converting to Word</EmptyTitle>
                                         <EmptyDescription className="text-sm sm:text-base">
                                             Please wait while PDF is converted to Word. Do not refresh the page.
                                         </EmptyDescription>
@@ -196,14 +196,14 @@ const PDF2Word = () => {
                                         variant="outline"
                                         size="default"
                                         onClick={() => setFile(null)}
-                                        className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                                        className="flex items-center gap-2 w-full sm:w-auto justify-center cursor-pointer"
                                     >
                                         <X size={16} /> Change File
                                     </Button>
                                     <Button
                                         onClick={handleConvert}
                                         disabled={isConverting}
-                                        className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                                        className="flex items-center gap-2 w-full sm:w-auto justify-center bg-gradient-to-br from-blue-500 to-blue-400 cursor-pointer"
                                         size="lg"
                                     >
                                         <File size={16} /> Convert to Word
