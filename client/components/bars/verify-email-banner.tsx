@@ -19,7 +19,7 @@ const VerifyEmailBanner = () => {
     if (loading || !user.id) return
     return (
         <StickyBanner hideOnScroll={true}>
-            <div className="flex items-center justify-center gap-2">
+            <div className="flex items-center justify-center gap-2 text-center text-sm sm:text-base sm:text-left sm:flex-row flex-col">
                 <span>Please check your email to verify your accout.</span>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
