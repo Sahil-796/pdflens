@@ -145,14 +145,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         {loading ? (
-          <Button variant="outline" disabled size="sm" className="m-1">
+          <Button variant="secondary" disabled className="m-1">
             <Spinner />
             Please wait
           </Button>
         ) : user?.id ? (
           <NavUser user={data.user} />
         ) : (
-          <Button asChild className="m-1 cursor-pointer">
+          <Button asChild variant="secondary" className="m-1 cursor-pointer">
             <Link href="/login">Log In</Link>
           </Button>
         )}

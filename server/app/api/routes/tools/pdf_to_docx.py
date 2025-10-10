@@ -3,8 +3,6 @@ from fastapi import APIRouter, FastAPI, UploadFile, File
 from fastapi.responses import StreamingResponse
 from pdf2docx import Converter
 
-router = APIRouter()
-
 router = APIRouter(
     prefix='/tools',
     tags=["tools"]
