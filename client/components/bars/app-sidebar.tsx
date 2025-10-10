@@ -31,6 +31,7 @@ import useUser from "@/hooks/useUser"
 import { Button } from "../ui/button"
 import Link from "next/link"
 import { Spinner } from "../ui/spinner"
+import { Logo } from "../Logo"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
@@ -100,40 +101,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               )}
               tooltip={isCollapsed ? "Zendra" : undefined}
             >
-              <div
-                className={cn(
-                  "flex items-center gap-3 transition-all duration-200",
-                  isCollapsed && "justify-center"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex items-center justify-center rounded-lg",
-                    "bg-gradient-to-br from-primary to-primary/80",
-                    "text-primary-foreground shadow-sm",
-                    "transition-all duration-200",
-                    "group-hover/header:shadow-md group-hover/header:scale-105",
-                    isCollapsed ? "size-8" : "size-9"
-                  )}
-                >
-                  <FileSearch
-                    className={cn(
-                      "transition-all duration-200",
-                      isCollapsed ? "size-4" : "size-5"
-                    )}
-                  />
-                </div>
-                {!isCollapsed && (
-                  <div className="flex flex-col">
-                    <span className="text-base font-bold tracking-tight">
-                      Zendra
-                    </span>
-                    <span className="text-[10px] text-muted-foreground font-medium">
-                      AI PDF Assistant
-                    </span>
-                  </div>
-                )}
-              </div>
+              <Logo
+                size={isCollapsed ? "sm" : "md"}
+                showText={!isCollapsed}
+                showSubtitle={!isCollapsed}
+              />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

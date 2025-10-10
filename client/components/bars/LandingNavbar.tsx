@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
 import { authClient } from "@/lib/auth-client"
 import useUser from "@/hooks/useUser"
+import { Logo } from "../Logo"
 
 // Navigation links array
 const navigationLinks = [
@@ -127,36 +128,10 @@ export default function Navbar() {
                     {/* Left: Logo */}
                     <Link href="/"
                         className={cn(
-                            "group/header relative text-lg font-bold text-primary flex-shrink-0",
-                            "justify-center"
+                            "flex-shrink-0 justify-center",
                         )}
                     >
-                        <div
-                            className={cn(
-                                "flex items-center gap-3",
-                            )}
-                        >
-                            <div
-                                className={cn(
-                                    "flex items-center justify-center rounded-lg",
-                                    "bg-gradient-to-br from-primary to-primary/80",
-                                    "text-primary-foreground shadow-sm",
-                                    "transition-all duration-200",
-                                    "group-hover/header:shadow-md5",
-                                    "size-9"
-                                )}
-                            >
-                                <FileSearch className="size-5" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-base font-bold tracking-tight">
-                                    Zendra
-                                </span>
-                                <span className="text-[10px] text-muted-foreground font-medium">
-                                    AI PDF Assistant
-                                </span>
-                            </div>
-                        </div>
+                        <Logo showSubtitle={true} showText={true} size="sm" />
                     </Link>
 
                     {/* Center: Navigation */}
