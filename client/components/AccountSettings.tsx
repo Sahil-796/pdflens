@@ -17,7 +17,7 @@ import { authClient } from "@/lib/auth-client"
 import LumaSpin from "./21st/LumaSpin"
 
 const AccountSettings = () => {
-    const { user, loading, isAuthenticated } = useUser()
+    const { user, loading } = useUser()
     const { clearUser } = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
@@ -49,7 +49,7 @@ const AccountSettings = () => {
     const handleUpdateProfile = async () => {
         try {
             setUpdating(true)
-            if (!isAuthenticated) {
+            if (!user.isAuthenticated) {
                 toast.error('You must be verify your email.')
                 return
             }
@@ -82,7 +82,7 @@ const AccountSettings = () => {
     const handleChangePassword = async () => {
         try {
             setChangingPassword(true)
-            if (!isAuthenticated) {
+            if (!user.isAuthenticated) {
                 toast.error('You must be authenticated to change your password')
                 return
             }
@@ -141,7 +141,7 @@ const AccountSettings = () => {
                 <CardContent className="space-y-6">
 
                     {/* Email Verification Status */}
-                    {isAuthenticated ? (
+                    {user.isAuthenticated ? (
                         <Alert
                             variant="default"
                             className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
@@ -176,7 +176,7 @@ const AccountSettings = () => {
                     {/* Profile Section */}
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name" className="text-sm font-medium">Name {name !== user.name && <Dot className="text-primary -ml-2 scale-140 animate-caret-blink" />}</Label>
+                            <Label htmlFor="name" className="text-sm font-medium">Display Name {name !== user.name && <Dot className="text-primary -ml-2 scale-140 animate-caret-blink" />}</Label>
                             <div className="flex gap-2">
                                 <div className="relative flex-1">
                                     <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -186,7 +186,7 @@ const AccountSettings = () => {
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         className="pl-9 bg-background border-border focus:ring-primary"
-                                        disabled={!isAuthenticated}
+                                        disabled={!user.isAuthenticated}
                                     />
                                 </div>
                             </div>
@@ -214,7 +214,7 @@ const AccountSettings = () => {
                         <Button
                             onClick={handleUpdateProfile}
                             className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                            disabled={updating || !isAuthenticated}
+                            disabled={updating || !user.isAuthenticated}
                         >
                             {updating ? 'Updating...' : 'Update Name'}
                         </Button>
@@ -234,7 +234,7 @@ const AccountSettings = () => {
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                                 className="bg-background border-border focus:ring-primary"
-                                disabled={!isAuthenticated}
+                                disabled={!user.isAuthenticated}
                             />
                         </div>
                         <div className="space-y-2">
@@ -246,7 +246,7 @@ const AccountSettings = () => {
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                                 className="bg-background border-border focus:ring-primary"
-                                disabled={!isAuthenticated}
+                                disabled={!user.isAuthenticated}
                             />
                         </div>
                         <div className="space-y-2">
@@ -258,13 +258,13 @@ const AccountSettings = () => {
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
                                 className="bg-background border-border focus:ring-primary"
-                                disabled={!isAuthenticated}
+                                disabled={!user.isAuthenticated}
                             />
                         </div>
                         <Button
                             onClick={handleChangePassword}
                             variant="outline"
-                            disabled={!isAuthenticated || changingPassword}
+                            disabled={!user.isAuthenticated || changingPassword}
                             className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                         >
                             {changingPassword ? 'Changing...' : 'Change Password'}

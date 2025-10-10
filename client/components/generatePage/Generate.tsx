@@ -259,7 +259,7 @@ const Generate = () => {
             )}
           </button>
         </div>
-
+        
         {/* File Upload Section */}
         <div className="p-4 sm:p-6 border-t border-border">
           <UploadFiles />

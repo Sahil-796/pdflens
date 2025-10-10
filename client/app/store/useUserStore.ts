@@ -1,7 +1,6 @@
 import { create } from "zustand"
 
 type AuthStatus = "loading" | "authenticated" | "unauthenticated"
-type VerificationStatus = "unverified" | "verified"
 
 type UserState = {
     userId: string | null

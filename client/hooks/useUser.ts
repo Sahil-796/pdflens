@@ -55,10 +55,10 @@ export default function useUser() {
             avatar: userAvatar,
             plan: userPlan,
             emailVerified,
+            isPro: userPlan === 'premium',
+            isAuthenticated: emailVerified,
         },
         loading,
         status,
-        isAuthenticated: emailVerified,
-        isPro: userPlan === 'premium'
     };
 }

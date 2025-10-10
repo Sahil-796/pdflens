@@ -35,14 +35,14 @@ import { Logo } from "../Logo"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const { user, isPro, loading } = useUser()
+  const { user, loading } = useUser()
   const { state } = useSidebar();
   const data = {
     user: {
       name: user.name || 'Loading',
       email: user.email || 'Loading',
       avatar: user.avatar || '',
-      isPro
+      isPro: user.isPro
     },
     main: [
       {
