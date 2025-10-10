@@ -17,7 +17,6 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-// import { signIn } from "@/server/users"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -61,7 +60,6 @@ export function LoginForm({
       provider: "google",
       callbackURL: "/dashboard",
       errorCallbackURL: "/",
-      disableRedirect: true,
     });
   };
 
