@@ -72,7 +72,6 @@ const AccountSettings = () => {
     const handleVerifyEmail = async () => {
         try {
             // Add your email verification API call here
-            toast.success('Verification email sent')
         } catch (error) {
             console.error(error)
             toast.error('Failed to send verification email')
@@ -129,7 +128,7 @@ const AccountSettings = () => {
     }
 
     return (
-        <div className='h-full w-full max-w-3xl mx-auto my-auto p-6'>
+        <div className='flex-1 w-full max-w-3xl mx-auto my-auto p-6'>
             <Card className="border-border bg-card">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-semibold text-primary">Profile Settings</CardTitle>
@@ -162,14 +161,29 @@ const AccountSettings = () => {
                                     Please verify your email address to unlock all features.
                                 </AlertDescription>
                             </div>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={handleVerifyEmail}
-                                className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                            >
-                                Verify Email
-                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleVerifyEmail}
+                                        className="border-destructive/40 text-destructive hover:bg-destructive/10"
+                                    >
+                                        Verify Email
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Verification Email</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            We have sent you a new verification email, please check both your inbox and spam folder.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Close</AlertDialogCancel>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </Alert>
                     )}
 
