@@ -23,7 +23,7 @@ const VerifyEmailBanner = () => {
                 <span className='font-medium text-sm sm:text-base'>Please check your email to verify your accout.</span>
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
-                        <Button variant="secondary" size="sm" className='cursor-pointer'>Resend Email</Button>
+                        <Button size="sm" className='cursor-pointer'>Resend Email</Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
