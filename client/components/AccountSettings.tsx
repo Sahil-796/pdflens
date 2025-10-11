@@ -58,6 +58,10 @@ const AccountSettings = () => {
                 toast.error('Name cannot be empty')
                 return
             }
+            if(name.trim() == user.name) {
+                toast.info("Name is same")
+                return
+            }
             await authClient.updateUser({
                 name: name.trim()
             })
@@ -81,10 +85,14 @@ const AccountSettings = () => {
                 toast.error('Email cannot be empty')
                 return
             }
+            if(email.trim() == user.email) {
+                toast.info("Email cannot be same")
+                return
+            }
             await authClient.changeEmail({
                 newEmail: email.trim()
             })
-            toast.success('Email updated successfully')
+            toast.success('Verification email sent to new address. Please confirm to complete the update.')
 
         } catch (err) {
             console.error(err)

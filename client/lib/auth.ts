@@ -27,7 +27,7 @@ export const auth = betterAuth({
             enabled: true,
             sendChangeEmailVerification: async ({ newEmail, url }) => {
                 await resend.emails.send({
-                    from: 'ff',
+                    from: 'delivered@resend.dev',
                     to: newEmail,
                     subject: 'Approve email change',
                     text: `Click the link to approve the change: ${url}`

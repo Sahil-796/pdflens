@@ -10,7 +10,6 @@ import {
     Hr,
     Tailwind,
 } from '@react-email/components';
-import Link from 'next/link';
 
 interface EmailVerificationProps {
     userEmail: string;
@@ -86,7 +85,7 @@ const EmailVerification = (props: EmailVerificationProps) => {
                                 123 Business Street, Suite 100, City, State 12345
                             </Text>
                             <Text className="text-[12px] text-gray-500 leading-[16px] m-0">
-                                <Link href="#" className="text-gray-500 underline">Unsubscribe</Link>
+                                <a href="#" className="text-gray-500 underline">Unsubscribe</a>
                             </Text>
                         </Section>
                     </Container>
