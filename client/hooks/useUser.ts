@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 
 export default function useUser() {
-    const { userId, userName, userEmail, userAvatar, userPlan, emailVerified, setUser, clearUser } = useUserStore()
+    const { userId, userName, userEmail, userAvatar, userPlan, emailVerified, setUser, clearUser, providerId } = useUserStore()
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
@@ -24,10 +24,11 @@ export default function useUser() {
                     try {
                         const res = await fetch("/api/getUserDetails", { cache: "no-store" })
                         if (res.ok) {
-                            const { plan, emailVerified } = await res.json()
+                            const { plan, emailVerified, providerId } = await res.json()
                             setUser({
                                 userPlan: plan,
                                 emailVerified,
+                                providerId,
                             })
                         }
                     } catch { }
@@ -55,6 +56,7 @@ export default function useUser() {
             emailVerified,
             isPro: userPlan === 'premium',
             isAuthenticated: !!userId && emailVerified,
+            userProvider: providerId
         },
         loading,
     }

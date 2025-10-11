@@ -218,7 +218,7 @@ const AccountSettings = () => {
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
                                         className="pl-9 bg-background border-border focus:ring-primary"
-                                        disabled={true}
+                                        disabled={user.userProvider!=='credential' || !user.isAuthenticated}
                                     />
                                 </div>
                             </div>
@@ -237,55 +237,59 @@ const AccountSettings = () => {
                     <Separator className="bg-border" />
 
                     {/* Password Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium text-foreground">Password</h3>
-                        <div className="space-y-2">
-                            <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
-                            <Input
-                                id="current-password"
-                                type="password"
-                                placeholder="Current password"
-                                value={currentPassword}
-                                onChange={(e) => setCurrentPassword(e.target.value)}
-                                className="bg-background border-border focus:ring-primary"
-                                disabled={!user.isAuthenticated}
-                            />
+                    {
+                        user.userProvider === 'credential' &&
+                        <div>
+                            <div className="space-y-4">
+                                <h3 className="text-lg font-medium text-foreground">Password</h3>
+                                <div className="space-y-2">
+                                    <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
+                                    <Input
+                                        id="current-password"
+                                        type="password"
+                                        placeholder="Current password"
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        className="bg-background border-border focus:ring-primary"
+                                        disabled={!user.isAuthenticated}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
+                                    <Input
+                                        id="new-password"
+                                        type="password"
+                                        placeholder="New password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="bg-background border-border focus:ring-primary"
+                                        disabled={!user.isAuthenticated}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
+                                    <Input
+                                        id="confirm-password"
+                                        type="password"
+                                        placeholder="Confirm new password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="bg-background border-border focus:ring-primary"
+                                        disabled={!user.isAuthenticated}
+                                    />
+                                </div>
+                                <Button
+                                    onClick={handleChangePassword}
+                                    variant="outline"
+                                    disabled={!user.isAuthenticated || changingPassword}
+                                    className="w-full border-border hover:bg-accent hover:text-accent-foreground"
+                                >
+                                    {changingPassword ? 'Changing...' : 'Change Password'}
+                                </Button>
+                            </div>
+                            <Separator className="bg-border" />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
-                            <Input
-                                id="new-password"
-                                type="password"
-                                placeholder="New password"
-                                value={newPassword}
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="bg-background border-border focus:ring-primary"
-                                disabled={!user.isAuthenticated}
-                            />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
-                            <Input
-                                id="confirm-password"
-                                type="password"
-                                placeholder="Confirm new password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="bg-background border-border focus:ring-primary"
-                                disabled={!user.isAuthenticated}
-                            />
-                        </div>
-                        <Button
-                            onClick={handleChangePassword}
-                            variant="outline"
-                            disabled={!user.isAuthenticated || changingPassword}
-                            className="w-full border-border hover:bg-accent hover:text-accent-foreground"
-                        >
-                            {changingPassword ? 'Changing...' : 'Change Password'}
-                        </Button>
-                    </div>
-
-                    <Separator className="bg-border" />
+                    }
 
                     {/* Danger Zone */}
                     <div className="space-y-4">

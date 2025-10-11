@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/db/client"
-import { user } from "@/db/schema"
+import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 export async function GET(req: Request) {
@@ -30,9 +30,23 @@ export async function GET(req: Request) {
             })
         }
 
+        const [userProvider] = await db
+            .select({
+                providerId: account.providerId
+            })
+            .from(account)
+            .where(eq(account.userId, session.user.id))
+
+        if(!userProvider) {
+            return NextResponse.json({
+                providerId: '',
+            })
+        }
+
         return NextResponse.json({
             plan: userDetails.plan,
             emailVerified: userDetails.emailVerified,
+            providerId: userProvider.providerId,
         }, {status: 200})
     } catch (error: any) {
         console.error('Error fetching user details:', error)

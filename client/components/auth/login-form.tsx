@@ -108,6 +108,7 @@ export function LoginForm({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-6">
+                {/* Google Sign In */}
                 <Button onClick={signInWithGoogle} variant="outline" className="w-full" type="button">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
@@ -117,12 +118,16 @@ export function LoginForm({
                   </svg>
                   Login with Google
                 </Button>
+
+                {/* Divider */}
                 <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground relative z-10 px-2">
                     Or continue with
                   </span>
                 </div>
+
                 <div className="grid gap-6">
+                  {/* Email */}
                   <FormField
                     control={form.control}
                     name="email"
@@ -136,6 +141,8 @@ export function LoginForm({
                       </FormItem>
                     )}
                   />
+
+                  {/* Password + Forgot */}
                   <div className="flex flex-col justify-center">
                     <FormField
                       control={form.control}
@@ -150,11 +157,22 @@ export function LoginForm({
                         </FormItem>
                       )}
                     />
+
+                    {/* Forgot password */}
+                    <div className="text-right mt-1">
+                      <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                        Forgot password?
+                      </Link>
+                    </div>
                   </div>
+
+                  {/* Submit */}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? <Loader2 className="size-4 animate-spin" /> : "Login"}
                   </Button>
                 </div>
+
+                {/* Sign up link */}
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
                   <Link href="/signup" className="underline underline-offset-4">
@@ -166,9 +184,11 @@ export function LoginForm({
           </Form>
         </CardContent>
       </Card>
+
+      {/* Footer */}
       <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
-        By clicking Login, you agree to our <Link href="#">Terms of Service</Link>{" "}
-        and <Link href="#">Privacy Policy</Link>.
+        By clicking Login, you agree to our <Link href="/terms-of-service">Terms of Service</Link>{" "}
+        and <Link href="/privacy-policy">Privacy Policy</Link>.
       </div>
     </div>
   )

@@ -7,6 +7,7 @@ type UserState = {
     userAvatar: string | null
     userPlan: 'free' | 'premium' | null
     emailVerified: boolean
+    providerId: string
     setUser: (data: Partial<UserState>) => void
     clearUser: () => void
 }
@@ -18,10 +19,10 @@ export const useUserStore = create<UserState>((set) => ({
     userAvatar: null,
     userPlan: null,
     emailVerified: false,
+    providerId: '',
     setUser: (data) => set((state) => ({ 
         ...state, 
         ...data, 
-        status: "authenticated"
     })),
     clearUser: () =>
         set({
@@ -31,5 +32,6 @@ export const useUserStore = create<UserState>((set) => ({
             userAvatar: null,
             userPlan: null,
             emailVerified: false,
+            providerId: ''
         }),
 }))
