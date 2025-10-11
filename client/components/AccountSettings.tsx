@@ -22,13 +22,14 @@ const AccountSettings = () => {
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
-    const [updating, setUpdating] = useState(false)
+    const [updatingName, setUpdatingName] = useState(false)
     const [confirmText, setConfirmText] = useState("")
     const [, setDeleteLoading] = useState(false)
     const [currentPassword, setCurrentPassword] = useState("")
     const [newPassword, setNewPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [changingPassword, setChangingPassword] = useState(false)
+    const [updatingEmail, setUpdatingEmail] = useState(false)
 
     const handleDeleteAccount = async () => {
         try {
@@ -46,9 +47,9 @@ const AccountSettings = () => {
         }
     }
 
-    const handleUpdateProfile = async () => {
+    const handleUpdateName = async () => {
         try {
-            setUpdating(true)
+            setUpdatingName(true)
             if (!user.isAuthenticated) {
                 toast.error('You must be verify your email.')
                 return
@@ -60,12 +61,36 @@ const AccountSettings = () => {
             await authClient.updateUser({
                 name: name.trim()
             })
-            toast.success('Profile updated successfully')
+            toast.success('Name updated successfully')
         } catch (error) {
             console.error(error)
-            toast.error('Failed to update profile')
+            toast.error('Failed to update name')
         } finally {
-            setUpdating(false)
+            setUpdatingName(false)
+        }
+    }
+
+    const handleUpdateEmail = async () => {
+        setUpdatingEmail(true)
+        try {
+            if (!user.isAuthenticated) {
+                toast.error('You must be verify your email.')
+                return
+            }
+            if (email.trim().length === 0) {
+                toast.error('Email cannot be empty')
+                return
+            }
+            await authClient.changeEmail({
+                newEmail: email.trim()
+            })
+            toast.success('Email updated successfully')
+
+        } catch (err) {
+            console.error(err)
+            toast.error("Updating email failed.")
+        } finally {
+            setUpdatingEmail(false)
         }
     }
 
@@ -189,9 +214,18 @@ const AccountSettings = () => {
 
                     {/* Profile Section */}
                     <div className="space-y-4">
+                        {/* Name Update */}
                         <div className="space-y-2">
-                            <Label htmlFor="name" className="text-sm font-medium">Display Name {name !== user.name && <Dot className="text-primary -ml-2 scale-140 animate-caret-blink" />}</Label>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-1">
+                                <Label htmlFor="name" className="text-sm font-medium">
+                                    Display Name
+                                </Label>
+                                {name !== user.name && (
+                                    <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
+                                )}
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
                                 <div className="relative flex-1">
                                     <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                     <Input
@@ -199,16 +233,32 @@ const AccountSettings = () => {
                                         placeholder="Your name"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="pl-9 bg-background border-border focus:ring-primary"
+                                        className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
                                         disabled={!user.isAuthenticated}
                                     />
                                 </div>
+                                <Button
+                                    onClick={handleUpdateName}
+                                    className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                                    disabled={updatingName || !user.isAuthenticated}
+                                >
+                                    {updatingName ? 'Updating...' : 'Change Name'}
+                                </Button>
                             </div>
                         </div>
 
+                        {/* Email Update */}
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-medium">Email {email !== user.email && <Dot className="text-primary -ml-2 scale-140 animate-caret-blink" />}</Label>
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-1">
+                                <Label htmlFor="email" className="text-sm font-medium">
+                                    Email
+                                </Label>
+                                {email !== user.email && (
+                                    <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
+                                )}
+                            </div>
+
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
                                 <div className="relative flex-1">
                                     <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                                     <Input
@@ -217,21 +267,22 @@ const AccountSettings = () => {
                                         placeholder="Your email"
                                         value={email}
                                         onChange={(e) => setEmail(e.target.value)}
-                                        className="pl-9 bg-background border-border focus:ring-primary"
-                                        disabled={user.userProvider!=='credential' || !user.isAuthenticated}
+                                        className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
+                                        disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
                                     />
                                 </div>
+                                {
+                                    user.userProvider === 'credential' &&
+                                    <Button
+                                        onClick={handleUpdateEmail}
+                                        className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                                        disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
+                                    >
+                                        {updatingEmail ? 'Updating...' : 'Change Email'}
+                                    </Button>
+                                }
                             </div>
                         </div>
-
-
-                        <Button
-                            onClick={handleUpdateProfile}
-                            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                            disabled={updating || !user.isAuthenticated}
-                        >
-                            {updating ? 'Updating...' : 'Update Name'}
-                        </Button>
                     </div>
 
                     <Separator className="bg-border" />
@@ -299,7 +350,7 @@ const AccountSettings = () => {
                             <AlertDialogTrigger asChild>
                                 <Button
                                     variant="destructive"
-                                    className="w-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                    className="w-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
                                 >
                                     Delete Account
                                 </Button>
