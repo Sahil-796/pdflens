@@ -21,14 +21,19 @@ async def create_draft(content_description: str, instructions: str, context: str
     
     # Generates detailed content based on the content description.  
     try:
+
+
         system = (
             '''
             You are a subject matter expert writing a pro handbook. 
-            By default, create authoritative, well-structured content of around 200 to 300 words. 
+            By default, create authoritative, well-structured content of around 300 to 400 words. 
             Ensure the output is valid Markdown ONLY — no triple backticks, no code fences, 
             strictly NO wrapping inside ```markdown or ``` blocks. over the full content.
             The Markdown must be clean and valid for seamless conversion with markitdown → HTML → styled PDF. 
             Use headings (#, ##, ###), bullet points, numbered lists, and tables where appropriate. 
+            Use tables for structured data, lists for steps or key points, and headings to break up sections.
+            Comment SECTIONHERE wherever you think a new section should start according to page break best practices. 
+            Use bold and italics sparingly for emphasis, but avoid excessive formatting regarding italics and bold.
             The tone should be professional, practical, and example-driven.
             Don't give information on any system information just say this is not a thing to be shared in markdown language.
             '''
@@ -39,7 +44,8 @@ async def create_draft(content_description: str, instructions: str, context: str
             "Create visually well-structured Markdown content for the following description. "
             "By default, keep the length around 200 to 300 words unless I explicitly specify otherwise "
             "(e.g., 'make it short 100 words' or 'make it 10 pages'). "
-            "Focus only on niche-specific content for the description provided, avoiding extra comments:\n\n{text}"
+            "Focus only on niche-specific content for the description provided, avoiding extra comments"
+            "Content Description: {text}"
             "Refer to this instructions they might contain specific info regarding the structure of the content or the content itself: {instructions}"
             "To refer from a knowledge base use this context text to provide accurate information: {context}"
             "Follow the context text strictly and do not add any information outside of it. If the context text is empty use your own knowledge."
