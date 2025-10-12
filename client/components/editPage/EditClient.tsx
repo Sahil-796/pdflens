@@ -1,7 +1,6 @@
 'use client'
 
 import { usePdfStore } from '@/app/store/usePdfStore'
-import TitleNav from '@/components/bars/title-nav'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import React, { useEffect, useState } from 'react'
@@ -10,6 +9,8 @@ import PDFPreview from '@/components/editPage/PDFPreview'
 import { toast } from 'sonner'
 import SaveChanges from './SaveChanges'
 import EditPDF from './EditPDF'
+import { Input } from '../ui/input'
+import { Dot } from 'lucide-react'
 
 interface Pdf {
     id: string
@@ -24,6 +25,8 @@ export default function EditClient({ id }: { id: string }) {
     const [editPdf, setEditPdf] = useState<Pdf | null>(null)
     const [contextFiles, setContextFiles] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
+    const [filename, setFilename] = useState(editPdf?.fileName || "")
+    const [initialName, setInitialName] = useState('')
 
     useEffect(() => {
         setPdf({ pdfId: id })
@@ -39,6 +42,8 @@ export default function EditClient({ id }: { id: string }) {
                 const data = await res.json()
                 if (data.pdf) {
                     setEditPdf(data.pdf)
+                    setFilename(data.pdf.fileName)
+                    setInitialName(data.pdf.fileName)
                 } else {
                     toast.error("PDF not found")
                     router.push("/dashboard")
@@ -112,11 +117,23 @@ export default function EditClient({ id }: { id: string }) {
             <div className='flex-1 flex flex-col min-w-0'>
                 {/* Action Buttons on Top of PDF */}
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-muted-foreground">Actions</span>
+                    <div className="flex items-center">
+                        <div className="relative flex items-center">
+                            <Input
+                                id="filename"
+                                placeholder="Enter file name..."
+                                value={filename}
+                                disabled={loading}
+                                onChange={(e) => setFilename(e.target.value)}
+                                className="pr-10"
+                            />
+                            {filename !== initialName && (
+                                <Dot className="absolute right-3 text-primary scale-140 animate-caret-blink" />
+                            )}
+                        </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <SaveChanges />
+                        <SaveChanges filename={filename} onSaveSuccess={()=>setInitialName(filename)} />
                         <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
                     </div>
                 </div>
