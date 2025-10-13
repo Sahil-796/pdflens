@@ -5,7 +5,7 @@ import { z } from 'zod'
 const UpdatePdfSchema = z.object({
     id: z.string().min(1),
     html: z.string().nullable().optional(),
-    filename: z.string().min(1),
+    filename: z.string().nullable(),
 })
 
 export async function POST(req: Request) {
@@ -21,7 +21,8 @@ export async function POST(req: Request) {
 
         const { id, html, filename } = parsed.data
         const html_content = html ?? ""
-        const updatedPdf = await updatePdf(id, filename, html_content)
+        const newFileName = filename ?? "Untitled" 
+        const updatedPdf = await updatePdf(id, newFileName, html_content)
         if (!updatedPdf) {
             return NextResponse.json(
                 { status: 404, message: "PDF not found" },

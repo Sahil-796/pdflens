@@ -174,7 +174,7 @@ const Generate = () => {
       const updateRes = await fetch('/api/updatePdf', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: generateData.data, id: currentPdfId }),
+        body: JSON.stringify({ html: generateData.data, id: currentPdfId, filename: fileName }),
       })
       const updateData = await updateRes.json()
 
