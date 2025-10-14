@@ -8,7 +8,7 @@ import { Tab } from "./pricing-tab"
 
 export default function Pricing() {
   const router = useRouter()
-  const { user, isAuthenticated } = useUser()
+  const { user } = useUser()
   const frequencies = ["monthly", "yearly"] as const
   const [selectedFrequency, setSelectedFrequency] = React.useState<typeof frequencies[number]>("monthly")
 

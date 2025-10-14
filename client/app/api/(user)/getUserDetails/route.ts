@@ -48,7 +48,7 @@ export async function GET(req: Request) {
             emailVerified: userDetails.emailVerified,
             providerId: userProvider.providerId,
         }, {status: 200})
-    } catch (error: any) {
+    } catch (error) {
         console.error('Error fetching user details:', error)
         return NextResponse.json({ 
             error: "Internal server error",

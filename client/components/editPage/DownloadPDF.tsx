@@ -4,7 +4,7 @@ import { Download } from "lucide-react";
 import { usePdfStore } from "@/app/store/usePdfStore";
 import {toast} from 'sonner'
 
-const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
+const DownloadPDF = () => {
     const [loading, setLoading] = useState(false);
 
     const { renderedHtml, setRenderedHtml, fileName, htmlContent } = usePdfStore();

@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, LogOut, User, FileSearch } from "lucide-react"
+import { Loader2, LogOut, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {

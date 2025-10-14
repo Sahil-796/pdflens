@@ -5,9 +5,6 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Card, CardContent } from '@/components/ui/card'
 import {
-  Clock,
-  TrendingUp,
-  FileText,
   Plus,
   Wrench,
   User,

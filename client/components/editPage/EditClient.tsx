@@ -21,11 +21,10 @@ interface Pdf {
 
 export default function EditClient({ id }: { id: string }) {
     const router = useRouter()
-    const { htmlContent, fileName, setPdf } = usePdfStore()
+    const { htmlContent, setPdf } = usePdfStore()
     const [editPdf, setEditPdf] = useState<Pdf | null>(null)
     const [contextFiles, setContextFiles] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
-    const [filename, setFilename] = useState(editPdf?.fileName || "")
     const [initialName, setInitialName] = useState('')
 
     useEffect(() => {
@@ -140,7 +139,7 @@ export default function EditClient({ id }: { id: string }) {
                     </div>
                     <div className="flex items-center gap-3">
                         <SaveChanges filename={filename} onSaveSuccess={()=>setInitialName(filename)} />
-                        <DownloadPDF html={editPdf?.htmlContent || htmlContent} pdfName={fileName} />
+                        <DownloadPDF />
                     </div>
                 </div>
 

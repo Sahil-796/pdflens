@@ -1,5 +1,3 @@
-import { GalleryVerticalEnd } from "lucide-react"
-
 import { SignupForm } from "@/components/auth/signup-form"
 import Link from "next/link"
 import { Logo } from "@/components/Logo"
