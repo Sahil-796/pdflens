@@ -205,140 +205,151 @@ const Generate = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row bg-background overflow-auto">
-      {/* Left Panel */}
-      <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
-        <div className="flex-1 p-4 space-y-8">
-          {/* Document Name Input */}
-          <div>
-            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
-              Document Name
-            </div>
-            <input
-              type="text"
-              value={fileName}
-              onChange={(e) => setPdf({ fileName: e.target.value })}
-              placeholder="Enter filename"
-              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-xs text-muted-foreground mt-0.5">
-              This name will be used for your PDF file
-            </p>
-          </div>
-
-          {/* Document Description */}
-          <div>
-            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
-              Describe your document
-            </div>
-            <textarea
-              id="inputMessage"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Describe what you want to create..."
-              className="w-full h-40 sm:h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-            />
-            <p className="text-xs text-muted-foreground -mt-1">
-              Be specific about the content, format, and style you want
-            </p>
-          </div>
-
-          {/* Generate Button */}
-          <button
-            onClick={handleSend}
-            disabled={loading || !input.trim()}
-            className="w-full mt-2 sm:mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
-              </div>
-            ) : (
-              `Generate (Credits Left: ${creditsLeft})`
-            )}
-          </button>
+<div className="flex-1 flex flex-col lg:flex-row bg-background overflow-auto">
+  {/* Left Panel */}
+  <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
+    <div className="flex-1 p-4 space-y-8">
+      {/* Document Name Input */}
+      <div>
+        <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
+          Document Name
         </div>
-        
-        {/* File Upload Section */}
-        <div className="p-4 sm:p-6 border-t border-border">
-          <UploadFiles />
-        </div>
+        <input
+          type="text"
+          value={fileName}
+          onChange={(e) => setPdf({ fileName: e.target.value })}
+          placeholder="Enter filename"
+          className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <p className="text-xs text-muted-foreground mt-0.5">
+          This name will be used for your PDF file
+        </p>
       </div>
 
-      {/* Right Panel - Information */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-4 sm:p-6 space-y-8 overflow-y-auto">
-          {/* Template Info */}
-          {template && (
-            <div className="bg-muted/30 rounded-lg p-4 mb-6">
-              <h4 className="font-medium mb-2">Using Template: {template}</h4>
-              <p className="text-sm text-muted-foreground">
-                This template will help structure your document. You can modify the content as needed.
-              </p>
-            </div>
-          )}
-
-          {/* Tips */}
-          <div className="space-y-4">
-            <h4 className="font-medium mb-3">Tips for better results:</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span>
-                <span>Be specific about the document type and purpose</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span>
-                <span>Include key details like names, dates, and requirements</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span>
-                <span>Upload reference files for better context</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-primary">•</span>
-                <span>Use clear, descriptive language</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Available Templates */}
-          <div className="space-y-4">
-            <h4 className="font-medium mb-3">Available Templates:</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {Object.keys(templatePrompts).map((templateName) => (
-                <button
-                  key={templateName}
-                  onClick={() => setInput(templatePrompts[templateName].trim())}
-                  className="text-left p-3 rounded-md border border-border hover:bg-muted/50 transition text-sm"
-                >
-                  {templateName}
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* Document Description */}
+      <div>
+        <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
+          Describe your document
         </div>
+        <textarea
+          id="inputMessage"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Describe what you want to create..."
+          className="w-full h-40 sm:h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+        <p className="text-xs text-muted-foreground -mt-1">
+          Be specific about the content, format, and style you want
+        </p>
       </div>
 
-      {/* Daily Limit Modal */}
-      <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
-        <AlertDialogContent className="bg-card border-border w-[92%] sm:w-[480px]">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">Daily token limit reached</AlertDialogTitle>
-            <AlertDialogDescription className="text-muted-foreground">
-              In the free plan, you get <span className="font-medium text-foreground">20 credits per day</span>.
-              Upgrade to <span className="font-medium text-foreground">Premium</span> to get
-              <span className="font-medium text-foreground"> 100 credits per day</span> and additional benefits.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-border">Close</AlertDialogCancel>
-            <Link href="/pricing" className="w-full sm:w-auto">
-              <AlertDialogAction className="w-full">View Pricing</AlertDialogAction>
-            </Link>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Token Display */}
+      <div className="flex items-center justify-between bg-muted/40 border border-border rounded-md px-3 py-2">
+        <div className="text-sm text-muted-foreground">
+          <span className="font-medium text-foreground">{creditsLeft}</span> credits remaining today
+        </div>
+        <Link
+          href="/pricing"
+          className="text-xs font-medium text-primary hover:underline"
+        >
+          Get more credits →
+        </Link>
+      </div>
+
+      {/* Generate Button */}
+      <button
+        onClick={handleSend}
+        disabled={loading || !input.trim()}
+        className="w-full mt-2 sm:mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {loading ? (
+          <div className="flex items-center justify-center gap-2">
+            <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
+          </div>
+        ) : (
+          `Generate Document`
+        )}
+      </button>
     </div>
+
+    {/* File Upload Section */}
+    <div className="p-4 sm:p-6 border-t border-border">
+      <UploadFiles />
+    </div>
+  </div>
+
+  {/* Right Panel */}
+  <div className="flex-1 flex flex-col">
+    <div className="flex-1 p-4 sm:p-6 space-y-8 overflow-y-auto">
+      {template && (
+        <div className="bg-muted/30 rounded-lg p-4 mb-6">
+          <h4 className="font-medium mb-2">Using Template: {template}</h4>
+          <p className="text-sm text-muted-foreground">
+            This template will help structure your document. You can modify the content as needed.
+          </p>
+        </div>
+      )}
+
+      {/* Tips */}
+      <div className="space-y-4">
+        <h4 className="font-medium mb-3">Tips for better results:</h4>
+        <ul className="space-y-3 text-sm">
+          <li className="flex items-start gap-2"><span className="text-primary">•</span>Be specific about the document type and purpose</li>
+          <li className="flex items-start gap-2"><span className="text-primary">•</span>Include key details like names, dates, and requirements</li>
+          <li className="flex items-start gap-2"><span className="text-primary">•</span>Upload reference files for better context</li>
+          <li className="flex items-start gap-2"><span className="text-primary">•</span>Use clear, descriptive language</li>
+        </ul>
+      </div>
+
+      {/* Available Templates */}
+      <div className="space-y-4">
+        <h4 className="font-medium mb-3">Available Templates:</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {Object.keys(templatePrompts).map((templateName) => (
+            <button
+              key={templateName}
+              onClick={() => setInput(templatePrompts[templateName].trim())}
+              className="text-left p-3 rounded-md border border-border hover:bg-muted/50 transition text-sm"
+            >
+              {templateName}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* Improved Alert Dialog */}
+  <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
+    <AlertDialogContent className="bg-gradient-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
+      <AlertDialogHeader className="space-y-2">
+        <div className="flex items-center justify-center mb-2">
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+            <span className="text-primary text-xl">⚠️</span>
+          </div>
+        </div>
+        <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
+          Daily Token Limit Reached
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-center text-sm text-muted-foreground">
+          You’ve used up your <span className="font-medium text-foreground">20 daily credits</span>.  
+          Upgrade to <span className="font-medium text-primary">Premium</span> to unlock  
+          <span className="font-medium text-foreground"> 100 credits per day</span> and more benefits.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
+        <AlertDialogCancel className="border-border w-full sm:w-auto">
+          Close
+        </AlertDialogCancel>
+        <Link href="/pricing" className="w-full sm:w-auto">
+          <AlertDialogAction className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition">
+            View Pricing
+          </AlertDialogAction>
+        </Link>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+</div>
   )
 }
 

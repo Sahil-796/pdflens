@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, CheckCircle2, Dot, Mail, User } from "lucide-react"
+import { AlertCircle, ArrowUpCircle, CheckCircle2, Coins, Dot, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "./ui/alert"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
@@ -15,10 +15,11 @@ import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
 import { authClient } from "@/lib/auth-client"
 import LumaSpin from "./21st/LumaSpin"
+import { Badge } from "./ui/badge"
 
 const AccountSettings = () => {
     const { user, loading } = useUser()
-    const { clearUser } = useUserStore()
+    const { clearUser, creditsLeft } = useUserStore()
     const router = useRouter()
     const [name, setName] = useState(user?.name || "")
     const [email, setEmail] = useState(user?.email || "")
@@ -161,244 +162,281 @@ const AccountSettings = () => {
     }
 
     return (
-        <div className='flex-1 w-full max-w-3xl mx-auto my-auto p-6'>
-            <Card className="border-border bg-card">
-                <CardHeader className="space-y-1">
-                    <CardTitle className="text-2xl font-semibold text-primary">Profile Settings</CardTitle>
-                    <CardDescription>
-                        Manage your account settings and set email preferences.
-                    </CardDescription>
-                </CardHeader>
+<div className="flex-1 w-full max-w-3xl mx-auto my-auto p-6">
+  <Card className="border-border bg-card">
+    <CardHeader className="space-y-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <CardTitle className="text-2xl font-semibold text-primary">
+            Profile Settings
+          </CardTitle>
+          <CardDescription>
+            Manage your account settings and set email preferences.
+          </CardDescription>
+        </div>
 
-                <CardContent className="space-y-6">
+        {/* Credits & Upgrade */}
+        <div className="flex items-center gap-3">
+          <Badge
+            variant="outline"
+            className="text-sm font-semibold bg-muted/30 px-3 py-1 flex items-center gap-1"
+          >
+            <Coins className="w-4 h-4 text-primary" />
+            {creditsLeft} credits
+          </Badge>
+          {!user.isPro && (
+            <Button
+              size="sm"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+              onClick={() => router.push("/pricing")}
+            >
+              <ArrowUpCircle className="w-4 h-4 mr-1" /> Upgrade to Premium
+            </Button>
+          )}
+        </div>
+      </div>
+    </CardHeader>
 
-                    {/* Email Verification Status */}
-                    {user.isAuthenticated ? (
-                        <Alert
-                            variant="default"
-                            className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
-                        >
-                            <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
-                            <AlertDescription className="text-sm font-medium">
-                                Your email has been verified. You&apos;re all set!
-                            </AlertDescription>
-                        </Alert>
-                    ) : (
-                        <Alert
-                            variant="default"
-                            className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
-                        >
-                            <div className="flex items-center gap-3">
-                                <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                                <AlertDescription className="text-sm font-medium">
-                                    Please verify your email address to unlock all features.
-                                </AlertDescription>
-                            </div>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={handleVerifyEmail}
-                                        className="border-destructive/40 text-destructive hover:bg-destructive/10"
-                                    >
-                                        Verify Email
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Verification Email</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            We have sent you a new verification email, please check both your inbox and spam folder.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Close</AlertDialogCancel>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </Alert>
-                    )}
+    <CardContent className="space-y-6">
 
-                    {/* Profile Section */}
-                    <div className="space-y-4">
-                        {/* Name Update */}
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-1">
-                                <Label htmlFor="name" className="text-sm font-medium">
-                                    Display Name
-                                </Label>
-                                {name !== user.name && (
-                                    <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
-                                )}
-                            </div>
+      {/* Email Verification Status */}
+      {user.isAuthenticated ? (
+        <Alert
+          variant="default"
+          className="flex items-center gap-3 bg-primary/10 border-primary/20 text-primary"
+        >
+          <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+          <AlertDescription className="text-sm font-medium">
+            Your email has been verified. You&apos;re all set!
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Alert
+          variant="default"
+          className="flex items-center justify-between gap-3 bg-destructive/10 border-destructive/20 text-destructive"
+        >
+          <div className="flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 flex-shrink-0" />
+            <AlertDescription className="text-sm font-medium">
+              Please verify your email address to unlock all features.
+            </AlertDescription>
+          </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleVerifyEmail}
+                className="border-destructive/40 text-destructive hover:bg-destructive/10"
+              >
+                Verify Email
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Verification Email</AlertDialogTitle>
+                <AlertDialogDescription>
+                  We have sent you a new verification email, please check both your inbox and spam folder.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Close</AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </Alert>
+      )}
 
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
-                                <div className="relative flex-1">
-                                    <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="name"
-                                        placeholder="Your name"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                        className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
-                                        disabled={!user.isAuthenticated}
-                                    />
-                                </div>
-                                <Button
-                                    onClick={handleUpdateName}
-                                    className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                                    disabled={updatingName || !user.isAuthenticated}
-                                >
-                                    {updatingName ? 'Updating...' : 'Change Name'}
-                                </Button>
-                            </div>
-                        </div>
+      {/* Profile Section */}
+      <div className="space-y-4">
+        {/* Name Update */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-1">
+            <Label htmlFor="name" className="text-sm font-medium">
+              Display Name
+            </Label>
+            {name !== user.name && (
+              <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
+            <div className="relative flex-1">
+              <User className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="name"
+                placeholder="Your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
+                disabled={!user.isAuthenticated}
+              />
+            </div>
+            <Button
+              onClick={handleUpdateName}
+              className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+              disabled={updatingName || !user.isAuthenticated}
+            >
+              {updatingName ? 'Updating...' : 'Change Name'}
+            </Button>
+          </div>
+        </div>
 
-                        {/* Email Update */}
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-1">
-                                <Label htmlFor="email" className="text-sm font-medium">
-                                    Email
-                                </Label>
-                                {email !== user.email && (
-                                    <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
-                                )}
-                            </div>
+        {/* Email Update */}
+        <div className="space-y-2">
+          <div className="flex items-center gap-1">
+            <Label htmlFor="email" className="text-sm font-medium">
+              Email
+            </Label>
+            {email !== user.email && (
+              <Dot className="text-primary -ml-1 scale-140 animate-caret-blink" />
+            )}
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
+            <div className="relative flex-1">
+              <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="Your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
+                disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
+              />
+            </div>
+            {user.userProvider === 'credential' && (
+              <Button
+                onClick={handleUpdateEmail}
+                className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
+              >
+                {updatingEmail ? 'Updating...' : 'Change Email'}
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
 
-                            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-3 gap-2">
-                                <div className="relative flex-1">
-                                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="Your email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
-                                        disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
-                                    />
-                                </div>
-                                {
-                                    user.userProvider === 'credential' &&
-                                    <Button
-                                        onClick={handleUpdateEmail}
-                                        className="sm:w-auto w-full bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                                        disabled={user.userProvider !== 'credential' || !user.isAuthenticated}
-                                    >
-                                        {updatingEmail ? 'Updating...' : 'Change Email'}
-                                    </Button>
-                                }
-                            </div>
-                        </div>
-                    </div>
+      <Separator className="bg-border" />
 
-                    <Separator className="bg-border" />
+      {/* Password Section */}
+{/* Password Section */}
+{user.userProvider === 'credential' && (
+  <div className="space-y-4">
+    <h3 className="text-lg font-medium text-foreground">Change Password</h3>
 
-                    {/* Password Section */}
-                    {
-                        user.userProvider === 'credential' &&
-                        <div>
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-medium text-foreground">Password</h3>
-                                <div className="space-y-2">
-                                    <Label htmlFor="current-password" className="text-sm font-medium">Current Password</Label>
-                                    <Input
-                                        id="current-password"
-                                        type="password"
-                                        placeholder="Current password"
-                                        value={currentPassword}
-                                        onChange={(e) => setCurrentPassword(e.target.value)}
-                                        className="bg-background border-border focus:ring-primary"
-                                        disabled={!user.isAuthenticated}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="new-password" className="text-sm font-medium">New Password</Label>
-                                    <Input
-                                        id="new-password"
-                                        type="password"
-                                        placeholder="New password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        className="bg-background border-border focus:ring-primary"
-                                        disabled={!user.isAuthenticated}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirm-password" className="text-sm font-medium">Confirm New Password</Label>
-                                    <Input
-                                        id="confirm-password"
-                                        type="password"
-                                        placeholder="Confirm new password"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="bg-background border-border focus:ring-primary"
-                                        disabled={!user.isAuthenticated}
-                                    />
-                                </div>
-                                <Button
-                                    onClick={handleChangePassword}
-                                    variant="outline"
-                                    disabled={!user.isAuthenticated || changingPassword}
-                                    className="w-full border-border hover:bg-accent hover:text-accent-foreground"
-                                >
-                                    {changingPassword ? 'Changing...' : 'Change Password'}
-                                </Button>
-                            </div>
-                            <Separator className="bg-border" />
-                        </div>
-                    }
+    <div className="space-y-2">
+      <Label htmlFor="current-password" className="text-sm font-medium">
+        Current Password
+      </Label>
+      <Input
+        id="current-password"
+        type="password"
+        placeholder="Enter current password"
+        value={currentPassword}
+        onChange={(e) => setCurrentPassword(e.target.value)}
+        className="bg-background border-border focus:ring-primary"
+        disabled={!user.isAuthenticated}
+      />
+    </div>
+
+    <div className="space-y-2">
+      <Label htmlFor="new-password" className="text-sm font-medium">
+        New Password
+      </Label>
+      <Input
+        id="new-password"
+        type="password"
+        placeholder="Enter new password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+        className="bg-background border-border focus:ring-primary"
+        disabled={!user.isAuthenticated}
+      />
+    </div>
+
+    <div className="">
+      <Input
+        id="confirm-password"
+        type="password"
+        placeholder="Confirm new password"
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+        className="bg-background border-border focus:ring-primary"
+        disabled={!user.isAuthenticated}
+      />
+    </div>
+
+    <Button
+      onClick={handleChangePassword}
+      variant="outline"
+      className="w-full border-border hover:bg-accent hover:text-accent-foreground"
+      disabled={
+        !user.isAuthenticated ||
+        changingPassword ||
+        !currentPassword ||
+        !newPassword ||
+        newPassword !== confirmPassword
+      }
+    >
+      {changingPassword ? "Changing..." : "Update Password"}
+    </Button>
+  </div>
+)}
+
+      <Separator className="bg-border" />
 
                     {/* Danger Zone */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium text-destructive">Danger Zone</h3>
+{/* Danger Zone */}
+<div className="space-y-4">
+  <h3 className="text-lg font-semibold text-destructive">Danger Zone</h3>
 
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="destructive"
-                                    className="w-full bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
-                                >
-                                    Delete Account
-                                </Button>
-                            </AlertDialogTrigger>
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button
+        variant="destructive"
+        className="w-full cursor-pointer text-destructive hover:text-primary"
+      >
+        Delete Account
+      </Button>
+    </AlertDialogTrigger>
 
-                            <AlertDialogContent className="bg-card border-border">
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle className="text-foreground">
-                                        Are you absolutely sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription className="text-muted-foreground">
-                                        This action cannot be undone. Type <span className="font-semibold text-destructive">&quot;delete my account&quot;</span> below to confirm.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
+    <AlertDialogContent className="bg-card border border-border rounded-xl max-w-sm mx-auto">
+      <AlertDialogHeader className="text-center space-y-2">
+        <AlertDialogTitle className="text-lg font-semibold text-foreground">
+          Confirm Account Deletion
+        </AlertDialogTitle>
+        <AlertDialogDescription className="text-sm text-muted-foreground">
+          This action <span className="font-semibold text-destructive">cannot be undone</span>.  
+          Type <span className="font-medium text-destructive">&quot;delete my account&quot;</span> below to confirm.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
 
-                                <div className="py-3">
-                                    <input
-                                        type="text"
-                                        value={confirmText}
-                                        onChange={(e) => setConfirmText(e.target.value)}
-                                        placeholder='Type "delete my account"'
-                                        className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
-                                    />
-                                </div>
+      <div className="mt-4">
+        <Input
+          type="text"
+          value={confirmText}
+          onChange={(e) => setConfirmText(e.target.value)}
+          placeholder='Type "delete my account"'
+          className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-destructive/50"
+        />
+      </div>
 
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel className="border-border hover:bg-accent">
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleDeleteAccount}
-                                        disabled={confirmText.trim().toLowerCase() !== "delete my account"}
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Delete Account
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
+      <AlertDialogFooter className="mt-4 flex justify-end gap-2">
+        <AlertDialogCancel className="px-3 py-1 border border-border rounded hover:bg-muted/20 text-sm">
+          Cancel
+        </AlertDialogCancel>
+        <AlertDialogAction
+          onClick={handleDeleteAccount}
+          disabled={confirmText.trim().toLowerCase() !== "delete my account"}
+          className="px-3 py-1 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Delete
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+</div>
                 </CardContent>
             </Card>
         </div>

@@ -82,10 +82,8 @@ export default function EditClient({ id }: { id: string }) {
 
         <div className='flex-1 flex overflow-hidden'>
             {/* Left Panel - Edit Tools */}
-            <div className='w-80 border-r border-border bg-card flex flex-col'>
-                {/* Edit Tools - More Space */}
-                <div className="flex-1 p-4">
-                    <h2 className="text-sm font-medium text-muted-foreground mb-3">Edit Tools</h2>
+            <div className='w-80 border-r border-border bg-card flex flex-col p-4'>
+                <div className="flex-1">
                     <EditPDF />
                 </div>
 
@@ -130,7 +128,7 @@ export default function EditClient({ id }: { id: string }) {
                                 value={fileName}
                                 disabled={loading}
                                 onChange={(e) => setPdf({ fileName: e.target.value })}
-                                className="pr-10"
+                                className="pr-10 font-medium"
                             />
                             {fileName !== initialName && (
                                 <Dot className="absolute right-3 text-primary scale-140 animate-caret-blink" />
