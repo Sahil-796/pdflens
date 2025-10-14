@@ -94,7 +94,7 @@ const navigationLinks = [
 export default function Navbar() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    const { user } = useUser()
+    const { user, loading } = useUser()
     const { clearUser } = useUserStore()
 
     const handleLogout = async () => {
@@ -189,7 +189,7 @@ export default function Navbar() {
                     </NavigationMenu>
 
                     {/* Right: Auth/User */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className={`flex items-center gap-2 flex-shrink-0 ${loading ? 'opacity-0' : 'opacity-100'}`}>
                         {!user.id ? (
                             <>
                                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">

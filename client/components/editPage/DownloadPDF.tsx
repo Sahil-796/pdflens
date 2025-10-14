@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { usePdfStore } from "@/app/store/usePdfStore";
+import {toast} from 'sonner'
 
 const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
     const [loading, setLoading] = useState(false);
@@ -16,6 +17,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         if (!renderedHtml) return;
 
         setLoading(true);
+        try {
         const wrapper = document.createElement("div");
         wrapper.style.padding = "16px";
         wrapper.innerHTML = renderedHtml;
@@ -27,7 +29,6 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
         });
 
         if (res.ok) {
-            setLoading(false);
             const blob = await res.blob();
             const url = URL.createObjectURL(blob);
 
@@ -36,6 +37,12 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
             a.download = `${pdfName || "documentFromPDFLens"}.pdf`;
             a.click();
             URL.revokeObjectURL(url);
+        }
+        } catch (err) {
+          console.error(err.message)
+          toast.error("Failed to download PDF.")
+        } finally {
+          setLoading(false)
         }
     }
 
