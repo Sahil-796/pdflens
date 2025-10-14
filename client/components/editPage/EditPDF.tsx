@@ -3,9 +3,21 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePdfStore } from '@/app/store/usePdfStore'
+import { useUserStore } from '@/app/store/useUserStore'
 import { Button } from '@/components/ui/button'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import { Wand2, RotateCcw } from 'lucide-react'
+import Link from 'next/link'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const EditPlaceholder = () => (
     <div className="flex flex-col items-center justify-center h-32 text-center">
@@ -35,9 +47,12 @@ const EditPDF = () => {
         setShowAiResponse
     } = usePdfStore()
 
+    const { setUser, creditsLeft } = useUserStore();
+
     const [promptValue, setPromptValue] = useState("")
     const [status, setStatus] = useState<'prompt' | 'loading' | 'aiResult'>('prompt')
     const [activeTab, setActiveTab] = useState<'ai-edit' | 'replace'>('ai-edit')
+    const [limitModalOpen, setLimitModalOpen] = useState(false)
 
     // reset promptValue depending on tab + selectedText
     useEffect(() => {
@@ -63,6 +78,10 @@ const EditPDF = () => {
     }, [selectedId, renderedHtml, setRenderedHtml])
 
     const handleAiEdit = async () => {
+      if (creditsLeft==0) {
+        setLimitModalOpen(true)
+        return
+      }
         if (status === 'prompt') {
             if (!promptValue) return
             try {
@@ -79,7 +98,8 @@ const EditPDF = () => {
                 })
                 if (!res.ok) throw new Error('API failed')
                 const data = await res.json()
-                const response = data.editedText || data
+                const response = data.data
+                setUser({ creditsLeft: data.creditsLeft})
                 setAiResponse(response)
                 setShowAiResponse(true)
                 setStatus('aiResult')
@@ -150,7 +170,7 @@ const EditPDF = () => {
                                         {status === 'loading' ? (
                                             <TextShimmerWave duration={1.5}>Generating...</TextShimmerWave>
                                         ) : (
-                                            'Ask AI'
+                                            `Ask AI (Credits Left: ${creditsLeft})`
                                         )}
                                     </Button>
                                 </div>
@@ -186,6 +206,24 @@ const EditPDF = () => {
                     )}
                 </TabsContent>
             </Tabs>
+      <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
+        <AlertDialogContent className="bg-card border-border w-[92%] sm:w-[480px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-foreground">Daily token limit reached</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              In the free plan, you get <span className="font-medium text-foreground">20 credits per day</span>.
+              Upgrade to <span className="font-medium text-foreground">Premium</span> to get
+              <span className="font-medium text-foreground"> 100 credits per day</span> and additional benefits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-border">Close</AlertDialogCancel>
+            <Link href="/pricing" className="w-full sm:w-auto">
+              <AlertDialogAction className="w-full">View Pricing</AlertDialogAction>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
         </div>
     )
 }

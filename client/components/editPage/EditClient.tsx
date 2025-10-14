@@ -21,7 +21,7 @@ interface Pdf {
 
 export default function EditClient({ id }: { id: string }) {
     const router = useRouter()
-    const { htmlContent, setPdf } = usePdfStore()
+    const { htmlContent, setPdf, fileName } = usePdfStore()
     const [editPdf, setEditPdf] = useState<Pdf | null>(null)
     const [contextFiles, setContextFiles] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
@@ -43,10 +43,10 @@ export default function EditClient({ id }: { id: string }) {
                     const newPdf = data.pdf
                     setEditPdf(newPdf)
                     setPdf({
-                      htmlContent: newPdf.htmlContent,
-                      fileName: newPdf.fileName
+                        htmlContent: newPdf.htmlContent,
+                        fileName: newPdf.fileName
                     })
-                    setFilename(newPdf.fileName)
+                    setPdf({ fileName: newPdf.fileName })
                     setInitialName(newPdf.fileName)
                 } else {
                     toast.error("PDF not found")
@@ -127,18 +127,18 @@ export default function EditClient({ id }: { id: string }) {
                             <Input
                                 id="filename"
                                 placeholder="Enter file name..."
-                                value={filename}
+                                value={fileName}
                                 disabled={loading}
-                                onChange={(e) => setFilename(e.target.value)}
+                                onChange={(e) => setPdf({ fileName: e.target.value })}
                                 className="pr-10"
                             />
-                            {filename !== initialName && (
+                            {fileName !== initialName && (
                                 <Dot className="absolute right-3 text-primary scale-140 animate-caret-blink" />
                             )}
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <SaveChanges filename={filename} onSaveSuccess={()=>setInitialName(filename)} />
+                        <SaveChanges filename={fileName} onSaveSuccess={() => setInitialName(fileName)} />
                         <DownloadPDF />
                     </div>
                 </div>

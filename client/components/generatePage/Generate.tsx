@@ -103,7 +103,7 @@ const Generate = () => {
   const [progress, setProgress] = useState(0)
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
-  const { userId, creditsLeft } = useUserStore()
+  const { userId, creditsLeft, setUser } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
   const template = searchParams.get('template') // Check for template param
@@ -125,6 +125,11 @@ const Generate = () => {
   const handleSend = async () => {
     if (!input.trim()) {
       toast.error("Prompt cannot be empty")
+      return
+    }
+
+    if(creditsLeft==0){
+      setLimitModalOpen(true)
       return
     }
 
@@ -159,17 +164,11 @@ const Generate = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, userPrompt: input, pdfId: currentPdfId, isContext }),
       })
-      if (generateRes.status === 429) {
-        setLimitModalOpen(true)
-        setShowAIWorking(false)
-        setLoading(false)
-        clearInterval(progressInterval)
-        return
-      }
       if (!generateRes.ok) throw new Error("Failed to generate HTML")
 
       const generateData = await generateRes.json()
       setPdf({ htmlContent: generateData.data })
+      setUser({creditsLeft: generateData.creditsLeft})
 
       const updateRes = await fetch('/api/updatePdf', {
         method: "POST",
