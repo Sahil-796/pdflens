@@ -103,7 +103,7 @@ const Generate = () => {
   const [progress, setProgress] = useState(0)
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
-  const { userId } = useUserStore()
+  const { userId, creditsLeft } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
 
   const template = searchParams.get('template') // Check for template param
@@ -255,7 +255,7 @@ const Generate = () => {
                 <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
               </div>
             ) : (
-              'Generate PDF'
+              `Generate (Credits Left: ${creditsLeft})`
             )}
           </button>
         </div>

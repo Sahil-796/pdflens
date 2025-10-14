@@ -24,10 +24,11 @@ export default function useUser() {
                     try {
                         const res = await fetch("/api/getUserDetails", { cache: "no-store" })
                         if (res.ok) {
-                            const { plan, emailVerified, providerId } = await res.json()
+                            const { plan, emailVerified, providerId, creditsLeft } = await res.json()
                             setUser({
                                 userPlan: plan,
                                 emailVerified,
+                                creditsLeft,
                                 providerId,
                             })
                         }

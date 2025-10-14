@@ -18,6 +18,7 @@ export async function GET(req: Request) {
             .select({
                 plan: user.plan,
                 emailVerified: user.emailVerified,
+                creditsLeft: user.creditsLeft,
             })
             .from(user)
             .where(eq(user.id, session.user.id))
@@ -27,6 +28,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ 
                 plan: null,
                 emailVerified: null,
+                creditsLeft: 0,
             })
         }
 
@@ -46,6 +48,7 @@ export async function GET(req: Request) {
         return NextResponse.json({
             plan: userDetails.plan,
             emailVerified: userDetails.emailVerified,
+            creditsLeft: userDetails.creditsLeft,
             providerId: userProvider.providerId,
         }, {status: 200})
     } catch (error) {
