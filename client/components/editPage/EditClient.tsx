@@ -41,15 +41,21 @@ export default function EditClient({ id }: { id: string }) {
                 if (!res.ok) throw new Error("Failed to fetch PDF")
                 const data = await res.json()
                 if (data.pdf) {
-                    setEditPdf(data.pdf)
-                    setFilename(data.pdf.fileName)
-                    setInitialName(data.pdf.fileName)
+                    const newPdf = data.pdf
+                    setEditPdf(newPdf)
+                    setPdf({
+                      htmlContent: newPdf.htmlContent,
+                      fileName: newPdf.fileName
+                    })
+                    setFilename(newPdf.fileName)
+                    setInitialName(newPdf.fileName)
                 } else {
                     toast.error("PDF not found")
                     router.push("/dashboard")
                 }
             } catch (err) {
-                toast.error(err || "Error fetching PDF")
+                console.error(err)
+                toast.error("Error fetching PDF")
                 router.push('/dashboard')
             }
         }

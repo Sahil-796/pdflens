@@ -7,11 +7,11 @@ import {toast} from 'sonner'
 const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
     const [loading, setLoading] = useState(false);
 
-    const { renderedHtml, setRenderedHtml } = usePdfStore();
+    const { renderedHtml, setRenderedHtml, fileName, htmlContent } = usePdfStore();
 
     useEffect(() => {
-        if (html) setRenderedHtml(html);
-    }, [html, setRenderedHtml]);
+        if (htmlContent) setRenderedHtml(htmlContent);
+    }, [htmlContent, setRenderedHtml]);
 
     async function handleDownload() {
         if (!renderedHtml) return;
@@ -34,7 +34,7 @@ const DownloadPDF = ({ html, pdfName }: { html: string; pdfName?: string }) => {
 
             const a = document.createElement("a");
             a.href = url;
-            a.download = `${pdfName || "documentFromPDFLens"}.pdf`;
+            a.download = `${fileName || "documentFromPDFLens"}.pdf`;
             a.click();
             URL.revokeObjectURL(url);
         }
