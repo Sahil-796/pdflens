@@ -154,9 +154,15 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
       icon: PlaneLanding,
       keywords: ['home', 'welcome', 'start', 'landing']
     },
+    {
+      name: 'Pricing',
+      value: '/pricing',
+      icon: DollarSign,
+      keywords: ['money', 'price', 'rate']
+    },
   ]
 
-    const logOutNavigationItems = [
+  const logOutNavigationItems = [
     {
       name: 'Landing Page',
       value: '/',
