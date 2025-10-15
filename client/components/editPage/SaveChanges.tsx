@@ -48,10 +48,33 @@ const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSucc
     <button
       onClick={handleSave}
       disabled={loading}
-      className="group flex items-center gap-2 bg-primary text-primary-foreground font-medium rounded-md px-3 py-2 text-sm shadow-sm hover:bg-primary/90 hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      className="
+    group flex items-center justify-center gap-2
+    bg-secondary text-secondary-foreground font-medium
+    rounded-md px-2.5 py-2 text-sm shadow-sm
+    hover:bg-secondary/80 hover:shadow-md
+    transition-all duration-200
+    disabled:opacity-50 disabled:cursor-not-allowed
+
+    sm:px-3 sm:py-2
+    md:text-base md:px-4 md:py-2.5
+  "
     >
-      <Save className={`w-4 h-4 ${loading ? 'animate-caret-blink' : ''}`} />
-      <span className="hidden sm:inline">Save</span>
+      <Save
+        className={`
+      w-4 h-4 shrink-0
+      ${loading ? 'animate-caret-blink' : ''}
+      sm:w-5 sm:h-5
+    `}
+      />
+      <span
+        className="
+      hidden 
+      text-xs sm:text-sm lg:inline md:text-base
+    "
+      >
+        Save
+      </span>
     </button>
   )
 }
