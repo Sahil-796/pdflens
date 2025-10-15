@@ -44,7 +44,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const router = useRouter()
   const { clearUser } = useUserStore()
   const { user } = useUser()
-  const { pdfs, loading } = usePdfStore();
+  const { pdfs, loading, clearPdf } = usePdfStore();
 
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
@@ -376,6 +376,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                           setOpen(false)
                           await authClient.signOut()
                           clearUser()
+                          clearPdf()
+                          setQuery("")
                           router.push('/')
                         }}
                         keywords={['sign out', 'log out', 'exit', 'leave']}
