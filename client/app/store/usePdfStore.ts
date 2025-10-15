@@ -8,12 +8,14 @@ interface Pdf {
 }
 
 interface PdfState {
+  status: 'idle' | 'loading' | 'error' | 'success';
+  setStatus: (status: 'idle' | 'loading' | 'error' | 'success') => void;
   pdfs: Pdf[];
-  loading: boolean;
   setPdfs: (pdfs: Pdf[]) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
   addPdf: (pdf: Pdf) => void;
   removePdf: (id: string) => void;
-  setLoading: (loading: boolean) => void;
   pdfId: string | null;
   fileName: string;
   htmlContent: string;
@@ -23,16 +25,18 @@ interface PdfState {
 };
 
 export const usePdfStore = create<PdfState>(set => ({
+  status: 'idle',
+  setStatus: (status) => set({ status }),
   pdfs: [],
-  loading: false,
   setPdfs: (pdfs) => set({ pdfs }),
+  loading: false,
+  setLoading: (loading) => set({ loading }),
   addPdf: (pdf) => set((state) => ({
-    pdfs: [...state.pdfs, pdf],
+    pdfs: [pdf, ...state.pdfs],
   })),
   removePdf: (id) => set((state) => ({
     pdfs: state.pdfs.filter((pdf) => pdf.id !== id)
   })),
-  setLoading: (loading) => set({ loading }),
   pdfId: null,
   fileName: "Untitled",
   htmlContent: "",
