@@ -19,7 +19,6 @@ export async function POST(req: Request) {
 
         const { html } = parsed.data
 
-        // --- Start of Changes ---
 
         const styledHTML = `
       <html>
@@ -33,24 +32,28 @@ export async function POST(req: Request) {
 
             body { font-family: sans-serif; }
 
+           /* Page-break helper emitted by renderer */
+           .pg-break { display:block; page-break-before: always; break-before: page; height:0; margin:0; padding:0; }
+            /* Page-break helper emitted by renderer */
+
             /* 2. Define print-specific rules */
             @media print {
                 /* Prevent a page break immediately AFTER a heading */
-              h1, h2, h3, h4, h5, h6 { 
+                h1, h2, h3, h4, h5, h6 { 
                     page-break-after: avoid; 
                 }
 
-                /* Prevent tables, lists, and code blocks from splitting across pages */
-              table, pre, blockquote, ul, ol { 
-                    page-break-inside: avoid; 
+                /* Add this rule to prevent a page break immediately BEFORE a heading */
+                h2, h3, h4, h5, h6 {
+                    page-break-before: avoid;
                 }
+
             }
           </style>
         </head>
         <body>${html}</body>
       </html>
     `
-        // --- End of Changes ---
 
         const browser = await chromium.launch()
         const page = await browser.newPage()
@@ -59,7 +62,7 @@ export async function POST(req: Request) {
         const pdfBuffer = await page.pdf({
             format: "A4",
             printBackground: true,
-            preferCSSPageSize: true, // This is important! It tells Playwright to use your @page styles
+            preferCSSPageSize: true, 
         })
         await browser.close()
 
