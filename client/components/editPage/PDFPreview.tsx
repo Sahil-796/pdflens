@@ -26,7 +26,6 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
     setStatus
   } = useEditPdfStore()
 
-
   useEffect(() => {
     if (html) setRenderedHtml(html)
   }, [html, setRenderedHtml])
@@ -37,7 +36,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
       const parser = new DOMParser()
       const doc = parser.parseFromString(renderedHtml, 'text/html')
       const el = doc.getElementById(selectedId)
-      if (el) el.innerHTML = newContent
+      if (el) el.outerHTML = newContent
       setRenderedHtml(doc.documentElement.outerHTML)
       setShowAiResponse(false)
       setAiResponse('')
@@ -68,10 +67,6 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
         aiResponseDiv.className = 'ai-response-container'
         aiResponseDiv.innerHTML = `
                     <div class="ai-response-content">
-                        <div class="ai-original">
-                            <span class="ai-label">Original:</span>
-                            <span class="ai-text original-text">${selectedText}</span>
-                        </div>
                         <div class="ai-suggestion">
                             <span class="ai-label">AI Suggestion:</span>
                             <span class="ai-text suggestion-text">${aiResponse}</span>
