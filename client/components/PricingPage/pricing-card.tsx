@@ -16,7 +16,6 @@ export interface PricingTier {
   features: string[]
   cta: string
   highlighted?: boolean
-  popular?: boolean
   onSelect?: () => void
   disabled?: boolean
 }
@@ -29,24 +28,21 @@ interface PricingCardProps {
 export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
   const price = tier.price[paymentFrequency]
   const isHighlighted = tier.highlighted
-  const isPopular = tier.popular
 
   return (
     <Card
       className={cn(
         "relative flex flex-col gap-8 overflow-hidden p-6",
-        isHighlighted
+        !isHighlighted
           ? "bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 text-foreground border border-primary/20"
-          : "bg-card text-foreground",
-        isPopular && "ring-2 ring-primary"
+          : "bg-card text-foreground ring-3 ring-primary"
       )}
     >
-      {isHighlighted && <HighlightedBackground />}
-      {isPopular && <PopularBackground />}
+      {isHighlighted && <></>}
 
       <h2 className="flex items-center gap-3 text-xl font-medium capitalize">
         {tier.name}
-        {isPopular && (
+        {isHighlighted && (
           <Badge variant="secondary" className="mt-1 z-10">
             🔥 Most Popular
           </Badge>
@@ -95,12 +91,9 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
       <Button
         variant={isHighlighted ? "default" : "default"}
         className={cn(
-          "w-full",
-          !tier.disabled && "cursor-pointer",
-          tier.disabled && "cursor-not-allowed"
+          "w-full cursor-pointer",
         )}
         onClick={tier.onSelect}
-        disabled={tier.disabled}
       >
         {tier.cta}
         <ArrowRight className="ml-2 h-4 w-4" />
@@ -109,10 +102,3 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
   )
 }
 
-const HighlightedBackground = () => (
-  <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:45px_45px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-)
-
-const PopularBackground = () => (
-  <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(120,119,198,0.1),rgba(255,255,255,0))]" />
-)

@@ -5,6 +5,7 @@ import useUser from "@/hooks/useUser"
 import { useRouter } from "next/navigation"
 import { PricingCard, type PricingTier } from "./pricing-card"
 import { Tab } from "./pricing-tab"
+import { toast } from "sonner"
 
 export default function Pricing() {
   const router = useRouter()
@@ -19,6 +20,11 @@ export default function Pricing() {
     }
 
     if (planName === "Pro") {
+      if (user.isPro) {
+        toast.info("You are already Pro.")
+        router.push('/account')
+        return
+      }
       router.push('/account/billing')
       return
     }
@@ -39,7 +45,6 @@ export default function Pricing() {
         "Community support",
       ],
       cta: user.id ? "Access Dashboard" : "Get Started",
-      popular: false,
       highlighted: false,
       onSelect: () => handlePlanSelect("Free"),
     },
@@ -55,11 +60,9 @@ export default function Pricing() {
         "Advanced formatting & styling",
         "Email support",
       ],
-      cta: user?.plan === "premium" ? "Current Plan" : "Upgrade to Pro",
-      popular: true,
+      cta: user?.plan === "premium" ? "You are already Pro" : "Upgrade to Pro",
       highlighted: true,
       onSelect: () => handlePlanSelect("Pro"),
-      disabled: user?.plan === "premium",
     },
   ]
 
