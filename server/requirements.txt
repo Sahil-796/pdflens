@@ -14,3 +14,5 @@ pydantic
 pypdf
 langchain-cloudflare
 pdf2docx
+pymupdf4llm
+python-multipart
