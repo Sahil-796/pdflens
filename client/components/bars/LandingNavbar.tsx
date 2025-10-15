@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, LogOut, User, Coins, ArrowUpCircle } from "lucide-react"
+import { Loader2, LogOut, User, Coins, ArrowUpCircle, Search, Home, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -25,6 +25,7 @@ import { authClient } from "@/lib/auth-client"
 import useUser from "@/hooks/useUser"
 import { Logo } from "../Logo"
 import { usePdfStore } from "@/app/store/usePdfStore"
+import { useCommandPalette } from "@/hooks/useCommandPalette"
 
 // Navigation links array
 const navigationLinks = [
@@ -97,6 +98,7 @@ export default function Navbar() {
   const { user, loading } = useUser()
   const { clearUser, creditsLeft } = useUserStore()
   const { clearPdf } = usePdfStore()
+  const { setOpen } = useCommandPalette()
 
   const handleLogout = async () => {
     try {
@@ -124,20 +126,24 @@ export default function Navbar() {
 
   return (
     <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
-      <div className="bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-3 py-2.5">
+      <div className="bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-4 py-3">
 
         <div className="flex items-center justify-between">
+
+          <div className="block sm:hidden">
+            <Menu />
+          </div>
           {/* Left: Logo */}
           <Link href="/"
             className={cn(
-              "flex-shrink-0 justify-center",
+              "flex-shrink-0 justify-center hidden sm:flex",
             )}
           >
             <Logo showSubtitle={true} showText={true} size="sm" />
           </Link>
 
           {/* Center: Navigation */}
-          <NavigationMenu viewport={false} className="hidden md:flex">
+          <NavigationMenu viewport={false} className="hidden sm:flex">
             <NavigationMenuList className="gap-1">
               {navigationLinks.map((link, index) => (
                 <NavigationMenuItem key={index}>
@@ -191,7 +197,7 @@ export default function Navbar() {
           </NavigationMenu>
 
           {/* Right: Auth/User */}
-          <div className={`flex items-center gap-2 flex-shrink-0 ${loading ? 'opacity-0' : 'opacity-100'}`}>
+          <div className={`flex items-center gap-2 flex-shrink-0 ${loading ? 'scale-0' : 'scale-100'}`}>
             {!user.id ? (
               <>
                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">
@@ -203,8 +209,11 @@ export default function Navbar() {
               </>
             ) : (
               <div className="flex items-center gap-2">
-                <Button asChild variant="ghost" size="sm" className="h-8 rounded-md">
-                  <Link href="/dashboard">Dashboard</Link>
+                <Button asChild variant="ghost" size="sm" onClick={() => setOpen(true)} className="h-8 rounded-md cursor-pointer text-primary">
+                  <div><Search className="h-4 w-4" /></div>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="h-8 rounded-md text-primary">
+                  <Link href="/dashboard"><Home className="h-4 w-4" /></Link>
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -221,13 +230,15 @@ export default function Navbar() {
                     {/* User Info Section */}
                     <div className="p-4 pb-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <span className="text-lg font-semibold text-primary">
-                            {monogram}
-                          </span>
-                        </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-sm truncate">{user.name}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold text-sm truncate">{user.name}</p>
+                            {user.isPro && (
+                              <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                                PRO
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                         </div>
                       </div>
@@ -239,11 +250,6 @@ export default function Navbar() {
                             <Coins className="h-3.5 w-3.5 text-primary" />
                             <span className="text-foreground/90">{creditsLeft} credits left</span>
                           </div>
-                          {user.isPro && (
-                            <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
-                              PRO
-                            </span>
-                          )}
                         </div>
 
                         {/* Upgrade Button for non-pro users */}
