@@ -65,7 +65,6 @@ export function SignupForm({
             callbackURL: "/dashboard",
             errorCallbackURL: "/",
             newUserCallbackURL: "/dashboard",
-            disableRedirect: true,
         });
     };
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, LogOut, User, FileSearch } from "lucide-react"
+import { Loader2, LogOut, User, Coins, ArrowUpCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -94,8 +94,8 @@ const navigationLinks = [
 export default function Navbar() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
-    const { user } = useUser()
-    const { clearUser } = useUserStore()
+    const { user, loading } = useUser()
+    const { clearUser, creditsLeft } = useUserStore()
 
     const handleLogout = async () => {
         try {
@@ -189,7 +189,7 @@ export default function Navbar() {
                     </NavigationMenu>
 
                     {/* Right: Auth/User */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className={`flex items-center gap-2 flex-shrink-0 ${loading ? 'opacity-0' : 'opacity-100'}`}>
                         {!user.id ? (
                             <>
                                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">
@@ -204,72 +204,102 @@ export default function Navbar() {
                                 <Button asChild variant="ghost" size="sm" className="h-8 rounded-md">
                                     <Link href="/dashboard">Dashboard</Link>
                                 </Button>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="secondary"
-                                            size="icon"
-                                            className="rounded-lg h-9 w-9 font-semibold cursor-pointer transition-transform"
-                                        >
-                                            {monogram}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-64 p-0 mr-4" align="end">
-                                        {/* User Info Section */}
-                                        <div className="p-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                                    <span className="text-lg font-semibold text-primary">
-                                                        {monogram}
-                                                    </span>
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <p className="font-semibold text-sm truncate">{user.name}</p>
-                                                    <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-                                                </div>
-                                            </div>
-                                        </div>
+<Popover>
+  <PopoverTrigger asChild>
+    <Button
+      variant="secondary"
+      size="icon"
+      className="rounded-lg h-9 w-9 font-semibold cursor-pointer transition-transform hover:scale-105"
+    >
+      {monogram}
+    </Button>
+  </PopoverTrigger>
 
-                                        <Separator />
+  <PopoverContent className="w-72 p-0 mr-4 rounded-xl border border-border/60 bg-gradient-to-br from-background to-card shadow-xl" align="end">
+    {/* User Info Section */}
+    <div className="p-4 pb-3">
+      <div className="flex items-center gap-3">
+        <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center">
+          <span className="text-lg font-semibold text-primary">
+            {monogram}
+          </span>
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm truncate">{user.name}</p>
+          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        </div>
+      </div>
 
-                                        {/* Actions Section */}
-                                        <div className="p-2">
-                                            <Button
-                                                variant="ghost"
-                                                className="w-full justify-start gap-2 h-9 text-sm font-normal"
-                                                asChild
-                                            >
-                                                <Link href="/account">
-                                                    <User className="h-4 w-4" />
-                                                    Account Settings
-                                                </Link>
-                                            </Button>
-                                            <div className="flex items-center justify-between px-3 py-2">
-                                                <span className="text-sm text-muted-foreground">Theme</span>
-                                                <ThemeToggle />
-                                            </div>
-                                        </div>
+      {/* Credits + Pro Section */}
+      <div className="mt-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 text-xs font-medium bg-muted px-2.5 py-1 rounded-md">
+            <Coins className="h-3.5 w-3.5 text-primary" />
+            <span className="text-foreground/90">{creditsLeft} credits left</span>
+          </div>
+          {user.isPro && (
+            <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+              PRO
+            </span>
+          )}
+        </div>
 
-                                        <Separator />
+        {/* Upgrade Button for non-pro users */}
+        {!user.isPro && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => router.push("/pricing")}
+            className="text-[11px] font-medium text-primary bg-primary/10 hover:bg-primary/20 px-2 py-1 rounded-md"
+          >
+            <ArrowUpCircle className="w-3.5 h-3.5 mr-1" />
+            Upgrade
+          </Button>
+        )}
+      </div>
+    </div>
 
-                                        {/* Logout Section */}
-                                        <div className="p-2">
-                                            <Button
-                                                variant="ghost"
-                                                onClick={handleLogout}
-                                                disabled={isLoading}
-                                                className="w-full justify-start gap-2 h-9 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10"
-                                            >
-                                                {isLoading ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                ) : (
-                                                    <LogOut className="h-4 w-4" />
-                                                )}
-                                                <span>{isLoading ? "Logging out..." : "Log out"}</span>
-                                            </Button>
-                                        </div>
-                                    </PopoverContent>
-                                </Popover>
+    <Separator />
+
+    {/* Actions Section */}
+    <div className="p-2">
+      <Button
+        variant="ghost"
+        className="w-full justify-start gap-2 h-9 text-sm font-normal"
+        asChild
+      >
+        <Link href="/account">
+          <User className="h-4 w-4" />
+          Account Settings
+        </Link>
+      </Button>
+
+      <div className="flex items-center justify-between px-3 py-2">
+        <span className="text-sm text-muted-foreground">Theme</span>
+        <ThemeToggle />
+      </div>
+    </div>
+
+    <Separator />
+
+    {/* Logout Section */}
+    <div className="p-2">
+      <Button
+        variant="ghost"
+        onClick={handleLogout}
+        disabled={isLoading}
+        className="w-full justify-start gap-2 h-9 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10"
+      >
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )}
+        <span>{isLoading ? "Logging out..." : "Log out"}</span>
+      </Button>
+    </div>
+  </PopoverContent>
+</Popover>
                             </div>
                         )}
                     </div>

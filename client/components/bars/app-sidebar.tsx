@@ -4,7 +4,6 @@ import * as React from "react"
 import {
   ArrowLeftRight,
   BetweenVerticalEnd,
-  FileSearch,
   Home,
   Pen,
   Plus,
@@ -32,17 +31,20 @@ import { Button } from "../ui/button"
 import Link from "next/link"
 import { Spinner } from "../ui/spinner"
 import { Logo } from "../Logo"
+import { useUserStore } from "@/app/store/useUserStore"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const { user, isPro, loading } = useUser()
+  const { user, loading } = useUser()
   const { state } = useSidebar();
+  const {creditsLeft} = useUserStore()
   const data = {
     user: {
       name: user.name || 'Loading',
       email: user.email || 'Loading',
       avatar: user.avatar || '',
-      isPro
+      isPro: user.isPro,
+      creditsLeft
     },
     main: [
       {

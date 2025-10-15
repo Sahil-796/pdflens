@@ -27,12 +27,14 @@ export const createPdf = async (
 
 export const updatePdf = async (
   id: string,
+  filename: string,
   htmlContent?: string,
 ) => {
   try {
     const [updatedPdf] = await db
       .update(pdf)
       .set({
+        fileName: filename,
         htmlContent: htmlContent ?? "",
       })
       .where(eq(pdf.id, id))

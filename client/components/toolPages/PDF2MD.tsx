@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Upload, FileText, X, File, Download, CheckCircle2, Code, ArrowLeftCircle } from 'lucide-react'
+import { Upload, X, File, Download, CheckCircle2, Code, ArrowLeftCircle } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {

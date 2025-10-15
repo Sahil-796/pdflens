@@ -54,7 +54,6 @@ export async function POST(req: Request) {
                 );
             } catch {
                 // in case Python returns non-JSON error
-
             }
         }
 

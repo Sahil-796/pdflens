@@ -3,8 +3,9 @@
 import {
   ChevronsUpDown,
   CreditCard,
-  Sparkles,
   User,
+  Coins,
+  ArrowUpCircle,
 } from "lucide-react"
 
 import {
@@ -17,6 +18,7 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -28,7 +30,7 @@ import {
 } from "@/components/ui/sidebar"
 import LogoutButton from "../auth/logout-button"
 import { useRouter } from "next/navigation"
-
+import { Badge } from "@/components/ui/badge"
 
 export function NavUser({
   user,
@@ -38,6 +40,7 @@ export function NavUser({
     email: string
     avatar: string
     isPro: boolean
+    creditsLeft: number
   }
 }) {
   const { isMobile } = useSidebar()
@@ -50,57 +53,77 @@ export function NavUser({
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-muted/50 data-[state=open]:text-foreground rounded-xl transition-all"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
+              <Avatar className="h-8 w-8 rounded-lg ring-1 ring-border/30">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
-                  {user.name?.[0] ?? "U"}
+                <AvatarFallback className="rounded-lg bg-muted">
+                  {user.name?.[0]?.toUpperCase() ?? "U"}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
-                <span className="truncate text-xs">{user.email}</span>
+                <span className="truncate font-medium text-foreground">
+                  {user.name}
+                </span>
+                <span className="truncate text-xs text-muted-foreground">
+                  {user.email}
+                </span>
               </div>
-              <ChevronsUpDown className="ml-auto size-4" />
+              <ChevronsUpDown className="ml-auto h-4 w-4 text-muted-foreground" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
-          >
-            {
-              !user.isPro && (
-                <DropdownMenuGroup>
-                  <DropdownMenuItem onSelect={() => router.push('/pricing')}>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Upgrade to Pro
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
-              )}
 
-            <DropdownMenuSeparator />
+<DropdownMenuContent
+  className="min-w-56 rounded-xl border border-border/60 bg-gradient-to-br from-background to-card shadow-lg"
+  side={isMobile ? "bottom" : "right"}
+  align="end"
+  sideOffset={6}
+>
+  {/* Top section */}
+  <DropdownMenuLabel className="flex flex-col gap-1.5 px-3 py-2 border-b border-border/60">
+    <p className="text-sm font-medium text-foreground">{user.name}</p>
+    <p className="text-xs text-muted-foreground">{user.email}</p>
 
-            {/* Account + Billing */}
-            <DropdownMenuGroup>
-              <DropdownMenuItem onSelect={() => router.push('/account')}>
-                <User className="mr-2 h-4 w-4" />
-                Account Settings
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Billing
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
+    {/* Credits left */}
+    <div className="flex items-center gap-1 mt-1">
+      <Badge
+        variant="outline"
+        className="text-[11px] font-medium bg-muted px-3 py-1 rounded-md text-foreground flex items-center"
+      >
+        <Coins className="w-3.5 h-3.5 mr-1 text-primary" />
+        {user.creditsLeft} credits left
+      </Badge>
+    </div>
 
-            <DropdownMenuSeparator />
+    {/* Upgrade to Pro button (only for non-pro users) */}
+    {!user.isPro && (
+      <button
+        onClick={() => router.push("/pricing")}
+        className="mt-2 w-full bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium py-1.5 rounded-md transition-colors flex items-center justify-center gap-1"
+      >
+        <ArrowUpCircle className="w-4 h-4" />
+        Upgrade to Pro
+      </button>
+    )}
+  </DropdownMenuLabel>
 
-            <DropdownMenuGroup className="w-full">
-              <LogoutButton />
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
+  <DropdownMenuGroup>
+    <DropdownMenuItem onSelect={() => router.push("/account")}>
+      <User className="mr-2 h-4 w-4 text-muted-foreground" />
+      Account Settings
+    </DropdownMenuItem>
+
+    <DropdownMenuItem onSelect={() => router.push("/billing")}>
+      <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
+      Billing
+    </DropdownMenuItem>
+  </DropdownMenuGroup>
+
+  <DropdownMenuSeparator />
+  <DropdownMenuGroup className="w-full">
+    <LogoutButton />
+  </DropdownMenuGroup>
+</DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>

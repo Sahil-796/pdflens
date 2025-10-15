@@ -182,7 +182,7 @@ export default function UploadFiles() {
                 {files.length > 0 && (
                     <div className="sm:w-1/2 flex flex-col">
                         <h4 className="text-sm font-medium mb-2">Uploaded Files:</h4>
-                        <div className="flex-1 max-h-[150px] overflow-y-auto pr-1 space-y-1 bg-red-500">
+                        <div className="flex-1 max-h-[150px] overflow-y-auto pr-1 space-y-1">
                             {files.map((fileItem, idx) => (
                                 <div
                                     key={idx}

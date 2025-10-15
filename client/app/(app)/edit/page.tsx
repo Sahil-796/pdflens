@@ -5,7 +5,7 @@ import React from 'react'
 const Page = () => {
     return (
         <div className="h-screen flex flex-col">
-            <TitleNav text="Edit PDF" />
+            <TitleNav text="Choose PDF" />
             <div className="flex-1 overflow-hidden p-4">
                 <div className="bg-card border border-border rounded-xl p-4 h-full flex flex-col">
                     <h2 className="text-xl font-semibold text-primary mb-2">

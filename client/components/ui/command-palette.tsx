@@ -21,6 +21,9 @@ import {
   Pen,
   Sun,
   Moon,
+  Code,
+  LogIn,
+  DollarSign,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { authClient } from '@/lib/auth-client'
@@ -46,9 +49,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Check if user is authenticated first
-      if (!user.id) return;
-
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
         onOpenChange(true)
@@ -156,6 +156,36 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
     },
   ]
 
+    const logOutNavigationItems = [
+    {
+      name: 'Landing Page',
+      value: '/',
+      icon: PlaneLanding,
+      keywords: ['home', 'welcome', 'start', 'landing']
+    },
+    {
+      name: 'Pricing',
+      value: '/pricing',
+      icon: DollarSign,
+      keywords: ['money', 'price', 'rate']
+    }
+  ]
+
+  const tools = [
+    {
+      name: 'PDF to MD',
+      value: '/tools/pdf-to-md',
+      icon: Code,
+      keywords: ['md', 'convert', 'tools', 'pdf']
+    },
+    {
+      name: 'PDF to Word',
+      value: '/tools/pdf-to-word',
+      icon: FileText,
+      keywords: ['word', 'convert', 'tools', 'pdf', 'doc', 'docx']
+    },
+  ]
+
   // 🔍 Filter PDFs by name (case-insensitive)
   const filteredPdfs = pdfs.filter((pdf) =>
     pdf.fileName.toLowerCase().includes(query.toLowerCase())
@@ -207,23 +237,44 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Empty>
 
                 {/* Navigation */}
-                <Command.Group className="mb-4">
-                  <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
-                    Navigation
-                  </div>
-                  {navigationItems.map((item) => (
-                    <Command.Item
-                      key={item.value}
-                      value={item.value}
-                      keywords={item.keywords}
-                      onSelect={() => handleSelect(item.value)}
-                      className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                    >
-                      <item.icon className="mr-2 h-4 w-4" />
-                      <span>{item.name}</span>
-                    </Command.Item>
-                  ))}
-                </Command.Group>
+                {
+                  user.id ?
+                    <Command.Group className="mb-4">
+                      <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                        Navigation
+                      </div>
+                      {navigationItems.map((item) => (
+                        <Command.Item
+                          key={item.value}
+                          value={item.value}
+                          keywords={item.keywords}
+                          onSelect={() => handleSelect(item.value)}
+                          className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                        >
+                          <item.icon className="mr-2 h-4 w-4" />
+                          <span>{item.name}</span>
+                        </Command.Item>
+                      ))}
+                    </Command.Group>
+                    :
+                    <Command.Group className="mb-4">
+                      <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                        Navigation
+                      </div>
+                      {logOutNavigationItems.map((item) => (
+                        <Command.Item
+                          key={item.value}
+                          value={item.value}
+                          keywords={item.keywords}
+                          onSelect={() => handleSelect(item.value)}
+                          className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                        >
+                          <item.icon className="mr-2 h-4 w-4" />
+                          <span>{item.name}</span>
+                        </Command.Item>
+                      ))}
+                    </Command.Group>
+                }
 
                 {/* PDFs */}
                 {loading ? (
@@ -252,27 +303,52 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                   </Command.Group>
                 )}
 
-                {/* Templates */}
+                {/* Tools */}
                 <Command.Group className="mb-4">
                   <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
-                    Templates
+                    Tools
                   </div>
-                  {templates.map((template) => (
+                  {tools.map((item) => (
                     <Command.Item
-                      key={template.value}
-                      value={`template-${template.value}`}
-                      keywords={template.keywords}
-                      onSelect={() => handleSelect(`template-${template.value}`)}
+                      key={item.value}
+                      value={item.value}
+                      keywords={item.keywords}
+                      onSelect={() => handleSelect(item.value)}
                       className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
                     >
-                      <template.icon className="mr-2 h-4 w-4" />
-                      <span>{template.name}</span>
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.name}</span>
                     </Command.Item>
                   ))}
                 </Command.Group>
 
+                {/* Templates */}
+                {
+                  user.id &&
+                  <Command.Group className="mb-4">
+                    <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                      Templates
+                    </div>
+                    {templates.map((template) => (
+                      <Command.Item
+                        key={template.value}
+                        value={`template-${template.value}`}
+                        keywords={template.keywords}
+                        onSelect={() => handleSelect(`template-${template.value}`)}
+                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                      >
+                        <template.icon className="mr-2 h-4 w-4" />
+                        <span>{template.name}</span>
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                }
+
                 {/* Actions Group */}
                 <Command.Group>
+                  <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                    Quick Actions
+                  </div>
                   <Command.Item
                     key='theme'
                     onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -286,20 +362,38 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     )}
                     <span>Toggle Theme</span>
                   </Command.Item>
-                  <Command.Item
-                    key='signout'
-                    onSelect={async () => {
-                      setOpen(false)
-                      await authClient.signOut()
-                      clearUser()
-                      router.push('/')
-                    }}
-                    keywords={['sign out', 'log out', 'exit', 'leave']}
-                    className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                  >
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sign Out</span>
-                  </Command.Item>
+                  {
+                    user.id ?
+                      <Command.Item
+                        key='signout'
+                        onSelect={async () => {
+                          setOpen(false)
+                          await authClient.signOut()
+                          clearUser()
+                          router.push('/')
+                        }}
+                        keywords={['sign out', 'log out', 'exit', 'leave']}
+                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                      >
+                        <LogOut className="mr-2 h-4 w-4" />
+                        <span>Sign Out</span>
+                      </Command.Item>
+                      :
+                      <Command.Item
+                        key='login'
+                        onSelect={async () => {
+                          setOpen(false)
+                          setQuery("")
+                          router.push('/login')
+                        }}
+                        keywords={['sign in', 'log in', 'enter', 'join']}
+                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                      >
+                        <LogIn className="mr-2 h-4 w-4" />
+                        <span>Log In</span>
+                      </Command.Item>
+                  }
+
                 </Command.Group>
               </Command.List>
             </Command>

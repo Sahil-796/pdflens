@@ -1,5 +1,5 @@
 "use client";
-import React, { SVGProps, useState } from "react";
+import React, { useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
@@ -16,7 +16,7 @@ export const StickyBanner = ({
 }) => {
   const [open, setOpen] = useState(true);
   const { scrollY } = useScroll();
-  const { isAuthenticated } = useUser()
+  const { user } = useUser()
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     if (hideOnScroll && latest > 40) {
@@ -26,13 +26,13 @@ export const StickyBanner = ({
     }
   });
 
-  if (isAuthenticated) return null;
+  if (user.isAuthenticated) return null;
 
   return (
     <motion.div
       className={cn(
-        "sticky inset-x-0 top-0 z-40 flex w-full items-center justify-center bg-primary/80 text-primary-foreground px-4",
-        `${open ? "h-10" : "h-0"}`,
+        "sticky inset-x-0 top-0 z-40 flex w-full items-center justify-center bg-secondary text-secondary-foreground px-4",
+        `${open ? "h-18 sm:h-12" : "h-0"}`,
         className,
       )}
       initial={{

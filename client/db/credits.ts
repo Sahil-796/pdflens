@@ -5,7 +5,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 
 const DAILY_ALLOWANCE = {
     free: 20,
-    premium: 50, 
+    premium: 100, 
 };
 
 export const deduceCredits = async (userId: string, cost: number) => {

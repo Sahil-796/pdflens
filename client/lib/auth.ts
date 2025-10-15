@@ -22,6 +22,17 @@ export const auth = betterAuth({
     user: {
         deleteUser: {
             enabled: true,
+        },
+        changeEmail: {
+            enabled: true,
+            sendChangeEmailVerification: async ({ newEmail, url }) => {
+                await resend.emails.send({
+                    from: 'delivered@resend.dev',
+                    to: newEmail,
+                    subject: 'Approve email change',
+                    text: `Click the link to approve the change: ${url}`
+                })
+            }
         }
     },
     emailAndPassword: {
