@@ -57,9 +57,7 @@ const EditPDF = () => {
 
   useEffect(() => {
     if (!selectedText) return
-    if (activeTab === 'replace') setPromptValue(selectedText)
-    else setPromptValue("")
-    setStatus('prompt')
+    setPromptValue(activeTab === 'replace' ? selectedText : "")
   }, [selectedText, activeTab])
 
   const applyChanges = useCallback((newContent: string) => {
@@ -67,7 +65,13 @@ const EditPDF = () => {
     const parser = new DOMParser()
     const doc = parser.parseFromString(renderedHtml, "text/html")
     const el = doc.getElementById(selectedId)
-    if (el) el.innerHTML = newContent
+    if (el) {
+      // Preserve line breaks and multiple spaces
+      const formatted = newContent
+        .replace(/\n/g, "<br>")
+        .replace(/ {2}/g, "&nbsp;&nbsp;")
+      el.innerHTML = formatted
+    }
     setRenderedHtml(doc.documentElement.outerHTML)
     setPromptValue("")
     setStatus('prompt')
@@ -119,7 +123,7 @@ const EditPDF = () => {
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border pb-2">
         <h2 className="text-sm font-semibold text-muted-foreground tracking-wide flex items-center gap-1.5">
-          Tools 
+          Tools
         </h2>
         <span className="font-medium text-xs bg-muted px-2 py-0.5 rounded-full text-primary">
           {creditsLeft} credits left
@@ -188,7 +192,7 @@ const EditPDF = () => {
                   >
                     {status === 'loading' ? (
                       <TextShimmerWave duration={1.2}>Generating...</TextShimmerWave>
-                    ) : 
+                    ) :
                       'Ask AI'
                     }
                   </Button>
@@ -227,35 +231,35 @@ const EditPDF = () => {
       </Tabs>
 
       {/* --- Credit Limit Modal --- */}
-  <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
-    <AlertDialogContent className="bg-gradient-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
-      <AlertDialogHeader className="space-y-2">
-        <div className="flex items-center justify-center mb-2">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-            <span className="text-primary text-xl">⚠️</span>
-          </div>
-        </div>
-        <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
-          Daily Token Limit Reached
-        </AlertDialogTitle>
-        <AlertDialogDescription className="text-center text-sm text-muted-foreground">
-          You’ve used up your <span className="font-medium text-foreground">20 daily credits</span>.  
-          Upgrade to <span className="font-medium text-primary">Premium</span> to unlock  
-          <span className="font-medium text-foreground"> 100 credits per day</span> and more benefits.
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
-        <AlertDialogCancel className="border-border w-full sm:w-auto">
-          Close
-        </AlertDialogCancel>
-        <Link href="/pricing" className="w-full sm:w-auto">
-          <AlertDialogAction className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition">
-            View Pricing
-          </AlertDialogAction>
-        </Link>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+      <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
+        <AlertDialogContent className="bg-gradient-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
+          <AlertDialogHeader className="space-y-2">
+            <div className="flex items-center justify-center mb-2">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-xl">⚠️</span>
+              </div>
+            </div>
+            <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
+              Daily Token Limit Reached
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-sm text-muted-foreground">
+              You’ve used up your <span className="font-medium text-foreground">20 daily credits</span>.
+              Upgrade to <span className="font-medium text-primary">Premium</span> to unlock
+              <span className="font-medium text-foreground"> 100 credits per day</span> and more benefits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
+            <AlertDialogCancel className="border-border w-full sm:w-auto">
+              Close
+            </AlertDialogCancel>
+            <Link href="/pricing" className="w-full sm:w-auto">
+              <AlertDialogAction className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition">
+                View Pricing
+              </AlertDialogAction>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
