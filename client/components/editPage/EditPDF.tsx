@@ -38,9 +38,7 @@ const SelectedTextView = ({ text }) => (
 )
 
 const EditPDF = () => {
-  const {
-    pdfId,
-  } = usePdfStore()
+  const { pdfId } = usePdfStore()
 
   const {
     promptValue,
@@ -104,9 +102,8 @@ const EditPDF = () => {
       })
       if (!res.ok) throw new Error('API failed')
       const data = await res.json()
-      const response = data.data
       setUser({ creditsLeft: data.creditsLeft })
-      setAiResponse(response)
+      setAiResponse(data.data)
       setShowAiResponse(true)
       setStatus('aiResult')
     } catch (err) {

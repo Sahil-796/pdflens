@@ -155,7 +155,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                 if (target) {
                   setSelectedId(target.id)
                   setSelectedText(target.innerText)
-                  setOriginalHtml(target.innerHTML)
+                  setOriginalHtml(target.outerHTML)
                 }
               }}
             />
