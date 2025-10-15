@@ -22,23 +22,32 @@ async def upload_context(
 
     contents = await file.read()
 
-    # Save temp file
-    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    tmp_path = tmp_file.name
-    tmp_file.write(contents)
-    tmp_file.close()
+    if not filename.endswith(".pdf") and file.content_type != "application/pdf":
+        return JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
+    if not contents.startswith(b"%PDF"):
+        return JSONResponse(status_code=400, content={"message": "Uploaded file is not a valid PDF"})
 
+
+    tmp_path = None
     try:
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+        tmp_path = tmp_file.name
+        tmp_file.write(contents)
+        tmp_file.close()
+
         # Process PDF and index
         process_and_index_pdf(tmp_path, file.filename, pdfId, userId)
         return JSONResponse(content={"message": "Context Pdf uploaded"})
+
     except Exception as e:
         logger.error(f"Error processing PDF {pdfId}: {str(e)}", exc_info=True)
         return JSONResponse(status_code=500, content={"message": str(e)})
     finally:
-        # Ensure temp file is deleted
-        if os.path.exists(tmp_path):
-            os.unlink(tmp_path)
+        if tmp_path and os.path.exists(tmp_path):
+            try:
+                os.unlink(tmp_path)
+            except Exception:
+                logger.exception("Failed to remove temp file %s", tmp_path)
 
 
 def process_and_index_pdf(tmp_path, filename: str, pdfId: str, userId: str):
