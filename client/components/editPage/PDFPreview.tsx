@@ -1,68 +1,72 @@
 'use client'
 
 import React, { useCallback, useEffect } from 'react'
-import { usePdfStore } from '@/app/store/usePdfStore'
+import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 
 interface PDFPreviewProps {
-    loading: boolean
-    html: string
-    pdfId: string
+  loading: boolean
+  html: string
+  pdfId: string
 }
 
 const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
-    const {
-        renderedHtml,
-        setRenderedHtml,
-        setSelectedId,
-        setSelectedText,
-        setOriginalHtml,
-        selectedId,
-        selectedText,
-        aiResponse,
-        showAiResponse,
-        setShowAiResponse,
-        setAiResponse
-    } = usePdfStore()
+  const {
+    renderedHtml,
+    setRenderedHtml,
+    setSelectedId,
+    setSelectedText,
+    setOriginalHtml,
+    selectedId,
+    selectedText,
+    aiResponse,
+    showAiResponse,
+    setPromptValue,
+    setShowAiResponse,
+    setAiResponse,
+    setStatus
+  } = useEditPdfStore()
 
 
-    useEffect(() => {
-        if (html) setRenderedHtml(html)
-    }, [html, setRenderedHtml])
+  useEffect(() => {
+    if (html) setRenderedHtml(html)
+  }, [html, setRenderedHtml])
 
-    const applyChanges = useCallback(
-        (newContent: string) => {
-            if (!selectedId || !renderedHtml) return
-            const parser = new DOMParser()
-            const doc = parser.parseFromString(renderedHtml, 'text/html')
-            const el = doc.getElementById(selectedId)
-            if (el) el.innerHTML = newContent
-            setRenderedHtml(doc.documentElement.outerHTML)
-            setShowAiResponse(false)
-            setAiResponse('')
-        },
-        [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse]
-    )
+  const applyChanges = useCallback(
+    (newContent: string) => {
+      if (!selectedId || !renderedHtml) return
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(renderedHtml, 'text/html')
+      const el = doc.getElementById(selectedId)
+      if (el) el.innerHTML = newContent
+      setRenderedHtml(doc.documentElement.outerHTML)
+      setShowAiResponse(false)
+      setAiResponse('')
+      setStatus('prompt')
+      setPromptValue('')
+    },
+    [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse]
+  )
 
-    useEffect(() => {
-        if (renderedHtml && selectedId) {
-            const prev = document.querySelector(".selected")
-            if (prev) prev.classList.remove("selected")
+  useEffect(() => {
+    if (renderedHtml && selectedId) {
+      const prev = document.querySelector(".selected")
+      if (prev) prev.classList.remove("selected")
 
-            const el = document.getElementById(selectedId)
-            if (el) el.classList.add("selected")
-        }
-    }, [renderedHtml, selectedId])
+      const el = document.getElementById(selectedId)
+      if (el) el.classList.add("selected")
+    }
+  }, [renderedHtml, selectedId])
 
-    // Handle AI response display inline
-    useEffect(() => {
-        if (showAiResponse && selectedId && aiResponse) {
-            const el = document.getElementById(selectedId)
-            if (el) {
+  // Handle AI response display inline
+  useEffect(() => {
+    if (showAiResponse && selectedId && aiResponse) {
+      const el = document.getElementById(selectedId)
+      if (el) {
 
-                // Create AI response display
-                const aiResponseDiv = document.createElement('div')
-                aiResponseDiv.className = 'ai-response-container'
-                aiResponseDiv.innerHTML = `
+        // Create AI response display
+        const aiResponseDiv = document.createElement('div')
+        aiResponseDiv.className = 'ai-response-container'
+        aiResponseDiv.innerHTML = `
                     <div class="ai-response-content">
                         <div class="ai-original">
                             <span class="ai-label">Original:</span>
@@ -90,73 +94,75 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
                     </div>
                 `
 
-                // Replace content with AI response
-                el.innerHTML = ''
-                el.appendChild(aiResponseDiv)
+        // Replace content with AI response
+        el.innerHTML = ''
+        el.appendChild(aiResponseDiv)
 
-                // Add event listeners
-                const acceptBtn = el.querySelector('.accept-btn')
-                const rejectBtn = el.querySelector('.reject-btn')
+        // Add event listeners
+        const acceptBtn = el.querySelector('.accept-btn')
+        const rejectBtn = el.querySelector('.reject-btn')
 
-                acceptBtn?.addEventListener('click', (e) => {
-                    e.stopPropagation()
-                    applyChanges(aiResponse)
-                })
+        acceptBtn?.addEventListener('click', (e) => {
+          e.stopPropagation()
+          applyChanges(aiResponse)
+        })
 
-                rejectBtn?.addEventListener('click', (e) => {
-                    e.stopPropagation()
-                    setShowAiResponse(false)
-                    setAiResponse("")
-                })
-            }
-        }
-    }, [showAiResponse, selectedId, aiResponse, selectedText, applyChanges, setAiResponse, setShowAiResponse])
+        rejectBtn?.addEventListener('click', (e) => {
+          e.stopPropagation()
+          setShowAiResponse(false)
+          setAiResponse("")
+          setStatus('prompt')
+          setPromptValue("")
+        })
+      }
+    }
+  }, [showAiResponse, selectedId, aiResponse, selectedText, applyChanges, setAiResponse, setShowAiResponse])
 
 
-    return (
-        <div className="h-full w-full bg-background">
-            {loading ?
-                <div className="h-full overflow-y-auto p-6">
-                    <div className="space-y-6 bg-white rounded-lg p-6">
-                        {Array.from({ length: 5 }).map((_, pIndex) => (
-                            <div key={pIndex} className="space-y-2">
-                                {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
-                                    <div
-                                        key={i}
-                                        className="h-4 rounded bg-muted animate-pulse"
-                                        style={{ width: `${60 + Math.random() * 40}%` }}
-                                    />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-                : (
-                    <div className="h-full overflow-y-auto">
-                        <div
-                            className="mx-auto w-full p-6 bg-white text-black"
-                            dangerouslySetInnerHTML={{ __html: renderedHtml }}
-                            onMouseOver={(e) => {
-                                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-                                if (target) target.classList.add("hovered")
-                            }}
-                            onMouseOut={(e) => {
-                                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-                                if (target) target.classList.remove("hovered")
-                            }}
-                            onClick={(e) => {
-                                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-                                if (target) {
-                                    setSelectedId(target.id)
-                                    setSelectedText(target.innerText)
-                                    setOriginalHtml(target.innerHTML)
-                                }
-                            }}
-                        />
-                    </div>
-                )}
+  return (
+    <div className="h-full w-full bg-background">
+      {loading ?
+        <div className="h-full overflow-y-auto p-6">
+          <div className="space-y-6 bg-white rounded-lg p-6">
+            {Array.from({ length: 5 }).map((_, pIndex) => (
+              <div key={pIndex} className="space-y-2">
+                {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-4 rounded bg-muted animate-pulse"
+                    style={{ width: `${60 + Math.random() * 40}%` }}
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-    )
+        : (
+          <div className="h-full overflow-y-auto">
+            <div
+              className="mx-auto w-full p-6 bg-white text-black"
+              dangerouslySetInnerHTML={{ __html: renderedHtml }}
+              onMouseOver={(e) => {
+                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                if (target) target.classList.add("hovered")
+              }}
+              onMouseOut={(e) => {
+                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                if (target) target.classList.remove("hovered")
+              }}
+              onClick={(e) => {
+                const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+                if (target) {
+                  setSelectedId(target.id)
+                  setSelectedText(target.innerText)
+                  setOriginalHtml(target.innerHTML)
+                }
+              }}
+            />
+          </div>
+        )}
+    </div>
+  )
 }
 
 export default PDFPreview

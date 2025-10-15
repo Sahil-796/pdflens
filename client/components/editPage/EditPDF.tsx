@@ -18,6 +18,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 
 const EditPlaceholder = () => (
   <div className="flex flex-col items-center justify-center h-32 text-center rounded-lg border border-dashed border-border bg-muted/20 backdrop-blur-sm">
@@ -38,20 +39,25 @@ const SelectedTextView = ({ text }) => (
 
 const EditPDF = () => {
   const {
+    pdfId,
+  } = usePdfStore()
+
+  const {
+    promptValue,
+    status,
     selectedText,
     selectedId,
     originalHtml,
     renderedHtml,
+    setPromptValue,
     setRenderedHtml,
-    pdfId,
     setAiResponse,
-    setShowAiResponse
-  } = usePdfStore()
+    setShowAiResponse,
+    setStatus
+  } = useEditPdfStore()
 
   const { setUser, creditsLeft } = useUserStore()
 
-  const [promptValue, setPromptValue] = useState("")
-  const [status, setStatus] = useState<'prompt' | 'loading' | 'aiResult'>('prompt')
   const [activeTab, setActiveTab] = useState<'ai-edit' | 'replace'>('ai-edit')
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
