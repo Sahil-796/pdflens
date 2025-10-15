@@ -117,7 +117,7 @@ export default function UploadFiles() {
     const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault()
         e.stopPropagation()
-        if (loading) return // block drop while uploading
+        if (loading) return
         setDragActive(false)
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             uploadFile(e.dataTransfer.files[0])
@@ -132,72 +132,81 @@ export default function UploadFiles() {
                 <span className="text-xs text-muted-foreground">{files.length} uploaded</span>
             </div>
 
-            {/* Drag & Drop Area */}
-            <div
-                className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all duration-200
-      min-h-[140px] sm:min-h-[160px] flex flex-col items-center justify-center
-      ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
-      ${loading ? "opacity-50 cursor-wait" : ""}
-    `}
-                onDragOver={(e) => {
-                    if (!loading) {
-                        e.preventDefault()
-                        setDragActive(true)
-                    }
-                }}
-                onDragLeave={() => {
-                    if (!loading) setDragActive(false)
-                }}
-                onDrop={handleDrop}
-                onClick={() => {
-                    if (!loading) document.getElementById("fileInput")?.click()
-                }}
-            >
-                <Upload
-                    className={`mx-auto mb-2 text-muted-foreground transition-transform ${loading ? "animate-bounce" : "group-hover:scale-110"
-                        }`}
-                    size={28}
-                />
-                <p className="text-sm text-muted-foreground max-w-[80%] sm:max-w-none mx-auto">
-                    {loading ? "Uploading..." : "Drop files here or tap to browse"}
-                </p>
-                <input
-                    disabled={loading}
-                    id="fileInput"
-                    type="file"
-                    className="hidden"
-                    onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
-                />
-            </div>
-
-            {/* Files List */}
-            {files.length > 0 && (
-                <div className="space-y-2">
-                    <h4 className="text-sm font-medium">Uploaded Files:</h4>
-                    <div className="space-y-1 max-h-40 overflow-y-auto">
-                        {files.map((fileItem, idx) => (
-                            <div
-                                key={idx}
-                                className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm gap-2"
-                            >
-                                <span className="flex items-center gap-2 truncate">
-                                    📄 <span className="truncate">{fileItem.name}</span>
-                                </span>
-                                <button
-                                    onClick={() => removeFile(fileItem.name, idx)}
-                                    className="text-destructive hover:bg-destructive/10 p-1 rounded transition"
-                                >
-                                    {isRemoving ? (
-                                        <LoaderCircle size={14} className="animate-spin" />
-                                    ) : (
-                                        <X size={14} />
-                                    )}
-                                </button>
-                            </div>
-                        ))}
+            {/* Layout changes dynamically based on file presence */}
+            <div className={`flex flex-col sm:flex-row gap-4 transition-all`}>
+                {/* Upload Area */}
+                <div
+                    className={`flex-1
+                            ${files.length > 0 ? "sm:w-1/2" : "w-full"}
+                        `}
+                >
+                    <div
+                        className={`border-2 border-dashed rounded-lg p-4 sm:p-6 text-center cursor-pointer transition-all duration-200
+                                    min-h-[140px] sm:min-h-[180px] flex flex-col items-center justify-center
+                                    ${dragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:bg-muted/30"}
+                                    ${loading ? "opacity-50 cursor-wait" : ""}
+                                `}
+                        onDragOver={(e) => {
+                            if (!loading) {
+                                e.preventDefault()
+                                setDragActive(true)
+                            }
+                        }}
+                        onDragLeave={() => {
+                            if (!loading) setDragActive(false)
+                        }}
+                        onDrop={handleDrop}
+                        onClick={() => {
+                            if (!loading) document.getElementById("fileInput")?.click()
+                        }}
+                    >
+                        <Upload
+                            className={`mx-auto mb-2 text-muted-foreground transition-transform ${loading ? "animate-bounce" : "group-hover:scale-110"
+                                }`}
+                            size={28}
+                        />
+                        <p className="text-sm text-muted-foreground max-w-[80%] sm:max-w-none mx-auto">
+                            {loading ? "Uploading..." : "Drop files here or tap to browse"}
+                        </p>
+                        <input
+                            disabled={loading}
+                            id="fileInput"
+                            type="file"
+                            className="hidden"
+                            onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
+                        />
                     </div>
                 </div>
-            )}
+
+                {/* Files List */}
+                {files.length > 0 && (
+                    <div className="sm:w-1/2 flex flex-col">
+                        <h4 className="text-sm font-medium mb-2">Uploaded Files:</h4>
+                        <div className="flex-1 max-h-[150px] overflow-y-auto pr-1 space-y-1 bg-red-500">
+                            {files.map((fileItem, idx) => (
+                                <div
+                                    key={idx}
+                                    className="flex items-center justify-between p-2 rounded-md bg-muted/30 text-sm gap-2"
+                                >
+                                    <span className="flex items-center gap-2 truncate">
+                                        📄 <span className="truncate">{fileItem.name}</span>
+                                    </span>
+                                    <button
+                                        onClick={() => removeFile(fileItem.name, idx)}
+                                        className="text-destructive hover:bg-destructive/10 p-1 rounded transition"
+                                    >
+                                        {isRemoving ? (
+                                            <LoaderCircle size={14} className="animate-spin" />
+                                        ) : (
+                                            <X size={14} />
+                                        )}
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

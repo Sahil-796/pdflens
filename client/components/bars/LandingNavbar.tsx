@@ -7,7 +7,6 @@ import {
     NavigationMenu,
     NavigationMenuContent,
     NavigationMenuItem,
-    NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
@@ -24,10 +23,11 @@ import { useRouter } from "next/navigation"
 import { useUserStore } from "@/app/store/useUserStore"
 import { authClient } from "@/lib/auth-client"
 import useUser from "@/hooks/useUser"
+import { Logo } from "../Logo"
 
 // Navigation links array
 const navigationLinks = [
-    { href: "#", label: "Home" },
+    { href: "/", label: "Home" },
     {
         label: "Features",
         href: "#features"
@@ -38,7 +38,7 @@ const navigationLinks = [
     },
     {
         label: "Pricing",
-        href: "#pricing"
+        href: "/pricing"
     },
     {
         label: "Convert",
@@ -128,36 +128,10 @@ export default function Navbar() {
                     {/* Left: Logo */}
                     <Link href="/"
                         className={cn(
-                            "group/header relative text-lg font-bold text-primary flex-shrink-0",
-                            "justify-center"
+                            "flex-shrink-0 justify-center",
                         )}
                     >
-                        <div
-                            className={cn(
-                                "flex items-center gap-3",
-                            )}
-                        >
-                            <div
-                                className={cn(
-                                    "flex items-center justify-center rounded-lg",
-                                    "bg-gradient-to-br from-primary to-primary/80",
-                                    "text-primary-foreground shadow-sm",
-                                    "transition-all duration-200",
-                                    "group-hover/header:shadow-md5",
-                                    "size-9"
-                                )}
-                            >
-                                <FileSearch className="size-5" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-base font-bold tracking-tight">
-                                    PDF Lens
-                                </span>
-                                <span className="text-[10px] text-muted-foreground font-medium">
-                                    AI PDF Assistant
-                                </span>
-                            </div>
-                        </div>
+                        <Logo showSubtitle={true} showText={true} size="sm" />
                     </Link>
 
                     {/* Center: Navigation */}
@@ -180,9 +154,12 @@ export default function Navbar() {
                                                 >
                                                     {link.items.map((item, itemIndex) => (
                                                         <li key={itemIndex}>
-                                                            <NavigationMenuLink
+                                                            <Link
                                                                 href={item.href}
-                                                                className="block rounded-md px-3 py-2 hover:bg-muted"
+                                                                className={cn('block rounded-md px-3 py-2 hover:bg-muted',
+                                                                    "data-[active]:focus:bg-accent data-[active]:hover:bg-accent data-[active]:bg-accent data-[active]:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+                                                                )}
+
                                                             >
                                                                 <div className="font-medium text-sm">
                                                                     {item.label}
@@ -190,19 +167,21 @@ export default function Navbar() {
                                                                 <p className="text-muted-foreground text-xs">
                                                                     {item.description}
                                                                 </p>
-                                                            </NavigationMenuLink>
+                                                            </Link>
                                                         </li>
                                                     ))}
                                                 </ul>
                                             </NavigationMenuContent>
                                         </>
                                     ) : (
-                                        <NavigationMenuLink
+                                        <Link
                                             href={link.href}
-                                            className="text-sm text-foreground hover:text-primary px-3 py-1.5 font-medium"
+                                            className={cn("text-sm text-foreground hover:text-primary px-3 py-1.5 font-medium",
+                                                "data-[active]:focus:bg-accent data-[active]:hover:bg-accent data-[active]:bg-accent data-[active]:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+                                            )}
                                         >
                                             {link.label}
-                                        </NavigationMenuLink>
+                                        </Link>
                                     )}
                                 </NavigationMenuItem>
                             ))}
@@ -296,6 +275,6 @@ export default function Navbar() {
                     </div>
                 </div>
             </div>
-        </header>
+        </header >
     )
 }

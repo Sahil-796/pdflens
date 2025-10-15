@@ -367,3 +367,8 @@
   transform: translateY(-1px);
   box-shadow: 0 2px 4px oklch(from var(--destructive) l c h / 0.3);
 }
+
+::selection {
+  background-color: var(--primary);
+  color: white;
+}

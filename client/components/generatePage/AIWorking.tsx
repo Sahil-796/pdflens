@@ -30,6 +30,18 @@ const AIWorking: React.FC<AIWorkingProps> = ({
 }) => {
     const [showPrompt, setShowPrompt] = useState(false)
 
+    // There are 4 steps; compute which are completed/current based on progress (0-100)
+    const steps = [
+        'Analyzing your prompt...',
+        'Generating content structure...',
+        'Applying formatting and styling...',
+        'Finalizing your PDF...'
+    ]
+
+    // completedCount: number of steps fully completed
+    const completedCount = Math.floor(Math.min(Math.max(progress, 0), 99) / (100 / steps.length))
+    const currentIndex = progress >= 100 ? steps.length - 1 : completedCount
+
     const getStatusIcon = () => {
         switch (status) {
             case 'success':
@@ -150,26 +162,35 @@ const AIWorking: React.FC<AIWorkingProps> = ({
                                 transition={{ delay: 0.5 }}
                                 className="space-y-4 mb-8"
                             >
-                                <div className="flex items-center gap-3 text-sm">
-                                    <motion.div
-                                        animate={{ scale: [1, 1.2, 1] }}
-                                        transition={{ duration: 1, repeat: Infinity }}
-                                        className="w-2 h-2 rounded-full bg-primary"
-                                    />
-                                    <span>Analyzing your prompt...</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                    <div className="w-2 h-2 rounded-full bg-muted" />
-                                    <span>Generating content structure...</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                    <div className="w-2 h-2 rounded-full bg-muted" />
-                                    <span>Applying formatting and styling...</span>
-                                </div>
-                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                                    <div className="w-2 h-2 rounded-full bg-muted" />
-                                    <span>Finalizing your PDF...</span>
-                                </div>
+                                {steps.map((label, idx) => {
+                                    const isCompleted = idx < completedCount || progress >= 100
+                                    const isCurrent = idx === currentIndex && progress < 100
+
+                                    const dotClasses = isCompleted
+                                        ? 'bg-primary'
+                                        : isCurrent
+                                            ? 'bg-primary'
+                                            : 'bg-muted'
+
+                                    const textClasses = isCompleted || isCurrent
+                                        ? 'text-foreground'
+                                        : 'text-muted-foreground'
+
+                                    return (
+                                        <div key={label} className={`flex items-center gap-3 text-sm ${textClasses}`}>
+                                            {isCurrent ? (
+                                                <motion.div
+                                                    animate={{ scale: [1, 1.2, 1] }}
+                                                    transition={{ duration: 1, repeat: Infinity }}
+                                                    className={`w-2 h-2 rounded-full ${dotClasses}`}
+                                                />
+                                            ) : (
+                                                <div className={`w-2 h-2 rounded-full ${dotClasses}`} />
+                                            )}
+                                            <span>{label}</span>
+                                        </div>
+                                    )
+                                })}
                             </motion.div>
                         )}
 

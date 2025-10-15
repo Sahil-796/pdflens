@@ -18,7 +18,7 @@ import Navbar from "@/components/bars/LandingNavbar";
 import Link from "next/link";
 
 const LandingPage = () => {
-  const [ isScrolled, setIsScrolled] = useState(false);
+  const [, setIsScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
   const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.95]);
@@ -70,7 +70,7 @@ const LandingPage = () => {
       name: "Sarah Chen",
       role: "Research Director",
       company: "TechCorp Inc.",
-      quote: "PDF Lens has transformed how our team processes research papers. We're saving hours every single week.",
+      quote: "Zendra has transformed how our team processes research papers. We're saving hours every single week.",
       rating: 5,
       avatar: "SC"
     },
@@ -440,7 +440,7 @@ const LandingPage = () => {
             Ready to Transform Your Documents?
           </h2>
           <p className="text-xl text-muted-foreground mb-10">
-            Join thousands of professionals using PDF Lens to save time and work smarter
+            Join thousands of professionals using Zendra to save time and work smarter
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button className="group px-8 py-4 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition flex items-center gap-2 shadow-lg">
@@ -459,7 +459,7 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
-              <div className="text-xl font-bold text-foreground mb-4">PDF Lens</div>
+              <div className="text-xl font-bold text-foreground mb-4">Zendra</div>
               <p className="text-sm text-muted-foreground">
                 Transform your documents with AI-powered intelligence
               </p>
@@ -490,7 +490,7 @@ const LandingPage = () => {
             </div>
           </div>
           <div className="pt-8 border-t border-border text-center text-sm text-muted-foreground">
-            © {new Date().getFullYear()} PDF Lens. All rights reserved.
+            © {new Date().getFullYear()} Zendra. All rights reserved.
           </div>
         </div>
       </footer>

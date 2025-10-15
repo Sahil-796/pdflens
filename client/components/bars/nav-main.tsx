@@ -37,7 +37,7 @@ export function NavMain({
             <SidebarMenuButton
               asChild
               tooltip={item.title}
-              onClick={(e) => router.push(item.url)}
+              onClick={() => router.push(item.url)}
             >
               <Button variant={item.isActive ? "default" : "ghost"} className="w-full justify-start">
                 {item.icon && <item.icon />}

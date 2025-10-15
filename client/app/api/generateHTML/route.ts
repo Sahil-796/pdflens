@@ -1,4 +1,4 @@
-import { useCredits } from "@/db/credits"
+import { deduceCredits } from "@/db/credits"
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"
 import { z } from "zod"
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        const creditsLeft = await useCredits(userId, 4)
+        const creditsLeft = await deduceCredits(userId, 4)
 
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 

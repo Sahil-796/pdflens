@@ -1,5 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 import { useUserStore } from '@/app/store/useUserStore'
@@ -9,6 +10,16 @@ import { useRouter } from 'next/navigation'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
 import UploadFiles from '@/components/generatePage/UploadFiles'
 import AIWorking from '@/components/generatePage/AIWorking'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 const templatePrompts: Record<string, string> = {
   "Resume": `
@@ -90,6 +101,7 @@ const Generate = () => {
   const [success, setSuccess] = useState(false)
   const [showAIWorking, setShowAIWorking] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [limitModalOpen, setLimitModalOpen] = useState(false)
 
   const { userId } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext } = usePdfStore()
@@ -106,11 +118,7 @@ const Generate = () => {
 
   useEffect(() => {
     if (success) {
-      // Add a small delay to show the success state before redirecting
-      const timer = setTimeout(() => {
-        router.push(`/edit/${pdfId}`)
-      }, 2000)
-      return () => clearTimeout(timer)
+      router.push(`/edit/${pdfId}`)
     }
   }, [success, pdfId, router])
 
@@ -151,6 +159,13 @@ const Generate = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, userPrompt: input, pdfId: currentPdfId, isContext }),
       })
+      if (generateRes.status === 429) {
+        setLimitModalOpen(true)
+        setShowAIWorking(false)
+        setLoading(false)
+        clearInterval(progressInterval)
+        return
+      }
       if (!generateRes.ok) throw new Error("Failed to generate HTML")
 
       const generateData = await generateRes.json()
@@ -191,10 +206,10 @@ const Generate = () => {
   }
 
   return (
-    <div className="h-full flex flex-col lg:flex-row bg-background overflow-auto">
+    <div className="flex-1 flex flex-col lg:flex-row bg-background overflow-auto">
       {/* Left Panel */}
       <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
-        <div className="flex-1 p-4 sm:p-6 space-y-8">
+        <div className="flex-1 p-4 space-y-8">
           {/* Document Name Input */}
           <div>
             <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
@@ -304,6 +319,26 @@ const Generate = () => {
           </div>
         </div>
       </div>
+
+      {/* Daily Limit Modal */}
+      <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
+        <AlertDialogContent className="bg-card border-border w-[92%] sm:w-[480px]">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-foreground">Daily token limit reached</AlertDialogTitle>
+            <AlertDialogDescription className="text-muted-foreground">
+              In the free plan, you get <span className="font-medium text-foreground">20 credits per day</span>.
+              Upgrade to <span className="font-medium text-foreground">Premium</span> to get
+              <span className="font-medium text-foreground"> 100 credits per day</span> and additional benefits.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-border">Close</AlertDialogCancel>
+            <Link href="/pricing" className="w-full sm:w-auto">
+              <AlertDialogAction className="w-full">View Pricing</AlertDialogAction>
+            </Link>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

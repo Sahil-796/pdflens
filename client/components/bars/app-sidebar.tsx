@@ -28,16 +28,21 @@ import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
 import SearchBar from "../dashboardPage/SearchBar"
 import { cn } from "@/lib/utils"
 import useUser from "@/hooks/useUser"
+import { Button } from "../ui/button"
+import Link from "next/link"
+import { Spinner } from "../ui/spinner"
+import { Logo } from "../Logo"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   useAuthRehydrate()
-  const {user} = useUser()
+  const { user, isPro, loading } = useUser()
   const { state } = useSidebar();
   const data = {
     user: {
       name: user.name || 'Loading',
       email: user.email || 'Loading',
-      avatar: user.avatar || ''
+      avatar: user.avatar || '',
+      isPro
     },
     main: [
       {
@@ -62,9 +67,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: ArrowLeftRight,
         items: [
+          { title: "PDF to MD", url: "/tools/pdf-to-md" },
           { title: "PDF to Word", url: "/tools/pdf-to-word" },
           { title: "Word to PDF", url: "/tools/word-to-pdf" },
-          { title: "PDF to MD", url: "/tools/pdf-to-md" }
         ]
       },
       {
@@ -72,10 +77,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: BetweenVerticalEnd,
         items: [
+          { title: "Edit PDF", url: "/tools/edit-pdf" },
           { title: "Merge PDF", url: "/tools/merge-pdf" },
           { title: "Split PDF", url: "/tools/split-pdf" },
           { title: "Organize Pages", url: "/tools/organize-pdf" },
-          { title: "Edit PDF", url: "/tools/edit-pdf" },
         ]
       },
     ]
@@ -94,42 +99,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 "hover:bg-sidebar-accent transition-all duration-200",
                 isCollapsed ? "justify-center px-2" : "px-3"
               )}
-              tooltip={isCollapsed ? "PDF Lens" : undefined}
+              tooltip={isCollapsed ? "Zendra" : undefined}
             >
-              <div
-                className={cn(
-                  "flex items-center gap-3 transition-all duration-200",
-                  isCollapsed && "justify-center"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex items-center justify-center rounded-lg",
-                    "bg-gradient-to-br from-primary to-primary/80",
-                    "text-primary-foreground shadow-sm",
-                    "transition-all duration-200",
-                    "group-hover/header:shadow-md group-hover/header:scale-105",
-                    isCollapsed ? "size-8" : "size-9"
-                  )}
-                >
-                  <FileSearch
-                    className={cn(
-                      "transition-all duration-200",
-                      isCollapsed ? "size-4" : "size-5"
-                    )}
-                  />
-                </div>
-                {!isCollapsed && (
-                  <div className="flex flex-col">
-                    <span className="text-base font-bold tracking-tight">
-                      PDF Lens
-                    </span>
-                    <span className="text-[10px] text-muted-foreground font-medium">
-                      AI PDF Assistant
-                    </span>
-                  </div>
-                )}
-              </div>
+              <Logo
+                size={isCollapsed ? "sm" : "md"}
+                showText={!isCollapsed}
+                showSubtitle={!isCollapsed}
+              />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -140,7 +116,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        {loading ? (
+          <Button variant="secondary" disabled className="m-1">
+            <Spinner />
+            Please wait
+          </Button>
+        ) : user?.id ? (
+          <NavUser user={data.user} />
+        ) : (
+          <Button asChild variant="secondary" className="m-1 cursor-pointer">
+            <Link href="/login">Log In</Link>
+          </Button>
+        )}
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

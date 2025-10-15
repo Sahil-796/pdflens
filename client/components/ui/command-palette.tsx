@@ -19,12 +19,15 @@ import {
   PlaneLanding,
   Plus,
   Pen,
+  Sun,
+  Moon,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { authClient } from '@/lib/auth-client'
 import { useUserStore } from '@/app/store/useUserStore'
 import useUser from '@/hooks/useUser'
 import { usePdfStore } from '@/app/store/usePdfStore'
+import { useTheme } from 'next-themes'
 
 interface CommandPaletteProps {
   open: boolean
@@ -34,16 +37,17 @@ interface CommandPaletteProps {
 const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const { open, setOpen } = useCommandPalette()
   const [query, setQuery] = useState('')
+  const { theme, setTheme } = useTheme()
   const router = useRouter()
   const { clearUser } = useUserStore()
-  const { user, isAuthenticated } = useUser() // Add isAuthenticated
+  const { user } = useUser()
   const { pdfs, loading } = usePdfStore();
 
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check if user is authenticated first
-      if (!isAuthenticated) return;
+      if (!user.id) return;
 
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault()
@@ -58,7 +62,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
     // Add listener immediately after authentication
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onOpenChange, setOpen, isAuthenticated]) // Add dependencies
+  }, [open, onOpenChange, setOpen, user.id]) // Add dependencies
 
   // 🔗 Handle route logic
   const handleSelect = (value: string) => {
@@ -81,72 +85,72 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
 
   // Template definitions with keywords
   const templates = [
-    { 
-      name: 'Resume', 
-      value: 'Resume', 
+    {
+      name: 'Resume',
+      value: 'Resume',
       icon: FileText,
       keywords: ['cv', 'curriculum vitae', 'job', 'career', 'employment']
     },
-    { 
-      name: 'Business Proposal', 
-      value: 'Business-Proposal', 
+    {
+      name: 'Business Proposal',
+      value: 'Business-Proposal',
       icon: Briefcase,
       keywords: ['pitch', 'business plan', 'project', 'client', 'proposal']
     },
-    { 
-      name: 'Cover Letter', 
-      value: 'Cover-Letter', 
+    {
+      name: 'Cover Letter',
+      value: 'Cover-Letter',
       icon: Mail,
       keywords: ['job application', 'introduction', 'hiring', 'employment']
     },
-    { 
-      name: 'Research Paper', 
-      value: 'Research-Paper', 
+    {
+      name: 'Research Paper',
+      value: 'Research-Paper',
       icon: BookOpen,
       keywords: ['academic', 'study', 'thesis', 'paper', 'research']
     },
-    { 
-      name: 'Agreement', 
-      value: 'Agreement', 
+    {
+      name: 'Agreement',
+      value: 'Agreement',
       icon: FileCheck,
       keywords: ['contract', 'legal', 'terms', 'conditions', 'document']
     },
-    { 
-      name: 'Report', 
-      value: 'Report', 
+    {
+      name: 'Report',
+      value: 'Report',
       icon: BarChart3,
       keywords: ['analysis', 'summary', 'findings', 'statistics', 'data']
     },
   ]
 
   const navigationItems = [
-    { 
-      name: 'Dashboard', 
-      value: '/dashboard', 
+    {
+      name: 'Dashboard',
+      value: '/dashboard',
       icon: Home,
       keywords: ['home', 'main', 'overview', 'start']
     },
-    { 
-      name: 'Generate PDF', 
-      value: '/generate', 
+    {
+      name: 'Generate PDF',
+      value: '/generate',
       icon: Plus,
       keywords: ['create', 'new', 'make', 'generate']
     },
-    { 
-      name: 'Edit PDF', 
-      value: '/edit', 
+    {
+      name: 'Edit PDF',
+      value: '/edit',
       icon: Pen,
       keywords: ['modify', 'change', 'update', 'edit']
     },
-    { 
-      name: 'Account', 
-      value: '/account', 
+    {
+      name: 'Account',
+      value: '/account',
       icon: User,
       keywords: ['profile', 'settings', 'user', 'personal']
     },
-    { 
-      name: 'Landing Page', 
-      value: '/', 
+    {
+      name: 'Landing Page',
+      value: '/',
       icon: PlaneLanding,
       keywords: ['home', 'welcome', 'start', 'landing']
     },
@@ -269,6 +273,19 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
 
                 {/* Actions Group */}
                 <Command.Group>
+                  <Command.Item
+                    key='theme'
+                    onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    keywords={['theme', 'light', 'dark', 'system']}
+                    className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                  >
+                    {theme === "dark" ? (
+                      <Sun className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Moon className="h-4 w-4 mr-2" />
+                    )}
+                    <span>Toggle Theme</span>
+                  </Command.Item>
                   <Command.Item
                     key='signout'
                     onSelect={async () => {
