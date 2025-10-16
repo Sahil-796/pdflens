@@ -6,7 +6,7 @@ const page = () => {
   return (
     <div className="flex flex-col">
       <Navbar />
-      <div className="flex-1 mt-16 xl:mt-12">
+      <div className="flex-1 mt-16">
         <Pricing />
       </div>
     </div>

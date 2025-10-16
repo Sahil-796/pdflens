@@ -101,7 +101,6 @@ const Generate = () => {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [showAIWorking, setShowAIWorking] = useState(false)
-  const [progress, setProgress] = useState(0)
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
   const { userId, creditsLeft, setUser } = useUserStore()
@@ -136,15 +135,6 @@ const Generate = () => {
 
     setLoading(true)
     setShowAIWorking(true)
-    setProgress(0)
-
-    // Simulate progress updates
-    const progressInterval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 90) return prev
-        return prev + Math.random() * 15
-      })
-    }, 1000)
 
     try {
       let currentPdfId = pdfId
@@ -179,7 +169,6 @@ const Generate = () => {
       const updateData = await updateRes.json()
       const resPdf = updateData.pdf
       if (updateData.status === 200) {
-        setProgress(100)
         setSuccess(true)
         toast.success("PDF Generated Successfully!")
         addPdf({ id: resPdf.id, fileName, htmlContent: resPdf.data, createdAt: resPdf.createdAt })
@@ -188,20 +177,18 @@ const Generate = () => {
       console.error("Error in handleSend:", err)
       toast.error("Something went wrong while generating")
     } finally {
-      clearInterval(progressInterval)
       setLoading(false)
     }
   }
 
 
   // Show AI Working interface when generating
-  if (showAIWorking) {
+  if (!showAIWorking) {
     return (
       <AIWorking
         prompt={input}
         fileName={fileName}
-        status={success ? 'success' : loading ? 'working' : 'error'}
-        progress={progress}
+      // status={success ? 'success' : loading ? 'working' : 'error'}
       />
     )
   }
