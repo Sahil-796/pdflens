@@ -67,7 +67,7 @@ export default function Pricing() {
   ]
 
   return (
-    <section className="min-h-full flex items-start justify-center bg-background pt-8 md:pt-12 pb-12">
+    <section className="flex items-start justify-center bg-background pt-8 md:pt-12 pb-12">
       <div className="w-full max-w-6xl px-4 sm:px-6">
         <div className="space-y-2 sm:space-y-3 text-center max-w-2xl mx-auto">
           <h2 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-foreground">Simple, transparent pricing</h2>

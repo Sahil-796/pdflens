@@ -4,9 +4,9 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className="h-screen flex flex-col">
+    <div className="flex flex-col">
       <LandingNavbar />
-      <div className="flex-1 overflow-auto mt-16 xl:mt-12">
+      <div className="flex-1 mt-16 xl:mt-12">
         <Pricing />
       </div>
     </div>

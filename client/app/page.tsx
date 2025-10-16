@@ -11,7 +11,6 @@ import {
   Lightbulb,
   ArrowRight,
   Check,
-  Star,
   ChevronRight
 } from "lucide-react";
 import Navbar from "@/components/bars/LandingNavbar";
@@ -348,8 +347,8 @@ const LandingPage = () => {
                 className="relative"
               >
                 <div className={`h-full p-8 rounded-lg border transition-all duration-300 ${plan.popular
-                    ? 'border-primary bg-primary/5 shadow-xl'
-                    : 'border-border bg-card hover:border-primary/20'
+                  ? 'border-primary bg-primary/5 shadow-xl'
+                  : 'border-border bg-card hover:border-primary/20'
                   }`}>
                   {plan.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -381,8 +380,8 @@ const LandingPage = () => {
                   </ul>
 
                   <button className={`w-full py-3.5 rounded-lg font-semibold transition ${plan.popular
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg'
-                      : 'bg-muted hover:bg-muted/80 text-foreground'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg'
+                    : 'bg-muted hover:bg-muted/80 text-foreground'
                     }`}>
                     Get Started
                   </button>

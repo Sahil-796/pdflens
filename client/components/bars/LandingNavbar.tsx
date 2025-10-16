@@ -26,6 +26,7 @@ import useUser from "@/hooks/useUser"
 import { Logo } from "../Logo"
 import { usePdfStore } from "@/app/store/usePdfStore"
 import { useCommandPalette } from "@/hooks/useCommandPalette"
+import MobileMenubar from "./mobile-menubar"
 
 // Navigation links array
 const navigationLinks = [
@@ -94,6 +95,7 @@ const navigationLinks = [
 
 export default function Navbar() {
   const [isLoading, setIsLoading] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
   const router = useRouter()
   const { user, loading } = useUser()
   const { clearUser, creditsLeft } = useUserStore()
@@ -125,22 +127,32 @@ export default function Navbar() {
     "U"
 
   return (
-    <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl">
-      <div className="bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-4 py-3">
+    <>
+      <header className="w-full p-2 fixed top-2 md:top-4 left-1/2 -translate-x-1/2 z-50 md:max-w-6xl">
+        {/* //Add another div here to for padding purposes */}
+        <div className="flex items-center justify-between  bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-4 py-3 ">
 
-        <div className="flex items-center justify-between">
-
-          <div className="block sm:hidden">
-            <Menu />
-          </div>
           {/* Left: Logo */}
           <Link href="/"
             className={cn(
-              "flex-shrink-0 justify-center hidden sm:flex",
+              "flex-shrink-0 justify-center",
             )}
           >
             <Logo showSubtitle={true} showText={true} size="sm" />
           </Link>
+
+          <div className="sm:hidden flex items-center gap-2">
+
+            <Button asChild variant="ghost" size="sm" onClick={() => setOpen(true)} className="h-8 rounded-md cursor-pointer text-primary">
+              <div><Search className="h-4 w-4" /></div>
+            </Button>
+            <Button asChild variant="ghost" size="sm" className="h-8 rounded-md text-primary">
+              <Link href="/dashboard"><Home className="h-4 w-4" /></Link>
+            </Button>
+            <Button onClick={() => setMobileOpen(!mobileOpen)} variant="default" className="cursor-pointer">
+              <Menu />
+            </Button>
+          </div>
 
           {/* Center: Navigation */}
           <NavigationMenu viewport={false} className="hidden sm:flex">
@@ -196,8 +208,9 @@ export default function Navbar() {
             </NavigationMenuList>
           </NavigationMenu>
 
+
           {/* Right: Auth/User */}
-          <div className={`flex items-center gap-2 flex-shrink-0 ${loading ? 'scale-0' : 'scale-100'}`}>
+          <div className={`hidden sm:flex items-center gap-2 flex-shrink-0 ${loading ? 'scale-0' : 'scale-100'}`}>
             {!user.id ? (
               <>
                 <Button asChild variant="ghost" size="sm" className="text-sm h-8">
@@ -312,7 +325,21 @@ export default function Navbar() {
             )}
           </div>
         </div>
-      </div>
-    </header >
+
+      </header >
+      {mobileOpen && (
+        <MobileMenubar
+          mobileOpen={mobileOpen}
+          setMobileOpen={setMobileOpen}
+          navigationLinks={navigationLinks}
+          user={user}
+          loading={loading}
+          handleLogout={handleLogout}
+          isLoading={isLoading}
+          creditsLeft={creditsLeft}
+          setOpen={setOpen}
+        />
+      )}
+    </>
   )
 }
