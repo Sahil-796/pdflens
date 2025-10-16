@@ -14,7 +14,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { toast } from 'sonner'
 
-const PDF2Word = () => {
+const Word2PDF = () => {
   const [file, setFile] = useState<File | null>(null)
   const [dragActive, setDragActive] = useState(false)
   const [isConverting, setIsConverting] = useState(false)
@@ -26,7 +26,7 @@ const PDF2Word = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
     if (selected) {
-      if (!selected.name.toLowerCase().endsWith('.pdf')) {
+      if (!selected.name.toLowerCase().endsWith('.docx')) {
         handleInvalidFileType()
         e.target.value = ''
         return
@@ -45,7 +45,7 @@ const PDF2Word = () => {
     setDragActive(false)
     const droppedFile = e.dataTransfer.files?.[0]
     if (droppedFile) {
-      if (!droppedFile.name.toLowerCase().endsWith('.pdf')) {
+      if (!droppedFile.name.toLowerCase().endsWith('.docx')) {
         handleInvalidFileType()
         return
       }
@@ -68,12 +68,12 @@ const PDF2Word = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/pdf_to_docx`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/docx_to_pdf`, {
         method: 'POST',
         body: formData,
       })
 
-      if (!res.ok) throw new Error("Failed to convert PDF")
+      if (!res.ok) throw new Error("Failed to convert Word")
 
       const blob = await res.blob()
       setConvertedBlob(blob)
@@ -83,7 +83,7 @@ const PDF2Word = () => {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file.name.replace('.pdf', '.docx')
+      a.download = file.name.replace('.docx', '.pdf')
       a.click()
       window.URL.revokeObjectURL(url)
     } catch (err) {
@@ -99,7 +99,7 @@ const PDF2Word = () => {
     const url = window.URL.createObjectURL(convertedBlob)
     const a = document.createElement('a')
     a.href = url
-    a.download = file?.name.replace('.pdf', '.docx') || 'converted.docx'
+    a.download = file?.name.replace('.docx', '.pdf') || 'converted.pdf'
     a.click()
     window.URL.revokeObjectURL(url)
   }
@@ -109,17 +109,17 @@ const PDF2Word = () => {
       {success ? (
         <Card className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl border-border bg-background p-6 sm:p-8 flex flex-col items-center justify-center rounded-2xl shadow-md space-y-6">
           {/* Success Message */}
-          <div className="flex flex-col sm:flex-row items-center gap-2 text-blue-300 font-medium text-center sm:text-left text-lg sm:text-xl">
+          <div className="flex flex-col sm:flex-row items-center gap-2 text-blue-500 font-medium text-center sm:text-left text-lg sm:text-xl">
             <CheckCircle2 className="size-5 sm:size-6" />
-            <span>Your PDF has been converted successfully!</span>
+            <span>Your Word file has been converted successfully!</span>
           </div>
 
           {/* File Icon */}
           <div className="flex flex-col items-center space-y-2">
-            <FileText size={48} className="text-blue-300" />
+            <FileText size={48} className="text-blue-500" />
             <div>
               <p className="font-semibold text-lg sm:text-xl text-foreground">
-                {file?.name.replace('.pdf', '.docx')}
+                {file?.name.replace('.docx', '.pdf')}
               </p>
             </div>
           </div>
@@ -143,7 +143,7 @@ const PDF2Word = () => {
               onClick={handleDownload}
               variant="default"
               size="lg"
-              className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center bg-gradient-to-br from-blue-300 to-blue-200 cursor-pointer"
+              className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center bg-gradient-to-br from-blue-500 to-blue-400 cursor-pointer"
             >
               <Download className="size-5" /> Download
             </Button>
@@ -154,7 +154,7 @@ const PDF2Word = () => {
           {!file ? (
             <div
               className={`border-2 border-dashed rounded-xl w-full py-16 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${dragActive
-                ? 'border-blue-300 bg-blue-100 scale-[1.02]'
+                ? 'border-blue-500 bg-blue-100 scale-[1.02]'
                 : 'border-border hover:bg-muted/30'
                 }`}
               onDragOver={(e) => {
@@ -165,9 +165,9 @@ const PDF2Word = () => {
               onDrop={handleDrop}
               onClick={() => document.getElementById('fileInput')?.click()}
             >
-              <Upload className="text-blue-300 mb-3" size={40} />
-              <p className="text-sm sm:text-base text-blue-300 text-center">
-                Drop your PDF here or click to upload
+              <Upload className="text-blue-500 mb-3" size={40} />
+              <p className="text-sm sm:text-base text-blue-500 text-center">
+                Drop your Word file here or click to upload
               </p>
               <p className='text-muted-foreground text-sm'>
                 (Max File Size: 5MB)
@@ -175,14 +175,14 @@ const PDF2Word = () => {
               <input
                 id="fileInput"
                 type="file"
-                accept=".pdf"
+                accept=".docx"
                 onChange={handleFileChange}
                 className="hidden"
               />
             </div>
           ) : (
             <div className="flex flex-col items-center text-center space-y-5 w-full">
-              <FileText size={44} className="text-blue-300" />
+              <FileText size={44} className="text-blue-500" />
               <div>
                 <p className="text-lg sm:text-xl font-medium text-foreground">{file.name}</p>
                 <p className="text-base sm:text-lg text-muted-foreground">
@@ -193,12 +193,12 @@ const PDF2Word = () => {
               {isConverting ? (
                 <Empty className="w-full">
                   <EmptyHeader>
-                    <EmptyMedia variant="icon" className="text-blue-300">
+                    <EmptyMedia variant="icon" className="text-blue-500">
                       <Spinner />
                     </EmptyMedia>
-                    <EmptyTitle className="text-blue-300 text-lg sm:text-xl">Converting to Word</EmptyTitle>
+                    <EmptyTitle className="text-blue-500 text-lg sm:text-xl">Converting to PDF</EmptyTitle>
                     <EmptyDescription className="text-sm sm:text-base">
-                      Please wait while PDF is converted to Word. Do not refresh the page.
+                      Please wait while Word is converted to PDF. Do not refresh the page.
                     </EmptyDescription>
                   </EmptyHeader>
                 </Empty>
@@ -215,10 +215,10 @@ const PDF2Word = () => {
                   <Button
                     onClick={handleConvert}
                     disabled={isConverting}
-                    className="flex items-center gap-2 w-full sm:w-auto justify-center bg-gradient-to-br from-blue-300 to-blue-200 cursor-pointer scale-97 hover:scale-100"
+                    className="flex items-center gap-2 w-full sm:w-auto justify-center bg-gradient-to-br from-blue-500 to-blue-400 cursor-pointer"
                     size="lg"
                   >
-                    <File size={16} /> Convert to Word
+                    <File size={16} /> Convert to PDF
                   </Button>
                 </div>
               )}
@@ -230,4 +230,4 @@ const PDF2Word = () => {
   )
 }
 
-export default PDF2Word
+export default Word2PDF
