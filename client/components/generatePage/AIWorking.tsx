@@ -50,7 +50,7 @@ const AIWorking: React.FC<AIWorkingProps> = ({
       case 'error':
         return 'Generation Failed'
       default:
-        return `Zendra is creating ${fileName}...`
+        return `Zendra is creating "${fileName}"...`
     }
   }
 
@@ -115,9 +115,12 @@ const AIWorking: React.FC<AIWorkingProps> = ({
                 }
               </motion.p>
             </div>
-            <div className='flex items-center justify-center'>
-              <LumaSpin />
-            </div>
+            {
+              status === 'working' &&
+              <div className='flex items-center justify-center'>
+                <LumaSpin />
+              </div>
+            }
 
             {/* Prompt Visibility Toggle */}
             {
@@ -179,7 +182,7 @@ const AIWorking: React.FC<AIWorkingProps> = ({
               status === "working" && (
                 <div>
                   <div className='text-center text-muted-foreground'>It won't take long! while you wait, check out our other tools. we'll let you know when it's ready.</div>
-                  <div className='flex items-center gap-4 my-4'>
+                  <div className='flex items-center gap-4 mt-4'>
                     <Link href={'/pdf-to-word'} className='hover:scale-103 flex gap-2 items-center text-blue-600 dark:text-blue-400 bg-background px-4 py-2 rounded-lg border border-border'>
                       <File className='h-6 w-6' />
                       <span className='text-lg font-semibold'>PDF to Word</span>
@@ -231,7 +234,7 @@ const AIWorking: React.FC<AIWorkingProps> = ({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className={`${showPrompt ? 'mt-4' : 'mt-6'} text-center`}
+              className={`mt-4 text-center`}
             >
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Clock className="w-3 h-3" />

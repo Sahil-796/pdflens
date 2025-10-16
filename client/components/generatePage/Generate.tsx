@@ -20,7 +20,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { updatePdf } from '@/db/pdfs'
 
 const templatePrompts: Record<string, string> = {
   "Resume": `
@@ -170,7 +169,7 @@ const Generate = () => {
       const resPdf = updateData.pdf
       if (updateData.status === 200) {
         setSuccess(true)
-        toast.success("PDF Generated Successfully!")
+        toast.success(`"${fileName}" Generated Successfully!`)
         addPdf({ id: resPdf.id, fileName, htmlContent: resPdf.data, createdAt: resPdf.createdAt })
       }
     } catch (err) {
@@ -183,12 +182,12 @@ const Generate = () => {
 
 
   // Show AI Working interface when generating
-  if (!showAIWorking) {
+  if (showAIWorking) {
     return (
       <AIWorking
         prompt={input}
         fileName={fileName}
-      // status={success ? 'success' : loading ? 'working' : 'error'}
+        status={success ? 'success' : loading ? 'working' : 'error'}
       />
     )
   }
