@@ -33,6 +33,8 @@ export default function Pricing() {
     router.push('/dashboard')
   }
 
+  const currentPlan = user.isPro
+
   const tiers: PricingTier[] = [
     {
       name: "Free",
@@ -46,6 +48,7 @@ export default function Pricing() {
       ],
       cta: user.id ? "Access Dashboard" : "Get Started",
       highlighted: false,
+      currentPlan: !currentPlan,
       onSelect: () => handlePlanSelect("Free"),
     },
     {
@@ -62,6 +65,7 @@ export default function Pricing() {
       ],
       cta: user?.plan === "premium" ? "You are already Pro" : "Upgrade to Pro",
       highlighted: true,
+      currentPlan: currentPlan,
       onSelect: () => handlePlanSelect("Pro"),
     },
   ]

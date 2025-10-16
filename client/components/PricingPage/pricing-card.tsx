@@ -16,6 +16,7 @@ export interface PricingTier {
   features: string[]
   cta: string
   highlighted?: boolean
+  currentPlan: boolean
   onSelect?: () => void
   disabled?: boolean
 }
@@ -45,6 +46,11 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
         {isHighlighted && (
           <Badge variant="secondary" className="mt-1 z-10">
             🔥 Most Popular
+          </Badge>
+        )}
+        {tier.currentPlan && (
+          <Badge variant="default" className="mt-1 z-10">
+            Current Plan
           </Badge>
         )}
       </h2>
