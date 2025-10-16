@@ -333,11 +333,9 @@ export default function Navbar() {
           setMobileOpen={setMobileOpen}
           navigationLinks={navigationLinks}
           user={user}
-          loading={loading}
           handleLogout={handleLogout}
           isLoading={isLoading}
           creditsLeft={creditsLeft}
-          setOpen={setOpen}
         />
       )}
     </>

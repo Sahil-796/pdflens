@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "../theme/ThemeToggle"
-import { Coins, ArrowUpCircle, Home, User, LogOut, Loader2, Search } from "lucide-react"
+import { Coins, ArrowUpCircle, User, LogOut, Loader2, ArrowRight } from "lucide-react"
 
 interface Items {
   label: string
@@ -28,11 +28,9 @@ interface MobileMenubarProps {
     avatar?: string
     isPro?: boolean
   }
-  loading?: boolean
   handleLogout?: () => void
   isLoading?: boolean
   creditsLeft?: number
-  setOpen?: (open: boolean) => void
 }
 
 const MobileMenubar: React.FC<MobileMenubarProps> = ({
@@ -40,11 +38,9 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
   setMobileOpen,
   navigationLinks,
   user,
-  loading,
   handleLogout,
   isLoading,
   creditsLeft,
-  setOpen,
 }) => {
   return (
     <>
@@ -63,10 +59,10 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
       >
         {/* Header with close button */}
         <div className="flex items-center justify-between mb-6">
-          <p className="text-lg font-semibold text-foreground">Menu</p>
+          <ThemeToggle />
           <button
             onClick={() => setMobileOpen(false)}
-            className="p-2 rounded-md hover:bg-muted transition-colors"
+            className="p-2 px-3 rounded-full bg-muted transition-colors"
           >
             <span className="text-xl font-bold leading-none text-foreground/80">✕</span>
           </button>
@@ -78,15 +74,16 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
             !item.submenu ? (
               <Link
                 key={idx}
-                href={item.href || "#"}
+                href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-foreground hover:text-primary text-base font-medium rounded-md px-3 py-2 transition-colors hover:bg-muted/50"
+                className="flex items-center justify-between text-primary bg-muted/80 text-xl px-2 py-1 font-semibold rounded-md transition-colors"
               >
                 {item.label}
+                <ArrowRight />
               </Link>
             ) : (
               <div key={idx} className="flex flex-col space-y-1">
-                <p className="font-semibold text-foreground/90 text-sm mt-2 mb-1">
+                <p className="font-semibold text-secondary-foreground text-sm mt-2 mb-1">
                   {item.label}
                 </p>
                 {item.items?.map((subItem, subIdx) => (
@@ -94,7 +91,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                     key={subIdx}
                     href={subItem.href}
                     onClick={() => setMobileOpen(false)}
-                    className="text-muted-foreground hover:text-primary text-sm rounded-md px-3 py-1 transition-colors hover:bg-muted/50"
+                    className="text-muted-foreground text-sm rounded-md px-3 py-1 transition-colors"
                   >
                     {subItem.label}
                   </Link>
@@ -127,7 +124,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                   <Button
                     asChild
                     variant="outline"
-                    className="justify-start gap-1 text-xs text-foreground hover:text-primary px-2 py-1"
+                    className="justify-start gap-1 text-xs text-foreground px-2 py-1"
                     onClick={() => setMobileOpen(false)}
                   >
                     <div>
@@ -140,22 +137,23 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
 
               {/* Credits + Upgrade */}
               <div className="flex items-center justify-between py-1">
-                <div className="flex items-center gap-1 text-sm font-medium bg-muted px-2 py-0.5 rounded-md">
-                  <Coins className="h-3 w-3 text-primary" />
+                <div className="flex items-center gap-1 text-sm font-medium bg-muted px-2 py-1.5 rounded-md">
+                  <Coins className="h-4 w-4 text-primary" />
                   <span className="text-foreground/90">{creditsLeft} credits</span>
                 </div>
                 {!user.isPro && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setMobileOpen(false)
-                      window.location.href = "/pricing"
-                    }}
-                    className="flex items-center gap-1 text-sm text-primary px-2 py-0.5"
-                  >
-                    <ArrowUpCircle className="h-3 w-3" /> Upgrade
-                  </Button>
+                  <Link href={'/pricing'}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setMobileOpen(false)
+                      }}
+                      className="flex items-center gap-1 text-xs text-primary px-2 py-0.5"
+                    >
+                      <ArrowUpCircle className="h-2 w-2" /> Upgrade
+                    </Button>
+                  </Link>
                 )}
               </div>
 
