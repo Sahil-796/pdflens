@@ -196,7 +196,7 @@ const Generate = () => {
   }
 
   return (
-    <div className="flex-1 h-full flex flex-col lg:flex-row overflow-auto">
+    <div className="flex-1  flex flex-col lg:flex-row overflow-auto">
       {/* Left Panel */}
       <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
         <div className="flex-1 p-4 space-y-6">

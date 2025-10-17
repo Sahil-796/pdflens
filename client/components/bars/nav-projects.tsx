@@ -20,7 +20,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import Link from "next/link"
+import { Button } from "../ui/button"
+import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 export function NavProjects({
   projects,
@@ -32,9 +34,12 @@ export function NavProjects({
     items?: {
       title: string
       url: string
+      isActive?: boolean
     }[]
   }[]
 }) {
+
+  const router = useRouter()
 
   return (
     <SidebarGroup>
@@ -60,9 +65,16 @@ export function NavProjects({
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton asChild>
-                        <Link href={subItem.url}>
-                          <span>{subItem.title}</span>
-                        </Link>
+                        <Button
+                          variant={subItem.isActive ? "secondary" : "ghost"}
+                          className={cn(
+                            "w-full justify-start",
+                            subItem.isActive && "bg-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
+                          )}
+                          onClick={() => router.push(subItem.url)}
+                        >
+                          {subItem.title}
+                        </Button>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}
