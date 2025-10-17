@@ -73,8 +73,7 @@ const DownloadPDF = () => {
       />
       <span
         className="
-      hidden 
-      text-xs sm:text-sm lg:inline md:text-base
+      text-xs sm:text-sm md:text-base
     "
       >
         Download
