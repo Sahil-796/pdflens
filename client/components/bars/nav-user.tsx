@@ -114,11 +114,6 @@ export function NavUser({
                 <User className="mr-2 h-4 w-4 text-muted-foreground" />
                 Account Settings
               </DropdownMenuItem>
-
-              <DropdownMenuItem onSelect={() => router.push("/billing")}>
-                <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
-                Billing
-              </DropdownMenuItem>
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
