@@ -11,6 +11,7 @@ import SaveChanges from './SaveChanges'
 import EditPDF from './EditPDF'
 import { Input } from '../ui/input'
 import { Dot, Menu, X } from 'lucide-react'
+import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 
 interface Pdf {
   id: string
@@ -27,6 +28,7 @@ export default function EditClient({ id }: { id: string }) {
   const [loading, setLoading] = useState(true)
   const [initialName, setInitialName] = useState('')
   const [showSidebar, setShowSidebar] = useState(false)
+  const { status } = useEditPdfStore()
 
   useEffect(() => {
     setPdf({ pdfId: id })
@@ -79,6 +81,13 @@ export default function EditClient({ id }: { id: string }) {
     Promise.all([fetchPdf(), fetchContextFiles()]).finally(() => setLoading(false))
   }, [id, router, setPdf])
 
+  // Auto-close sidebar when AI response is ready or status changes
+  useEffect(() => {
+    if (status === 'aiResult' || status === 'prompt') {
+      setShowSidebar(false)
+    }
+  }, [status])
+
   return (
     <div className='flex-1 flex overflow-hidden relative'>
       {/* Mobile Toggle Button */}
@@ -112,7 +121,7 @@ export default function EditClient({ id }: { id: string }) {
                 overflow-hidden
             `}>
         <div className="flex-1 overflow-y-auto p-4">
-          <EditPDF />
+          <EditPDF onSidebarToggle={() => setShowSidebar(prev => !prev)} />
         </div>
 
         {/* Context Files - Moved Down */}
@@ -208,7 +217,12 @@ export default function EditClient({ id }: { id: string }) {
           transition={{ duration: 0.3 }}
           className="flex-1 h-full overflow-hidden"
         >
-          <PDFPreview loading={loading} html={editPdf?.htmlContent || htmlContent} pdfId={id} />
+          <PDFPreview
+            loading={loading}
+            html={editPdf?.htmlContent || htmlContent}
+            pdfId={id}
+            onTextSelect={() => setShowSidebar(true)}
+          />
         </motion.div>
       </div>
     </div>

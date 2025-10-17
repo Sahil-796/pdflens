@@ -38,7 +38,11 @@ const SelectedTextView = ({ text }) => (
   </div>
 )
 
-const EditPDF = () => {
+interface EditPDFProps {
+  onSidebarToggle?: () => void
+}
+
+const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
   const { pdfId } = usePdfStore()
 
   const {
@@ -120,6 +124,8 @@ const EditPDF = () => {
 
   const handleReplace = () => {
     applyChanges(promptValue)
+    // Close sidebar on mobile after replace
+    onSidebarToggle?.()
   }
 
   return (
