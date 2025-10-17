@@ -4,6 +4,7 @@ import { Download } from "lucide-react";
 import { usePdfStore } from "@/app/store/usePdfStore";
 import { toast } from 'sonner'
 import { useEditPdfStore } from "@/app/store/useEditPdfStore";
+import { Button } from "../ui/button";
 
 const DownloadPDF = () => {
   const [loading, setLoading] = useState(false);
@@ -49,36 +50,21 @@ const DownloadPDF = () => {
   }
 
   return (
-    <button
+    <Button
+      variant="secondary"
+      size="lg"
       onClick={handleDownload}
       disabled={loading}
-      className="
-    group flex items-center justify-center gap-2
-    bg-secondary text-secondary-foreground font-medium
-    rounded-md px-2.5 py-2 text-sm shadow-sm
-    hover:bg-secondary/80 hover:shadow-md
-    transition-all duration-200
-    disabled:opacity-50 disabled:cursor-not-allowed
-
-    sm:px-3 sm:py-2
-    md:text-base md:px-4 md:py-2.5
-  "
+      className="hover:scale-103 cursor-pointer"
     >
       <Download
         className={`
       w-4 h-4 shrink-0
       ${loading ? 'animate-bounce' : ''}
-      sm:w-5 sm:h-5
     `}
       />
-      <span
-        className="
-      text-xs sm:text-sm md:text-base
-    "
-      >
-        Download
-      </span>
-    </button>
+      Download
+    </Button>
   );
 };
 

@@ -128,7 +128,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="w-full p-2 fixed top-2 md:top-4 left-1/2 -translate-x-1/2 z-50 md:max-w-6xl">
+      <header className="w-full p-4 lg:p-6 fixed left-1/2 -translate-x-1/2 z-50 md:max-w-6xl">
         {/* //Add another div here to for padding purposes */}
         <div className="flex items-center justify-between  bg-background/80 backdrop-blur-lg border shadow-lg rounded-lg px-4 py-3 ">
 

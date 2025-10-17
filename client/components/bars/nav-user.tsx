@@ -94,8 +94,7 @@ export function NavUser({
               {/* Credits left */}
               <div className="flex items-center gap-1">
                 <Badge
-                  variant="outline"
-                  className="text-[11px] font-medium bg-muted px-3 py-1 rounded-md text-foreground flex items-center"
+                  variant="secondary"
                 >
                   <Coins className="w-4 h-4 mr-1 text-primary" />
                   {user.creditsLeft} credits left
