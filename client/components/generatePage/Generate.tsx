@@ -20,6 +20,9 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Badge } from '../ui/badge'
+import { Coins } from 'lucide-react'
+import { Button } from '../ui/button'
 
 const templatePrompts: Record<string, string> = {
   "Resume": `
@@ -193,13 +196,13 @@ const Generate = () => {
   }
 
   return (
-    <div className="flex-1 flex flex-col lg:flex-row bg-background overflow-auto">
+    <div className="flex-1 h-full flex flex-col lg:flex-row overflow-auto">
       {/* Left Panel */}
       <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
-        <div className="flex-1 p-4 space-y-8">
+        <div className="flex-1 p-4 space-y-6">
           {/* Document Name Input */}
           <div>
-            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
+            <div className="px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Document Name
             </div>
             <input
@@ -216,7 +219,7 @@ const Generate = () => {
 
           {/* Document Description */}
           <div>
-            <div className="bg-card px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
+            <div className="px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
               Describe your document
             </div>
             <textarea
@@ -232,10 +235,11 @@ const Generate = () => {
           </div>
 
           {/* Token Display */}
-          <div className="flex items-center justify-between bg-muted/40 border border-border rounded-md px-3 py-2">
-            <div className="text-sm text-muted-foreground">
-              <span className="font-medium text-foreground">{creditsLeft}</span> credits remaining today
-            </div>
+          <div className="flex items-center gap-4 rounded-md">
+            <Badge variant='secondary' className="text-sm">
+              <Coins className='h-4 w-4' />
+              {creditsLeft} credits remaining
+            </Badge>
             <Link
               href="/pricing"
               className="text-xs font-medium text-primary hover:underline"
@@ -248,7 +252,7 @@ const Generate = () => {
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="w-full mt-2 sm:mt-4 bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition  cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -261,48 +265,38 @@ const Generate = () => {
         </div>
 
         {/* File Upload Section */}
-        <div className="p-4 sm:p-6 border-t border-border">
+        <div className="px-4 pb-4 sm:px-6">
           <UploadFiles />
         </div>
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-4 sm:p-6 space-y-8 overflow-y-auto">
-          {template && (
-            <div className="bg-muted/30 rounded-lg p-4 mb-6">
-              <h4 className="font-medium mb-2">Using Template: {template}</h4>
-              <p className="text-sm text-muted-foreground">
-                This template will help structure your document. You can modify the content as needed.
-              </p>
-            </div>
-          )}
+      <div className="flex-1 flex flex-col p-4 sm:p-6 space-y-8">
+        {/* Tips */}
+        <div className="space-y-4">
+          <h4 className="font-medium mb-3">Tips for better results:</h4>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2"><span className="text-primary">•</span>Be specific about the document type and purpose</li>
+            <li className="flex items-start gap-2"><span className="text-primary">•</span>Include key details like names, dates, and requirements</li>
+            <li className="flex items-start gap-2"><span className="text-primary">•</span>Upload reference files for better context</li>
+            <li className="flex items-start gap-2"><span className="text-primary">•</span>Use clear, descriptive language</li>
+          </ul>
+        </div>
 
-          {/* Tips */}
-          <div className="space-y-4">
-            <h4 className="font-medium mb-3">Tips for better results:</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2"><span className="text-primary">•</span>Be specific about the document type and purpose</li>
-              <li className="flex items-start gap-2"><span className="text-primary">•</span>Include key details like names, dates, and requirements</li>
-              <li className="flex items-start gap-2"><span className="text-primary">•</span>Upload reference files for better context</li>
-              <li className="flex items-start gap-2"><span className="text-primary">•</span>Use clear, descriptive language</li>
-            </ul>
-          </div>
-
-          {/* Available Templates */}
-          <div className="space-y-4">
-            <h4 className="font-medium mb-3">Available Templates:</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {Object.keys(templatePrompts).map((templateName) => (
-                <button
-                  key={templateName}
-                  onClick={() => setInput(templatePrompts[templateName].trim())}
-                  className="text-left p-3 rounded-md border border-border hover:bg-muted/50 transition text-sm"
-                >
-                  {templateName}
-                </button>
-              ))}
-            </div>
+        {/* Available Templates */}
+        <div className="space-y-4">
+          <h4 className="font-medium mb-3">Available Templates:</h4>
+          <div className="grid grid-cols-2 gap-3">
+            {Object.keys(templatePrompts).map((templateName) => (
+              <Button
+                key={templateName}
+                variant='outline'
+                onClick={() => setInput(templatePrompts[templateName].trim())}
+                className='cursor-pointer'
+              >
+                {templateName}
+              </Button>
+            ))}
           </div>
         </div>
       </div>
@@ -330,7 +324,7 @@ const Generate = () => {
               Close
             </AlertDialogCancel>
             <Link href="/pricing" className="w-full sm:w-auto">
-              <AlertDialogAction className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition">
+              <AlertDialogAction className="w-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition cursor-pointer">
                 View Pricing
               </AlertDialogAction>
             </Link>

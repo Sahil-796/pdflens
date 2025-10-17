@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import ThemeToggle from "../theme/ThemeToggle"
-import { Coins, ArrowUpCircle, User, LogOut, Loader2, ArrowRight } from "lucide-react"
+import { Coins, User, LogOut, Loader2, ArrowRight } from "lucide-react"
 
 interface Items {
   label: string
@@ -142,17 +142,8 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                   <span className="text-foreground/90">{creditsLeft} credits</span>
                 </div>
                 {!user.isPro && (
-                  <Link href={'/pricing'}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setMobileOpen(false)
-                      }}
-                      className="flex items-center gap-1 text-xs text-primary px-2 py-0.5"
-                    >
-                      <ArrowUpCircle className="h-2 w-2" /> Upgrade
-                    </Button>
+                  <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                    Get More Credits →
                   </Link>
                 )}
               </div>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
-import { AlertCircle, ArrowUpCircle, CheckCircle2, Coins, Dot, Mail, User } from "lucide-react"
+import { AlertCircle, CheckCircle2, Coins, Dot, Mail, User } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Alert, AlertDescription } from "./ui/alert"
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog"
@@ -17,6 +17,7 @@ import { authClient } from "@/lib/auth-client"
 import LumaSpin from "./21st/LumaSpin"
 import { Badge } from "./ui/badge"
 import { usePdfStore } from "@/app/store/usePdfStore"
+import Link from "next/link"
 
 const AccountSettings = () => {
   const { user, loading } = useUser()
@@ -181,20 +182,16 @@ const AccountSettings = () => {
             {/* Credits & Upgrade */}
             <div className="flex items-center gap-3">
               <Badge
-                variant="outline"
-                className="text-sm font-semibold bg-muted/30 px-3 py-1 flex items-center gap-1"
+                variant="secondary"
+                className=""
               >
                 <Coins className="w-4 h-4 text-primary" />
                 {creditsLeft} credits
               </Badge>
               {!user.isPro && (
-                <Button
-                  size="sm"
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                  onClick={() => router.push("/pricing")}
-                >
-                  <ArrowUpCircle className="w-4 h-4 mr-1" /> Upgrade to Premium
-                </Button>
+                <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                  Get More Credits →
+                </Link>
               )}
             </div>
           </div>

@@ -181,7 +181,7 @@ const AIWorking: React.FC<AIWorkingProps> = ({
             {
               status === "working" && (
                 <div>
-                  <div className='text-center text-muted-foreground'>It won't take long! while you wait, check out our other tools. we'll let you know when it's ready.</div>
+                  <div className='text-center text-muted-foreground'>It won&apost take long! while you wait, check out our other tools. we&aposll let you know when it&aposs ready.</div>
                   <div className='flex items-center gap-4 mt-4'>
                     <Link href={'/pdf-to-word'} className='hover:scale-103 flex gap-2 items-center text-blue-600 dark:text-blue-400 bg-background px-4 py-2 rounded-lg border border-border'>
                       <File className='h-6 w-6' />

@@ -43,7 +43,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
       setStatus('prompt')
       setPromptValue('')
     },
-    [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse]
+    [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse, setStatus, setPromptValue]
   )
 
   useEffect(() => {
@@ -111,7 +111,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html }) => {
         })
       }
     }
-  }, [showAiResponse, selectedId, aiResponse, selectedText, applyChanges, setAiResponse, setShowAiResponse])
+  }, [showAiResponse, selectedId, aiResponse, selectedText, applyChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
 
 
   return (

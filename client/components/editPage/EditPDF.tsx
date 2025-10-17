@@ -6,7 +6,7 @@ import { usePdfStore } from '@/app/store/usePdfStore'
 import { useUserStore } from '@/app/store/useUserStore'
 import { Button } from '@/components/ui/button'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import { Wand2, RotateCcw } from 'lucide-react'
+import { Wand2, RotateCcw, Coins } from 'lucide-react'
 import Link from 'next/link'
 import {
   AlertDialog,
@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
+import { Badge } from '../ui/badge'
 
 const EditPlaceholder = () => (
   <div className="flex flex-col items-center justify-center h-32 text-center rounded-lg border border-dashed border-border bg-muted/20 backdrop-blur-sm">
@@ -62,7 +63,7 @@ const EditPDF = () => {
   useEffect(() => {
     if (!selectedText) return
     setPromptValue(activeTab === 'replace' ? selectedText : "")
-  }, [selectedText, activeTab])
+  }, [selectedText, activeTab, setPromptValue])
 
   const applyChanges = useCallback((newContent: string) => {
     if (!selectedId || !renderedHtml) return
@@ -79,7 +80,7 @@ const EditPDF = () => {
     setRenderedHtml(doc.documentElement.outerHTML)
     setPromptValue("")
     setStatus('prompt')
-  }, [selectedId, renderedHtml, setRenderedHtml])
+  }, [selectedId, renderedHtml, setRenderedHtml, setPromptValue, setStatus])
 
   const handleAiEdit = async () => {
     if (creditsLeft === 0) {
@@ -128,9 +129,9 @@ const EditPDF = () => {
         <h2 className="text-sm font-semibold text-muted-foreground tracking-wide flex items-center gap-1.5">
           Tools
         </h2>
-        <span className="font-medium text-xs bg-muted px-2 py-0.5 rounded-full text-primary">
-          {creditsLeft} credits left
-        </span>
+        <Badge variant='secondary'>
+          <Coins className='h-4 w-4' />{creditsLeft} credits left
+        </Badge>
       </div>
 
       {/* Tabs */}

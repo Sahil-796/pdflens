@@ -5,7 +5,6 @@ import {
   CreditCard,
   User,
   Coins,
-  ArrowUpCircle,
 } from "lucide-react"
 
 import {
@@ -31,7 +30,7 @@ import {
 import LogoutButton from "../auth/logout-button"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "../ui/button"
+import Link from "next/link"
 
 export function NavUser({
   user,
@@ -81,37 +80,33 @@ export function NavUser({
             sideOffset={6}
           >
             {/* Top section */}
-            <DropdownMenuLabel className="flex flex-col gap-1.5 px-3 py-2 border-b border-border/60">
-              <div className="flex items-center gap-2">
+            <DropdownMenuLabel className="flex flex-col gap-2 px-3 py-2 border-b border-border/60">
+              <div className="flex flex-col justify-center">
                 <p className="text-sm font-medium text-foreground">{user.name}</p>
                 {user.isPro && (
                   <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                     PRO
                   </span>
                 )}
+                <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
 
               {/* Credits left */}
-              <div className="flex items-center gap-1 mt-1">
+              <div className="flex items-center gap-1">
                 <Badge
                   variant="outline"
                   className="text-[11px] font-medium bg-muted px-3 py-1 rounded-md text-foreground flex items-center"
                 >
-                  <Coins className="w-3.5 h-3.5 mr-1 text-primary" />
+                  <Coins className="w-4 h-4 mr-1 text-primary" />
                   {user.creditsLeft} credits left
                 </Badge>
               </div>
 
               {/* Upgrade to Pro button (only for non-pro users) */}
               {!user.isPro && (
-                <button
-                  onClick={() => router.push("/pricing")}
-                  className="mt-2 w-full bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium py-1.5 rounded-md transition-colors flex items-center justify-center gap-1"
-                >
-                  <ArrowUpCircle className="w-4 h-4" />
-                  Upgrade to Pro
-                </button>
+                <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                  Get More Credits →
+                </Link>
               )}
             </DropdownMenuLabel>
 

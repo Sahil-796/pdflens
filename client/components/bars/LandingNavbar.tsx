@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, LogOut, User, Coins, ArrowUpCircle, Search, Home, Menu } from "lucide-react"
+import { Loader2, LogOut, User, Coins, Search, Home, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -267,15 +267,9 @@ export default function Navbar() {
 
                         {/* Upgrade Button for non-pro users */}
                         {!user.isPro && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => router.push("/pricing")}
-                            className="text-[11px] font-medium text-primary bg-primary/10 hover:bg-primary/20 px-2 py-1 rounded-md"
-                          >
-                            <ArrowUpCircle className="w-3.5 h-3.5 mr-1" />
-                            Upgrade
-                          </Button>
+                          <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                            Get More Credits →
+                          </Link>
                         )}
                       </div>
                     </div>
