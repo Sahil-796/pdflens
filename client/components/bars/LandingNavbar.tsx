@@ -43,7 +43,7 @@ const navigationLinks = [
     href: "/pricing"
   },
   {
-    label: "Convert",
+    label: "Tools",
     submenu: true,
     type: "description",
     items: [
@@ -70,24 +70,29 @@ const navigationLinks = [
     ]
   },
   {
-    label: "Tools",
+    label: "Convert",
     submenu: true,
     type: "description",
     items: [
-      {
-        "href": "/tools/pdf-to-word",
-        "label": "PDF to Word",
-        "description": "Convert your PDF files into editable Word documents with high accuracy."
-      },
       {
         "href": "/tools/word-to-pdf",
         "label": "Word to PDF",
         "description": "Turn Word documents into secure, shareable PDF files in seconds."
       },
       {
+        "href": "/tools/ppt-to-pdf",
+        "label": "PPT to PDF",
+        "description": "Turn your PowerPoint slides into shareable PDFs in seconds — no quality loss."
+      },
+      {
+        "href": "/tools/pdf-to-word",
+        "label": "PDF to Word",
+        "description": "Convert your PDF files into editable Word documents with high accuracy."
+      },
+      {
         "href": "/tools/pdf-to-md",
         "label": "PDF to MD",
-        "description": "Extract content from PDFs and convert it into clean Markdown format."
+        "description": "Convert your PDF documents into clean and editable Markdown files."
       }
     ]
   },

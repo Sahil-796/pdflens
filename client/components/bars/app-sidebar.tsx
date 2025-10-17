@@ -75,9 +75,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: ArrowLeftRight,
         items: [
-          { title: "PDF to MD", url: "/tools/pdf-to-md", isActive: pathname === '/tools/pdf-to-md' },
-          { title: "PDF to Word", url: "/tools/pdf-to-word", isActive: pathname === '/tools/pdf-to-word' },
           { title: "Word to PDF", url: "/tools/word-to-pdf", isActive: pathname === '/tools/word-to-pdf' },
+          { title: "PPT to PDF", url: "/tools/ppt-to-pdf", isActive: pathname === '/tools/ppt-to-pdf' },
+          { title: "PDF to Word", url: "/tools/pdf-to-word", isActive: pathname === '/tools/pdf-to-word' },
+          { title: "PDF to MD", url: "/tools/pdf-to-md", isActive: pathname === '/tools/pdf-to-md' },
         ]
       },
       {

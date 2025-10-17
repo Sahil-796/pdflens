@@ -3,15 +3,22 @@
 import React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { FileText, File, Scissors, Layers, ArrowDownLeft, Layout } from "lucide-react"
+import { FileText, File, Scissors, Layers, ArrowDownLeft, Layout, PanelLeftOpen } from "lucide-react"
 
 export const tools = [
   {
-    name: 'PDF to MD',
-    href: '/tools/pdf-to-md',
-    icon: <FileText className="w-8 h-8 text-green-500 dark:text-green-400" />,
-    description: 'Convert your PDF documents into clean and editable Markdown files.',
-    accent: 'text-green-600 dark:text-green-400',
+    name: 'Word to PDF',
+    href: '/tools/word-to-pdf',
+    icon: <File className="w-8 h-8 text-blue-500 dark:text-blue-400" />,
+    description: 'Turn Word documents into secure, shareable PDF files in seconds.',
+    accent: 'text-blue-600 dark:text-blue-400',
+  },
+  {
+    name: 'PPT to PDF',
+    href: '/tools/ppt-to-pdf',
+    icon: <PanelLeftOpen className="w-8 h-8 text-orange-500 dark:text-orange-400" />,
+    description: 'Turn your PowerPoint slides into shareable PDFs in seconds — no quality loss.',
+    accent: 'text-orange-600 dark:text-orange-400',
   },
   {
     name: 'PDF to Word',
@@ -21,18 +28,18 @@ export const tools = [
     accent: 'text-blue-400 dark:text-blue-200',
   },
   {
-    name: 'Word to PDF',
-    href: '/tools/word-to-pdf',
-    icon: <File className="w-8 h-8 text-blue-500 dark:text-blue-400" />,
-    description: 'Turn Word files into PDFs instantly while preserving layout and design',
-    accent: 'text-blue-600 dark:text-blue-400',
+    name: 'PDF to MD',
+    href: '/tools/pdf-to-md',
+    icon: <FileText className="w-8 h-8 text-green-500 dark:text-green-400" />,
+    description: 'Convert your PDF documents into clean and editable Markdown files.',
+    accent: 'text-green-600 dark:text-green-400',
   },
   {
     name: 'Split PDF',
     href: '/tools/split-pdf',
-    icon: <Scissors className="w-8 h-8 text-orange-500 dark:text-orange-400" />,
+    icon: <Scissors className="w-8 h-8 text-orange-300 dark:text-orange-200" />,
     description: 'Separate large PDFs into smaller files or extract specific pages easily.',
-    accent: 'text-orange-600 dark:text-orange-400',
+    accent: 'text-orange-400 dark:text-orange-200',
   },
   {
     name: 'Merge PDF',
