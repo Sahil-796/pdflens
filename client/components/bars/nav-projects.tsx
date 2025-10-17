@@ -68,7 +68,7 @@ export function NavProjects({
                         <Button
                           variant={subItem.isActive ? "secondary" : "ghost"}
                           className={cn(
-                            "w-full justify-start",
+                            "w-full justify-start cursor-pointer",
                             subItem.isActive && "bg-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
                           )}
                           onClick={() => router.push(subItem.url)}
