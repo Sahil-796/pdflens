@@ -10,7 +10,7 @@ import { Button } from "../ui/button"
 import { Lock } from "lucide-react"
 
 const SecurityTab = () => {
-  const { user, loading } = useUser()
+  const { user } = useUser()
 
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")

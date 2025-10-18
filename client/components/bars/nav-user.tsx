@@ -2,7 +2,6 @@
 
 import {
   ChevronsUpDown,
-  CreditCard,
   User,
   Coins,
 } from "lucide-react"

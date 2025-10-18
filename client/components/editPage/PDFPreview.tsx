@@ -18,7 +18,6 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
     setSelectedText,
     setOriginalHtml,
     selectedId,
-    selectedText,
     aiResponse,
     showAiResponse,
     setPromptValue,
