@@ -16,3 +16,4 @@ langchain-cloudflare
 pdf2docx
 pymupdf4llm
 python-multipart
+sentry-sdk[fastapi]
