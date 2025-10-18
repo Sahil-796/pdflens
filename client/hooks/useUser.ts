@@ -3,14 +3,29 @@ import { authClient } from "@/lib/auth-client";
 import { useEffect, useState } from "react";
 
 export default function useUser() {
-  const { userId, userName, userEmail, userAvatar, userPlan, emailVerified, setUser, clearUser, providerId } = useUserStore()
-  const [loading, setLoading] = useState(true)
+  const {
+    userId,
+    userName,
+    userEmail,
+    userAvatar,
+    userPlan,
+    emailVerified,
+    setUser,
+    clearUser,
+    providerId,
+    fetched,
+  } = useUserStore();
+
+  const [loading, setLoading] = useState(!fetched);
 
   useEffect(() => {
+    // ✅ only fetch if not fetched yet
+    if (fetched) return;
+
     const fetchUser = async () => {
       try {
-        setLoading(true)
-        const { data: session } = await authClient.getSession()
+        setLoading(true);
+        const { data: session } = await authClient.getSession();
 
         if (session?.user) {
           setUser({
@@ -18,34 +33,37 @@ export default function useUser() {
             userName: session.user.name,
             userEmail: session.user.email,
             userAvatar: session.user.image,
-          })
+          });
 
-          // Fetch authoritative plan + email verification
           try {
-            const res = await fetch("/api/getUserDetails", { cache: "no-store" })
+            const res = await fetch("/api/getUserDetails", { cache: "no-store" });
             if (res.ok) {
-              const { plan, emailVerified, providerId, creditsLeft } = await res.json()
+              const { plan, emailVerified, providerId, creditsLeft } = await res.json();
               setUser({
                 userPlan: plan,
                 emailVerified,
                 creditsLeft,
                 providerId,
-              })
+              });
             }
-          } catch { }
+          } catch (err) {
+            console.error("Error fetching user details:", err);
+          }
         } else {
-          clearUser()
+          clearUser();
         }
       } catch (error) {
-        console.error("Failed to fetch user:", error)
-        clearUser()
+        console.error("Failed to fetch user:", error);
+        clearUser();
       } finally {
-        setLoading(false)
+        // ✅ mark user as fetched
+        setUser({ fetched: true });
+        setLoading(false);
       }
-    }
+    };
 
-    fetchUser()
-  }, [setUser, clearUser])
+    fetchUser();
+  }, [fetched, setUser, clearUser]);
 
   return {
     user: {
@@ -55,10 +73,10 @@ export default function useUser() {
       avatar: userAvatar,
       plan: userPlan,
       emailVerified,
-      isPro: userPlan === 'premium',
+      isPro: userPlan === "premium",
       isAuthenticated: !!userId && emailVerified,
-      userProvider: providerId
+      userProvider: providerId,
     },
     loading,
-  }
+  };
 }
