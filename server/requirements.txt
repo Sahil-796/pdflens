@@ -7,7 +7,7 @@ langchain-google-genai
 langchain-core
 langchain-pinecone
 pinecone
-PyMuPDF  
+PyMuPDF==1.26.4
 bs4
 markdown-it-py
 pydantic
@@ -16,3 +16,4 @@ langchain-cloudflare
 pdf2docx
 pymupdf4llm
 python-multipart
+sentry-sdk[fastapi]
