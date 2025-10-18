@@ -67,7 +67,7 @@ const PDF2MD = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/edit-pdf`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/pdf-to-md`, {
         method: 'POST',
         body: formData,
       })
