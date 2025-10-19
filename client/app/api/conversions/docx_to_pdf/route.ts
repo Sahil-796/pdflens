@@ -1,4 +1,4 @@
-import { auth } from "@/lib/auth";
+// import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -13,12 +13,12 @@ export async function POST(req: Request) {
     }
 
     //auth check - wrap this into a func
-    const session = await auth.api.getSession({ headers: req.headers });
-    const userId = session?.user?.id;
+    // const session = await auth.api.getSession({ headers: req.headers });
+    // const userId = session?.user?.id;
 
-    if (!userId || typeof userId !== "string") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // if (!userId || typeof userId !== "string") {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
     //python server
 
