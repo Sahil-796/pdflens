@@ -49,13 +49,9 @@ export async function POST(req: Request) {
     }
 
 
-    const blob = await res.blob();
-    return new Response(blob, {
-    status: 200,
-    headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "attachment; filename=result.pdf",
-    },
+    return new Response(res.body, {
+      status: res.status,
+      headers: res.headers,
     });
 
 

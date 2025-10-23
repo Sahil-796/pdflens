@@ -1,5 +1,4 @@
 // import { auth } from "@/lib/auth";
-import { Schedule } from "framer-motion";
 import { NextResponse } from "next/server";
 
 
@@ -11,9 +10,6 @@ export async function POST(req: Request) {
     const formData = await req.formData(); 
 
     const files = formData.getAll("files") as File[];
-
-
-    // Require at least two files to merge
 
     if (files.length < 2) {
       return NextResponse.json({ error: "At least two PDF files are required to merge" }, { status: 400 });
@@ -50,18 +46,11 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: body.message || "Python API failed" }, { status: res.status })
     }
 
-    // Stream upstream response back to client, preserve key headers
-    const contentType = res.headers.get("content-type") || "application/pdf";
-    const contentDisposition = res.headers.get("content-disposition") || "attachment; filename=merged.pdf"
 
     return new Response(res.body, {
       status: res.status,
-      headers: {
-        "Content-Type": contentType,
-        "Content-Disposition": contentDisposition,
-      },
-    })
-
+      headers: res.headers,
+    });
 
   } catch (err: any) {
     console.error("API Error:", err)
