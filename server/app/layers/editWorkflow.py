@@ -17,7 +17,7 @@ def clean_markdown(text: str) -> str:
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
+llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
 class EditRequest(BaseModel):
     userPrompt: str
