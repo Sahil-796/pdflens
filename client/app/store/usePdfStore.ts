@@ -10,10 +10,12 @@ interface Pdf {
 interface PdfState {
   pdfs: Pdf[];
   loading: boolean;
+  status: 'idle' | 'loading' | 'success' | 'error';
   setPdfs: (pdfs: Pdf[]) => void;
   addPdf: (pdf: Pdf) => void;
   removePdf: (id: string) => void;
   setLoading: (loading: boolean) => void;
+  setStatus: (status: 'idle' | 'loading' | 'success' | 'error') => void;
   pdfId: string | null;
   fileName: string;
   htmlContent: string;
@@ -25,6 +27,7 @@ interface PdfState {
 export const usePdfStore = create<PdfState>(set => ({
   pdfs: [],
   loading: false,
+  status: 'idle',
   setPdfs: (pdfs) => set({ pdfs }),
   addPdf: (pdf) => set((state) => ({
     pdfs: [...state.pdfs, pdf],
@@ -33,6 +36,7 @@ export const usePdfStore = create<PdfState>(set => ({
     pdfs: state.pdfs.filter((pdf) => pdf.id !== id)
   })),
   setLoading: (loading) => set({ loading }),
+  setStatus: (status) => set({ status }),
   pdfId: null,
   fileName: "Untitled",
   htmlContent: "",
