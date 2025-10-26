@@ -110,7 +110,7 @@ const MergePdf = () => {
         formData.append('files', file)
       })
 
-      const res = await fetch(`/api/tools/merge_pdf`, {
+      const res = await fetch(`/api/tools/merge-pdf`, {
         method: 'POST',
         body: formData,
       })
@@ -221,81 +221,79 @@ const MergePdf = () => {
                 <p className='text-muted-foreground text-sm'>
                   (Max {MAX_FREE_FILES} files, 5MB each)
                 </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf"
-                  multiple
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
               </div>
             ) : (
               <div className="flex flex-col items-center text-center space-y-5 w-full h-full">
                 <div className='w-full flex items-center gap-4 justify-center'>
-                  <FileText className="text-purple-600 h-7 w-7" />
+                  <FileText className={`text-purple-600 h-7 w-7 ${isMerging && "animate-caret-blink"}`} />
 
                   <span className="text-lg sm:text-xl font-medium text-foreground">
-                    {files.length} PDF{files.length > 1 ? 's' : ''} Ready to Merge
+                    {isMerging ?
+                      ` ${files.length} PDF${files.length > 1 ? 's' : ''} Merging...`
+                      :
+                      `${files.length} PDF${files.length > 1 ? 's' : ''} Ready to Merge`
+                    }
                   </span>
                 </div>
 
-                <Reorder.Group axis="y" values={files} onReorder={setFiles} className="w-full space-y-2 h-90 overflow-y-auto">
-                  {files.map((file, index) => (
-                    <Reorder.Item
-                      key={file.name + file.size}
-                      value={file}
-                      className="flex items-center gap-2 bg-muted/50 rounded-lg p-3 text-left cursor-grab active:cursor-grabbing"
-                    >
-                      <div className="flex items-center gap-2 text-purple-600">
-                        <GripVertical size={20} className="flex-shrink-0" />
-                      </div>
-
-                      <div className="flex flex-col gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveFile(index, 'up')}
-                          disabled={index === 0}
-                          className="h-6 w-6 p-0"
-                        >
-                          <ChevronUp size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => moveFile(index, 'down')}
-                          disabled={index === files.length - 1}
-                          className="h-6 w-6 p-0"
-                        >
-                          <ChevronDown size={16} />
-                        </Button>
-                      </div>
-
-                      <div className="flex items-center justify-center bg-purple-100 rounded px-2 py-1 min-w-[2rem]">
-                        <span className="text-sm font-semibold text-purple-600">
-                          {index + 1}
-                        </span>
-                      </div>
-
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{file.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {(file.size / (1024 * 1024)).toFixed(2)} MB
-                        </p>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeFile(index)}
-                        className="flex-shrink-0"
+                {!isMerging &&
+                  <Reorder.Group axis="y" values={files} onReorder={setFiles} className="w-full space-y-2 h-90 overflow-y-auto">
+                    {files.map((file, index) => (
+                      <Reorder.Item
+                        key={file.name + file.size}
+                        value={file}
+                        className="flex items-center gap-2 bg-muted/50 rounded-lg p-3 text-left cursor-grab active:cursor-grabbing"
                       >
-                        <X size={16} />
-                      </Button>
-                    </Reorder.Item>
-                  ))}
-                </Reorder.Group>
+                        <div className="flex items-center gap-2 text-purple-600">
+                          <GripVertical size={20} className="flex-shrink-0" />
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveFile(index, 'up')}
+                            disabled={index === 0}
+                            className="h-6 w-6 p-0"
+                          >
+                            <ChevronUp size={16} />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => moveFile(index, 'down')}
+                            disabled={index === files.length - 1}
+                            className="h-6 w-6 p-0"
+                          >
+                            <ChevronDown size={16} />
+                          </Button>
+                        </div>
+
+                        <div className="flex items-center justify-center bg-purple-100 rounded px-2 py-1 min-w-[2rem]">
+                          <span className="text-sm font-semibold text-purple-600">
+                            {index + 1}
+                          </span>
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{file.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                          </p>
+                        </div>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeFile(index)}
+                          className="flex-shrink-0"
+                        >
+                          <X size={16} />
+                        </Button>
+                      </Reorder.Item>
+                    ))}
+                  </Reorder.Group>
+                }
 
                 {isMerging ? (
                   <Empty className="w-full">
@@ -342,12 +340,21 @@ const MergePdf = () => {
         )}
       </div>
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf"
+        multiple
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Upgrade to Pro</DialogTitle>
             <DialogDescription>
-              {`You've reached the free tier limit of <span className='text-purple-600 font-semibold'>{MAX_FREE_FILES} files per merge</span>.`}
+              You've reached the free tier limit of {MAX_FREE_FILES} files per merge.
             </DialogDescription>
           </DialogHeader>
           <div className="font-medium text-foreground">

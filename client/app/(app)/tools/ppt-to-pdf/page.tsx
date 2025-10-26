@@ -12,7 +12,7 @@ const page = () => {
       <TitleNav text="PPT to PDF" />
       <div className='flex-1 overflow-hidden p-4'>
         <div className="bg-card border border-border rounded-xl p-4 h-full flex flex-col">
-          <Link href={'/tools'}>
+          <Link href={'/tools'} className='w-fit'>
             <Button variant='secondary' className='flex gap-2 cursor-pointer mb-6'>
               <ArrowLeft className='h-4 w-4' />
               Back to Toolbox

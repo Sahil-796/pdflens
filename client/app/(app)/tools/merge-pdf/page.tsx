@@ -9,17 +9,17 @@ export default function Page() {
   return (
     <div className='h-screen flex flex-col'>
 
-      <TitleNav text="PDF to MD" />
+      <TitleNav text="Merge PDF" />
       <div className='flex-1 overflow-hidden p-4'>
         <div className="bg-card border border-border rounded-xl p-4 h-full flex flex-col">
-          <Link href={'/tools'}>
+          <Link href={'/tools'} className='w-fit'>
             <Button variant='secondary' className='flex gap-2 cursor-pointer mb-6'>
               <ArrowLeft className='h-4 w-4' />
               Back to Toolbox
             </Button>
           </Link>
           <h2 className="text-2xl font-semibold text-primary mb-2">
-            Merge PDF
+            Merge 2 or more PDFs
           </h2>
           <p className="text-muted-foreground mb-6">
             Combine your PDFs into one neat file — quick and simple.

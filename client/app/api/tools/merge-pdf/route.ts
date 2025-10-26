@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-
   try {
-
     const formData = await req.formData();
     const files = formData.getAll("files") as File[];
 
@@ -29,14 +27,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Convert backend response (PDF Blob)
+    // Get the PDF blob from Python backend
     const pdfBuffer = await res.arrayBuffer();
 
     return new Response(pdfBuffer, {
       status: 200,
       headers: res.headers
     });
-
   } catch (error: any) {
     console.error("API Error:", error);
     return NextResponse.json(

@@ -1,3 +1,4 @@
+import logging
 from tempfile import TemporaryDirectory
 from fastapi import APIRouter, FastAPI, UploadFile, File, Form
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -11,14 +12,14 @@ router = APIRouter(
     prefix='/tools',
     tags=["tools"]
 )
-import logging
 logger = logging.getLogger(__name__)
 
 # - this file contains various converstion tools like:
 # - pdf to docx, doc/docx to pdf, ppt/pptx to pdf, merge, split
 # - major libs used (although written in imports): pymupdf, pdf2docx, and used subprocess for running libreoffice
-# - issue was most libs use microsoft products for conversions uth and as a new linux user and 
+# - issue was most libs use microsoft products for conversions uth and as a new linux user and
 #   most cloud servers running linux its better to not use those or *just dockerise your apis*
+
 
 @router.post("/pdf_to_docx")
 async def convert_pdf_to_docx(file: UploadFile = File(...)):
@@ -27,7 +28,7 @@ async def convert_pdf_to_docx(file: UploadFile = File(...)):
         ext = file.filename.lower().split('.')[-1]
         name = file.filename.rsplit('.', 1)[0]
         if ext != "pdf" or file.content_type != "application/pdf":
-            return  JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
+            return JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
         contents = await file.read()
         if not contents:
             return JSONResponse(status_code=400, content={"message": "Uploaded file is empty"})
@@ -49,31 +50,30 @@ async def convert_pdf_to_docx(file: UploadFile = File(...)):
             # Read DOCX bytes
             docx_bytes = temp_docx_path.read_bytes()
 
-
         return StreamingResponse(
             BytesIO(docx_bytes),
             media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             headers={"Content-Disposition": f"attachment; filename={name}.docx"}
         )
 
-    except Exception as e:    
+    except Exception as e:
         logger.error(
-            f"Error converting pdf to docx: {str(e)}", 
+            f"Error converting pdf to docx: {str(e)}",
             exc_info=True
         )
         return JSONResponse(status_code=500, content={"message": str(e)})
+
 
 @router.post("/docx_to_pdf")
 async def convert_docx_to_pdf(file: UploadFile = File(...)):
     try:
 
         ext = file.filename.lower().split('.')[-1]
-        name = file.filename.rsplit('.', 1)[0] 
+        name = file.filename.rsplit('.', 1)[0]
         if ext not in ["doc", "docx"] or file.content_type not in ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword"]:
             return JSONResponse(status_code=400, content={"message": "Only DOC/DOCX files are allowed"})
         contents = await file.read()
         file.file.seek(0)
-
 
         with TemporaryDirectory() as td:
             temp_pdf_path = Path(td) / (name + ".pdf")
@@ -92,33 +92,32 @@ async def convert_docx_to_pdf(file: UploadFile = File(...)):
 
             pdf_bytes = temp_pdf_path.read_bytes()
 
-
         return StreamingResponse(
             BytesIO(pdf_bytes),
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={name}.pdf"}
         )
 
-    except Exception as e:    
+    except Exception as e:
         logger.error(
-            f"Error converting doc/docx to pdf: {str(e)}", 
+            f"Error converting doc/docx to pdf: {str(e)}",
             exc_info=True
         )
         return JSONResponse(status_code=500, content={"message": str(e)})
+
 
 @router.post("/pptx_to_pdf")
 async def convert_pptx_to_pdf(file: UploadFile = File(...)):
     try:
 
         ext = file.filename.lower().split('.')[-1]
-        name = file.filename.rsplit('.', 1)[0] 
+        name = file.filename.rsplit('.', 1)[0]
         if ext not in ["ppt", "pptx"] or file.content_type not in ["application/vnd.openxmlformats-officedocument.presentationml.presentation", "application/vnd.ms-powerpoint"]:
             return JSONResponse(status_code=400, content={"message": "Only PPT/PPTX files are allowed"})
         contents = await file.read()
         if not contents:
             return JSONResponse(status_code=400, content={"message": "Uploaded file is empty"})
         file.file.seek(0)
-
 
         # Save uploaded PPTX temporarily
         with TemporaryDirectory() as td:
@@ -139,16 +138,15 @@ async def convert_pptx_to_pdf(file: UploadFile = File(...)):
             # Read PDF bytes
             pdf_bytes = temp_pdf_path.read_bytes()
 
-
         return StreamingResponse(
             BytesIO(pdf_bytes),
             media_type="application/pdf",
             headers={"Content-Disposition": f"attachment; filename={name}.pdf"}
         )
 
-    except Exception as e:    
+    except Exception as e:
         logger.error(
-            f"Error converting ppt/pptx to pdf: {str(e)}", 
+            f"Error converting ppt/pptx to pdf: {str(e)}",
             exc_info=True
         )
         return JSONResponse(status_code=500, content={"message": str(e)})
@@ -161,7 +159,6 @@ async def merge_pdfs(files: list[UploadFile] = File(...)):
             return JSONResponse(status_code=400, content={"message": "At least two PDFs required"})
 
         merged_pdf = fitz.open()
-
 
         with TemporaryDirectory() as td:
 
@@ -194,7 +191,6 @@ async def merge_pdfs(files: list[UploadFile] = File(...)):
         return JSONResponse(status_code=500, content={"message": str(e)})
 
 
-
 # split ---------------------------
 
 @router.post("/split_pdf_by_range")
@@ -208,12 +204,10 @@ async def split_pdf_by_range(file: UploadFile = File(...), ranges: str = None):
             return JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
         if not ranges:
             return JSONResponse(status_code=400, content={"message": "ranges parameter is required (e.g., '1-3,5-8')"})
-        
 
         contents = await file.read()
         if not contents:
             return JSONResponse(status_code=400, content={"message": "Uploaded file is empty"})
-
 
         with TemporaryDirectory() as td:
             pdf_path = Path(td) / file.filename
@@ -242,19 +236,22 @@ async def split_pdf_by_range(file: UploadFile = File(...), ranges: str = None):
             # zip results if multiple
             if len(output_files) > 1:
                 zip_path = Path(td) / "split_results.zip"
-                subprocess.run(["zip", "-j", zip_path, *output_files], check=True)
+                subprocess.run(
+                    ["zip", "-j", zip_path, *output_files], check=True)
                 zip_bytes = zip_path.read_bytes()
                 return StreamingResponse(
                     BytesIO(zip_bytes),
                     media_type="application/zip",
-                    headers={"Content-Disposition": "attachment; filename=split_results.zip"}
+                    headers={
+                        "Content-Disposition": "attachment; filename=split_results.zip"}
                 )
             else:
                 pdf_bytes = output_files[0].read_bytes()
                 return StreamingResponse(
                     BytesIO(pdf_bytes),
                     media_type="application/pdf",
-                    headers={"Content-Disposition": "attachment; filename=split_result.pdf"}
+                    headers={
+                        "Content-Disposition": "attachment; filename=split_result.pdf"}
                 )
 
     except Exception as e:
@@ -276,7 +273,6 @@ async def split_pdf_by_pages(
         if not file.filename.lower().endswith(".pdf"):
             return JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
 
-       
         if not exclude:
             return JSONResponse(status_code=400, content={"message": "Provide exclude parameter"})
         # if not (pages or exclude):
@@ -296,7 +292,8 @@ async def split_pdf_by_pages(
             # if pages:
             #     selected_pages = set(int(p.strip()) for p in pages.split(",") if p.strip().isdigit())
             if exclude:
-                excluded = set(int(p.strip()) for p in exclude.split(",") if p.strip().isdigit())
+                excluded = set(int(p.strip())
+                               for p in exclude.split(",") if p.strip().isdigit())
                 selected_pages -= excluded
 
             new_pdf = fitz.open()
@@ -313,11 +310,10 @@ async def split_pdf_by_pages(
             return StreamingResponse(
                 BytesIO(pdf_bytes),
                 media_type="application/pdf",
-                headers={"Content-Disposition": "attachment; filename=filtered.pdf"}
+                headers={
+                    "Content-Disposition": "attachment; filename=filtered.pdf"}
             )
 
     except Exception as e:
         logger.error(f"Error splitting PDF by pages: {str(e)}", exc_info=True)
         return JSONResponse(status_code=500, content={"message": str(e)})
-
-
