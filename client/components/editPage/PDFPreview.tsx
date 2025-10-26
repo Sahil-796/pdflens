@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 
 interface PDFPreviewProps {
@@ -30,32 +30,18 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
     if (html) setRenderedHtml(html)
   }, [html, setRenderedHtml])
 
-  const applyChanges = useCallback(
-    (newContent: string) => {
-      if (!selectedId || !renderedHtml) return
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(renderedHtml, 'text/html')
-      const el = doc.getElementById(selectedId)
-      if (el) el.outerHTML = newContent
-      setRenderedHtml(doc.documentElement.outerHTML)
-      setShowAiResponse(false)
-      setAiResponse('')
-      setStatus('prompt')
-      setPromptValue('')
-    },
-    [selectedId, renderedHtml, setRenderedHtml, setShowAiResponse, setAiResponse, setStatus, setPromptValue]
-  )
-
-  // Handle selection styling
-  useEffect(() => {
-    if (renderedHtml && selectedId) {
-      const prev = document.querySelector(".selected")
-      if (prev) prev.classList.remove("selected")
-
-      const el = document.getElementById(selectedId)
-      if (el) el.classList.add("selected")
-    }
-  }, [renderedHtml, selectedId])
+  const acceptChanges = (newContent: string) => {
+    if (!selectedId || !renderedHtml) return
+    const parser = new DOMParser()
+    const doc = parser.parseFromString(renderedHtml, 'text/html')
+    const el = doc.getElementById(selectedId)
+    if (el) el.outerHTML = newContent
+    setRenderedHtml(doc.documentElement.outerHTML)
+    setShowAiResponse(false)
+    setAiResponse('')
+    setStatus('prompt')
+    setPromptValue('')
+  }
 
   // Handle AI response display inline - PERSIST until accept/reject
   useEffect(() => {
@@ -105,7 +91,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
 
       acceptBtn?.addEventListener('click', (e) => {
         e.stopPropagation()
-        applyChanges(aiResponse)
+        acceptChanges(aiResponse)
       })
 
       rejectBtn?.addEventListener('click', (e) => {
@@ -118,7 +104,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
         setPromptValue("")
       })
     }
-  }, [showAiResponse, selectedId, aiResponse, applyChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
+  }, [showAiResponse, selectedId, aiResponse])
 
   return (
     <div className="h-full w-full bg-background">
@@ -154,20 +140,38 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
             onClick={(e) => {
               const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
               if (target) {
+                const parser = new DOMParser()
+                const doc = parser.parseFromString(renderedHtml, 'text/html')
+
                 // Toggle selection if clicking the same element
                 if (selectedId === target.id) {
-                  // Deselect
-                  target.classList.remove("selected")
+                  // Deselect - remove selected class from HTML string
+                  const el = doc.getElementById(target.id)
+                  if (el) {
+                    el.classList.remove("selected")
+                    setRenderedHtml(doc.documentElement.outerHTML)
+                  }
                   setSelectedId('')
                   setSelectedText('')
                   setOriginalHtml('')
                 } else {
-                  // Select new element
-                  setSelectedId(target.id)
-                  setSelectedText(target.innerText)
-                  setOriginalHtml(target.outerHTML)
-                  // Trigger sidebar open on mobile
-                  onTextSelect?.()
+                  // Remove selected class from previously selected element
+                  if (selectedId) {
+                    const prevEl = doc.getElementById(selectedId)
+                    if (prevEl) prevEl.classList.remove("selected")
+                  }
+
+                  // Add selected class to new element
+                  const el = doc.getElementById(target.id)
+                  if (el) {
+                    el.classList.add("selected")
+                    setRenderedHtml(doc.documentElement.outerHTML)
+                    setSelectedId(target.id)
+                    setSelectedText(el.innerText)
+                    setOriginalHtml(el.outerHTML)
+                    // Trigger sidebar open on mobile
+                    onTextSelect?.()
+                  }
                 }
               }
             }}

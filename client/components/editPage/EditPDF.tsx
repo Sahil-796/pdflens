@@ -43,7 +43,7 @@ interface EditPDFProps {
 }
 
 const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
-  const { pdfId } = usePdfStore()
+  const { pdfId, isContext } = usePdfStore()
 
   const {
     promptValue,
@@ -98,15 +98,14 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     }
   }
 
-  const handleAiEdit = async () => {
+  const handleRegenerate = async () => {
     if (creditsLeft === 0) {
       setLimitModalOpen(true)
       return
     }
     if (!promptValue) return
-
+    setStatus('loading')
     try {
-      setStatus('loading')
       const res = await fetch('/api/editHTML', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +113,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
           userPrompt: promptValue,
           html: originalHtml,
           pdfId,
-          isContext: false,
+          isContext: isContext,
         }),
       })
       if (!res.ok) throw new Error('API failed')
@@ -126,11 +125,6 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     } catch (err) {
       console.error(err)
     }
-  }
-
-  const handleRegenerate = () => {
-    setStatus('loading')
-    handleAiEdit()
   }
 
   return (
@@ -202,7 +196,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
                   <Button
                     size="sm"
                     className="w-full h-8 text-xs font-medium shadow-md"
-                    onClick={handleAiEdit}
+                    onClick={handleRegenerate}
                     disabled={status === 'loading' || !promptValue}
                   >
                     {status === 'loading' ? (
