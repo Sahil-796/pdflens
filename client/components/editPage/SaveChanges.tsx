@@ -10,38 +10,42 @@ import { Button } from '../ui/button'
 
 const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSuccess?: () => void }) => {
   const { pdfId } = usePdfStore()
-  const { renderedHtml, saveChange } = useEditPdfStore()
+  const { renderedHtml, saveChange, setSaveChange } = useEditPdfStore()
   const { pdfs } = usePdf()
   const [loading, setLoading] = useState(false)
 
   async function handleSave() {
     if (!renderedHtml) return
-
     setLoading(true)
-    if (filename.trim() == '') {
-      toast.error("Filename can't be empty")
-      return
-    }
-    const res = await fetch("/api/updatePdf", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        html: renderedHtml,
-        id: pdfId,
-        filename
-      }),
-    })
+    try {
 
-    if (res.ok) {
-      setLoading(false)
-      toast.success("Changes Saved.")
-      onSaveSuccess?.()
-      pdfs.forEach(e => {
-        if (e.id == pdfId) e.fileName = filename
+      if (filename.trim() == '') {
+        toast.error("Filename can't be empty")
+        return
+      }
+      const res = await fetch("/api/updatePdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          html: renderedHtml,
+          id: pdfId,
+          filename
+        }),
       })
-    } else {
-      setLoading(false)
+
+      if (res.ok) {
+        setSaveChange(false)
+        toast.success("Changes Saved.")
+        onSaveSuccess?.()
+        pdfs.forEach(e => {
+          if (e.id == pdfId) e.fileName = filename
+        })
+      }
+    } catch (err) {
+      console.error(err)
       toast.error("Error while Saving.")
+    } finally {
+      setLoading(false)
     }
   }
 

@@ -99,7 +99,7 @@ const ProfileTab = () => {
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
+              className="pl-9 bg-background border-border"
               disabled={!user?.isAuthenticated}
             />
           </div>
@@ -133,7 +133,7 @@ const ProfileTab = () => {
               placeholder="Your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="pl-9 bg-background border-border focus-visible:ring-primary focus-visible:ring-offset-1"
+              className="pl-9 bg-background border-border"
               disabled={user?.userProvider !== 'credential' || !user?.isAuthenticated}
             />
           </div>

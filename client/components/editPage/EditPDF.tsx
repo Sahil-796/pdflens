@@ -84,6 +84,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
           .replace(/\n/g, "<br>")
           .replace(/ {2}/g, "&nbsp;&nbsp;")
         el.innerHTML = formatted
+        el.classList.remove('selected')
       }
       setRenderedHtml(doc.documentElement.outerHTML)
       setSaveChange(true)
