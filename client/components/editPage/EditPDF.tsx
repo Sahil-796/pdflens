@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useUserStore } from '@/app/store/useUserStore'
@@ -52,6 +52,8 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     selectedId,
     originalHtml,
     renderedHtml,
+    setSelectedId,
+    setSelectedText,
     setPromptValue,
     setRenderedHtml,
     setAiResponse,
@@ -69,22 +71,32 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     setPromptValue(activeTab === 'replace' ? selectedText : "")
   }, [selectedText, activeTab, setPromptValue])
 
-  const applyChanges = useCallback((newContent: string) => {
+  const handleReplace = (newContent: string) => {
     if (!selectedId || !renderedHtml) return
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(renderedHtml, "text/html")
-    const el = doc.getElementById(selectedId)
-    if (el) {
-      // Preserve line breaks and multiple spaces
-      const formatted = newContent
-        .replace(/\n/g, "<br>")
-        .replace(/ {2}/g, "&nbsp;&nbsp;")
-      el.innerHTML = formatted
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(renderedHtml, "text/html")
+      const el = doc.getElementById(selectedId)
+      if (el) {
+        // Preserve line breaks and multiple spaces
+        const formatted = newContent
+          .replace(/\n/g, "<br>")
+          .replace(/ {2}/g, "&nbsp;&nbsp;")
+        el.innerHTML = formatted
+      }
+      setRenderedHtml(doc.documentElement.outerHTML)
     }
-    setRenderedHtml(doc.documentElement.outerHTML)
-    setPromptValue("")
-    setStatus('prompt')
-  }, [selectedId, renderedHtml, setRenderedHtml, setPromptValue, setStatus])
+    catch (error) {
+      console.error(error)
+    } finally {
+      setPromptValue("")
+      setSelectedText("")
+      setSelectedId("")
+      setStatus('prompt')
+
+      onSidebarToggle?.()
+    }
+  }
 
   const handleAiEdit = async () => {
     if (creditsLeft === 0) {
@@ -113,19 +125,12 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
       setStatus('aiResult')
     } catch (err) {
       console.error(err)
-      setStatus('prompt')
     }
   }
 
   const handleRegenerate = () => {
     setStatus('loading')
     handleAiEdit()
-  }
-
-  const handleReplace = () => {
-    applyChanges(promptValue)
-    // Close sidebar on mobile after replace
-    onSidebarToggle?.()
   }
 
   return (
@@ -228,7 +233,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
               <Button
                 size="sm"
                 className="w-full h-8 text-xs font-medium shadow-md"
-                onClick={handleReplace}
+                onClick={() => handleReplace(promptValue)}
                 disabled={!promptValue || promptValue === selectedText}
               >
                 Replace Text
