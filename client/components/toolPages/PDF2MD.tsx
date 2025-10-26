@@ -170,7 +170,7 @@ const PDF2MD = () => {
               <p className="text-sm sm:text-base text-green-600 text-center">
                 Drop your PDF here or click to upload
               </p>
-              <p className='text-muted-foreground text-sm'>
+              <p className='text-muted-foreground text-sm mt-1'>
                 (Max File Size: 5MB)
               </p>
               <input

@@ -169,7 +169,7 @@ const PPT2PDF = () => {
               <p className="text-sm sm:text-base text-orange-500 text-center">
                 Drop your PowerPoint file here or click to upload
               </p>
-              <p className='text-muted-foreground text-sm'>
+              <p className='text-muted-foreground text-sm mt-1'>
                 (Max File Size: 5MB)
               </p>
               <input

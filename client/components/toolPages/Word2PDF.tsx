@@ -74,6 +74,7 @@ const Word2PDF = () => {
       })
 
       if (!res.ok) throw new Error("Failed to convert PDF")
+      console.log(res)
 
       const blob = await res.blob()
       setConvertedBlob(blob)
@@ -169,7 +170,7 @@ const Word2PDF = () => {
               <p className="text-sm sm:text-base text-blue-500 text-center">
                 Drop your Word file here or click to upload
               </p>
-              <p className='text-muted-foreground text-sm'>
+              <p className='text-muted-foreground text-sm mt-1'>
                 (Max File Size: 5MB)
               </p>
               <input
