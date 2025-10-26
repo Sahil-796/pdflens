@@ -35,18 +35,18 @@ export const tools = [
     accent: 'text-green-600 dark:text-green-400',
   },
   {
+    name: 'Merge PDF',
+    href: '/tools/merge-pdf',
+    icon: <Layers className="w-8 h-8 text-purple-500 dark:text-purple-400" />,
+    description: 'Combine your PDFs into one neat file — quick and simple.',
+    accent: 'text-purple-600 dark:text-purple-400',
+  },
+  {
     name: 'Split PDF',
     href: '/tools/split-pdf',
     icon: <Scissors className="w-8 h-8 text-orange-300 dark:text-orange-200" />,
     description: 'Separate large PDFs into smaller files or extract specific pages easily.',
     accent: 'text-orange-400 dark:text-orange-200',
-  },
-  {
-    name: 'Merge PDF',
-    href: '/tools/merge-pdf',
-    icon: <Layers className="w-8 h-8 text-purple-500 dark:text-purple-400" />,
-    description: 'Combine multiple PDF documents into a single, organized file.',
-    accent: 'text-purple-600 dark:text-purple-400',
   },
   {
     name: 'Compress PDF',

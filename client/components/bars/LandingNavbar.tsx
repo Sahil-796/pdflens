@@ -43,33 +43,6 @@ const navigationLinks = [
     href: "/pricing"
   },
   {
-    label: "Tools",
-    submenu: true,
-    type: "description",
-    items: [
-      {
-        "href": "/tools/merge-pdf",
-        "label": "Merge PDF",
-        "description": "Combine multiple PDF documents into one seamless, organized file."
-      },
-      {
-        "href": "/tools/split-pdf",
-        "label": "Split PDF",
-        "description": "Extract and split pages from large PDFs into smaller, separate files."
-      },
-      {
-        "href": "/tools/organize-pdf",
-        "label": "Organize Pages",
-        "description": "Reorder, rotate, or delete pages in your PDF for better structure."
-      },
-      {
-        "href": "/tools/edit-pdf",
-        "label": "Edit PDF",
-        "description": "Modify text, images, and layout directly within your PDF files."
-      }
-    ]
-  },
-  {
     label: "Convert",
     submenu: true,
     type: "description",
@@ -93,6 +66,33 @@ const navigationLinks = [
         "href": "/tools/pdf-to-md",
         "label": "PDF to MD",
         "description": "Convert your PDF documents into clean and editable Markdown files."
+      }
+    ]
+  },
+  {
+    label: "Tools",
+    submenu: true,
+    type: "description",
+    items: [
+      {
+        "href": "/tools/merge-pdf",
+        "label": "Merge PDF",
+        "description": "Combine your PDFs into one neat file — quick and simple."
+      },
+      {
+        "href": "/tools/split-pdf",
+        "label": "Split PDF",
+        "description": "Extract and split pages from large PDFs into smaller, separate files."
+      },
+      {
+        "href": "/tools/organize-pdf",
+        "label": "Organize Pages",
+        "description": "Reorder, rotate, or delete pages in your PDF for better structure."
+      },
+      {
+        "href": "/tools/compress-pdf",
+        "label": "Compress PDF",
+        "description": "Reduce the file size of PDFs for faster sharing and easy storage."
       }
     ]
   },
