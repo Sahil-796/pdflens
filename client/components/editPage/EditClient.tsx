@@ -25,7 +25,6 @@ interface Pdf {
 export default function EditClient({ id }: { id: string }) {
   const router = useRouter()
   const { htmlContent, setPdf, fileName } = usePdfStore()
-  const [editPdf, setEditPdf] = useState<Pdf | null>(null)
   const [contextFiles, setContextFiles] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
   const [initialName, setInitialName] = useState('')
@@ -47,12 +46,10 @@ export default function EditClient({ id }: { id: string }) {
         const data = await res.json()
         if (data.pdf) {
           const newPdf = data.pdf
-          setEditPdf(newPdf)
           setPdf({
             htmlContent: newPdf.htmlContent,
             fileName: newPdf.fileName
           })
-          setPdf({ fileName: newPdf.fileName })
           setInitialName(newPdf.fileName)
         } else {
           toast.error("PDF not found")
@@ -223,7 +220,7 @@ export default function EditClient({ id }: { id: string }) {
         >
           <PDFPreview
             loading={loading}
-            html={editPdf?.htmlContent || htmlContent}
+            html={htmlContent}
             pdfId={id}
             onTextSelect={() => setShowSidebar(true)}
           />

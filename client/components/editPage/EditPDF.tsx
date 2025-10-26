@@ -98,7 +98,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     }
   }
 
-  const handleRegenerate = async () => {
+  const handleAiEdit = async () => {
     if (creditsLeft === 0) {
       setLimitModalOpen(true)
       return
@@ -178,7 +178,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
                     size="sm"
                     variant="outline"
                     className="w-full h-7 text-xs"
-                    onClick={handleRegenerate}
+                    onClick={handleAiEdit}
                   >
                     <RotateCcw className="w-3 h-3 mr-1" /> Regenerate
                   </Button>
@@ -196,7 +196,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
                   <Button
                     size="sm"
                     className="w-full h-8 text-xs font-medium shadow-md"
-                    onClick={handleRegenerate}
+                    onClick={handleAiEdit}
                     disabled={status === 'loading' || !promptValue}
                   >
                     {status === 'loading' ? (
