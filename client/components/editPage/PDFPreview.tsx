@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
+import { toast } from 'sonner'
 
 interface PDFPreviewProps {
   loading: boolean
@@ -23,14 +24,15 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
     setPromptValue,
     setShowAiResponse,
     setAiResponse,
-    setStatus
+    setStatus,
+    setSaveChange
   } = useEditPdfStore()
 
   useEffect(() => {
     if (html) setRenderedHtml(html)
   }, [html, setRenderedHtml])
 
-  const acceptChanges = (newContent: string) => {
+  const acceptChanges = useCallback((newContent: string) => {
     if (!selectedId || !renderedHtml) return
     const parser = new DOMParser()
     const doc = parser.parseFromString(renderedHtml, 'text/html')
@@ -41,18 +43,29 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
     setAiResponse('')
     setStatus('prompt')
     setPromptValue('')
-  }
+    setSaveChange(true)
+  }, [renderedHtml, selectedId, setAiResponse, setPromptValue, setRenderedHtml, setShowAiResponse, setStatus])
 
-  // Handle AI response display inline - PERSIST until accept/reject
+  // Handle AI response display inline
   useEffect(() => {
-    if (showAiResponse && selectedId && aiResponse) {
+    if (!showAiResponse || !selectedId || !aiResponse) return
+
+    // Use setTimeout to ensure DOM is updated after React render
+    const timer = setTimeout(() => {
       const el = document.getElementById(selectedId)
+      if (!el) {
+        console.error('Selected element not found:', selectedId)
+        return
+      }
+
       // Check if AI response is already displayed
       const existingResponse = el.querySelector('.ai-response-container')
       if (existingResponse) return // Don't recreate if already exists
 
-      // Store original content
+      // Store original content AND classes/id before replacing
       const originalContent = el.innerHTML
+      const originalClassName = el.className
+      const originalId = el.id
 
       // Create AI response display
       const aiResponseDiv = document.createElement('div')
@@ -81,8 +94,10 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
         </div>
       `
 
-      // Replace content with AI response
+      // Replace content with AI response and remove original classes
       el.innerHTML = ''
+      el.className = 'ai-response-wrapper' // Replace with neutral class
+      el.removeAttribute('id') // Remove ID to avoid conflicts
       el.appendChild(aiResponseDiv)
 
       // Add event listeners
@@ -96,15 +111,19 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
 
       rejectBtn?.addEventListener('click', (e) => {
         e.stopPropagation()
-        // Restore original content
+        // Restore original content, classes, and ID
         el.innerHTML = originalContent
+        el.className = originalClassName
+        el.id = originalId
         setShowAiResponse(false)
         setAiResponse("")
         setStatus('prompt')
         setPromptValue("")
       })
-    }
-  }, [showAiResponse, selectedId, aiResponse])
+    }, 0)
+
+    return () => clearTimeout(timer)
+  }, [showAiResponse, selectedId, aiResponse, acceptChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
 
   return (
     <div className="h-full w-full bg-background">
@@ -138,6 +157,10 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
               if (target) target.classList.remove("hovered")
             }}
             onClick={(e) => {
+              if (aiResponse || showAiResponse) {
+                toast.info("Accept or reject the current changes.")
+                return
+              }
               const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
               if (target) {
                 const parser = new DOMParser()

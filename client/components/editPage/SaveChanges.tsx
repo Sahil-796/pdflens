@@ -3,14 +3,14 @@
 import { usePdfStore } from '@/app/store/usePdfStore'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
-import { Save } from 'lucide-react'
+import { Dot, Save } from 'lucide-react'
 import { usePdf } from '@/hooks/usePdf'
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 import { Button } from '../ui/button'
 
 const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSuccess?: () => void }) => {
   const { pdfId } = usePdfStore()
-  const { renderedHtml } = useEditPdfStore()
+  const { renderedHtml, saveChange } = useEditPdfStore()
   const { pdfs } = usePdf()
   const [loading, setLoading] = useState(false)
 
@@ -59,7 +59,10 @@ const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSucc
       ${loading ? 'animate-caret-blink' : ''}
     `}
       />
-      Save
+      <span>Save</span>
+      {saveChange && (
+        <Dot className="text-primary -ml-1 scale-200 animate-caret-blink" />
+      )}
     </Button>
   )
 }

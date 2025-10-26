@@ -58,7 +58,8 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     setRenderedHtml,
     setAiResponse,
     setShowAiResponse,
-    setStatus
+    setStatus,
+    setSaveChange,
   } = useEditPdfStore()
 
   const { setUser, creditsLeft } = useUserStore()
@@ -85,6 +86,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
         el.innerHTML = formatted
       }
       setRenderedHtml(doc.documentElement.outerHTML)
+      setSaveChange(true)
     }
     catch (error) {
       console.error(error)

@@ -15,13 +15,6 @@ import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 import { Button } from '../ui/button'
 import { useSidebar } from '../ui/sidebar'
 
-interface Pdf {
-  id: string
-  fileName: string
-  htmlContent: string
-  createdAt: string | null
-}
-
 export default function EditClient({ id }: { id: string }) {
   const router = useRouter()
   const { htmlContent, setPdf, fileName } = usePdfStore()
