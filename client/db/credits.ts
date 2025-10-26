@@ -1,6 +1,6 @@
 import { db } from "./client"
-import { user } from "./schema"
-import { eq } from 'drizzle-orm';
+import { user, credit_history } from "./schema"
+import { eq, desc } from 'drizzle-orm';
 import { formatInTimeZone } from 'date-fns-tz'
 
 const DAILY_ALLOWANCE = {
@@ -49,4 +49,13 @@ export const deduceCredits = async (userId: string, cost: number) => {
     } catch (err) {
         throw new Error(`Failed to use credits: ${err.message}`);
     }
+}
+
+export const getCreditHistory = async (userId: string) => {
+    const history = await db.select({amount: credit_history.amount, reason: credit_history.reason, created_at: credit_history.createdAt})
+          .from(credit_history)
+          .where(eq(credit_history.userId, userId))
+          .orderBy(desc(credit_history.createdAt))
+
+    return history
 }

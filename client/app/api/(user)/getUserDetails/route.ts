@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/db/client"
+import { deduceCredits } from "@/db/credits"
 import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -23,6 +24,8 @@ export async function GET(req: Request) {
             .from(user)
             .where(eq(user.id, session.user.id))
             .limit(1)
+        
+        deduceCredits(session?.user?.id, 0)
 
         if (!userDetails) {
             return NextResponse.json({ 
