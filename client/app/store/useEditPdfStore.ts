@@ -19,6 +19,7 @@ interface EditPdfState {
   setShowAiResponse: (show: boolean) => void;
   saveChange: boolean;
   setSaveChange: (bool: boolean) => void;
+  clearEditPdf: () => void;
 }
 
 export const useEditPdfStore = create<EditPdfState>(set => ({
@@ -40,5 +41,5 @@ export const useEditPdfStore = create<EditPdfState>(set => ({
   setShowAiResponse: (show) => set({ showAiResponse: show }),
   saveChange: false,
   setSaveChange: (bool) => set({ saveChange: bool }),
-  clearEditPdf: () => set({ status: 'prompt', renderedHtml: '', selectedId: '', selectedText: '', originalHtml: '', aiResponse: '', showAiResponse: false })
+  clearEditPdf: () => set({ status: 'prompt', renderedHtml: '', selectedId: '', selectedText: '', originalHtml: '', aiResponse: '', showAiResponse: false, saveChange: false })
 }))

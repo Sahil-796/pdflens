@@ -32,7 +32,7 @@ const EditPlaceholder = () => (
 const SelectedTextView = ({ text }) => (
   <div className="text-sm text-muted-foreground border border-border/70 rounded-lg p-3 bg-card/60 backdrop-blur-sm shadow-inner">
     <p className="font-medium mb-1 text-foreground/80">Selected Text</p>
-    <p className="italic text-xs leading-relaxed max-h-20 overflow-y-auto text-muted-foreground">
+    <p className="italic text-xs leading-relaxed max-h-40 overflow-y-auto text-muted-foreground">
       {text}
     </p>
   </div>
@@ -60,12 +60,17 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
     setShowAiResponse,
     setStatus,
     setSaveChange,
+    clearEditPdf,
   } = useEditPdfStore()
 
   const { setUser, creditsLeft } = useUserStore()
 
   const [activeTab, setActiveTab] = useState<'ai-edit' | 'replace'>('ai-edit')
   const [limitModalOpen, setLimitModalOpen] = useState(false)
+
+  useEffect(() => {
+    clearEditPdf()
+  }, [])
 
   useEffect(() => {
     if (!selectedText) return
@@ -221,7 +226,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
           {selectedText ? (
             <>
               <textarea
-                rows={10}
+                rows={14}
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
                 placeholder="Type the replacement text here..."

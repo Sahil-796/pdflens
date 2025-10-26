@@ -105,7 +105,7 @@ export default function EditClient({ id }: { id: string }) {
                 ${showSidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
                 fixed lg:relative
                 left-0 lg:left-auto
-                w-80 max-w-[85vw] lg:max-w-none
+                w-90 max-w-[85vw] lg:max-w-none
                 h-[calc(100%-var(--header-height,0px))]
                 lg:h-full
                 border-r border-border bg-card
@@ -119,7 +119,7 @@ export default function EditClient({ id }: { id: string }) {
         </div>
 
         {/* Context Files - Moved Down */}
-        <div className="p-4 mb-4 border-t border-border flex-shrink-0">
+        <div className="p-4 mb-8 lg:mb-4 border-t border-border flex-shrink-0">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-muted-foreground">Context Files</h3>
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
