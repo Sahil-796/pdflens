@@ -118,7 +118,7 @@ const PDF2Word = () => {
           <div className="flex flex-col items-center space-y-2">
             <FileText size={48} className="text-blue-300" />
             <div>
-              <p className="font-semibold text-lg sm:text-xl text-foreground">
+              <p className="font-semibold text-lg sm:text-xl text-foreground text-center">
                 {file?.name.replace('.pdf', '.docx')}
               </p>
             </div>

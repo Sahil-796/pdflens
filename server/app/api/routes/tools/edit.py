@@ -1,11 +1,8 @@
 import os
 from fastapi import APIRouter, UploadFile, File
-from fastapi.responses import JSONResponse
-import fitz
+from fastapi.responses import Response
 import logging
 import tempfile
-
-from langchain_text_splitters import MarkdownTextSplitter
 import pymupdf4llm
 
 logger = logging.getLogger(__name__)
@@ -13,10 +10,7 @@ router = APIRouter(prefix="/tools", tags=["tools"])
 
 
 @router.post('/pdf-to-md')
-async def edit_tool(
-    file: UploadFile = File(...),
-):
-
+async def edit_tool(file: UploadFile = File(...)):
     contents = await file.read()
 
     # Save temp file
@@ -28,15 +22,11 @@ async def edit_tool(
     try:
         # Process PDF and index
         md_text = pymupdf4llm.to_markdown(tmp_path)
-        return JSONResponse(status_code=200,
-                            content={"message": "Pdf Converted to Md",
-                                     "Md content": md_text
-                                     })
+        return Response(content=md_text, media_type="text/markdown")
 
     except Exception as e:
-        logger.error(
-            f"Error processing PDF in edit-tool: {str(e)}", exc_info=True)
-        return JSONResponse(status_code=500, content={"message": str(e)})
+        logger.error(f"Error processing PDF: {str(e)}", exc_info=True)
+        return Response(content=str(e), status_code=500, media_type="text/plain")
     finally:
         # Ensure temp file is deleted
         if os.path.exists(tmp_path):

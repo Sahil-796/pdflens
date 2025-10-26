@@ -67,16 +67,14 @@ const PDF2MD = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`/api/tools/pdf-to-md`, {
+      const res = await fetch('/api/tools/pdf-to-md', {
         method: 'POST',
         body: formData,
       })
 
       if (!res.ok) throw new Error("Failed to convert PDF")
 
-      const data = await res.json()
-      const mdContent = data["Md content"]
-      const blob = new Blob([mdContent], { type: 'text/markdown' })
+      const blob = await res.blob()
       setConvertedBlob(blob)
       setSuccess(true)
 
@@ -119,7 +117,7 @@ const PDF2MD = () => {
           <div className="flex flex-col items-center space-y-2">
             <Code size={48} className="text-green-600" />
             <div>
-              <p className="font-semibold text-lg sm:text-xl text-foreground">
+              <p className="font-semibold text-lg sm:text-xl text-foreground text-center">
                 {file?.name.replace('.pdf', '.md')}
               </p>
             </div>

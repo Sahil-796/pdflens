@@ -1,64 +1,45 @@
-// import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-
   try {
-
-    const formData = await req.formData(); // not req.json as this is multipart/formdata - for files
+    // Get file from request
+    const formData = await req.formData();
     const file = formData.get("file") as File;
 
-    if (!file || !(file instanceof File)) {
-      return NextResponse.json({ error: "File is required" }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ message: "No file provided" }, { status: 400 });
     }
 
-    //auth check - wrap this into a func
-    // const session = await auth.api.getSession({ headers: req.headers });
-    // const userId = session?.user?.id;
+    const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
-    // if (!userId || typeof userId !== "string") {
-    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    // }
-
-    //python server
-
-    const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
-
-    const pythonForm = new FormData();
-    pythonForm.append("file", file);
-
+    // Forward to FastAPI backend
     const res = await fetch(`${PYTHON_URL}/tools/pdf_to_docx`, {
       method: "POST",
       headers: {
         secret1: process.env.secret as string,
       },
-      body: pythonForm,
+      body: formData,
     });
 
     if (!res.ok) {
-      let body;
-      try {
-        body = await res.json();
-      } catch {
-        body = {};
-      }
+      const errorText = await res.text();
       return NextResponse.json(
-        { error: body.message || "Python API failed" },
+        { message: "Python API Failed", error: errorText },
         { status: res.status }
       );
     }
 
+    // Convert backend response (PDF Blob)
+    const pdfBuffer = await res.arrayBuffer();
 
-    return new Response(res.body, {
-      status: res.status,
-      headers: res.headers,
+    return new Response(pdfBuffer, {
+      status: 200,
+      headers: res.headers
     });
-
-
-  } catch (err: any) {
-    console.error("API Error:", err);
+  } catch (error: any) {
+    console.error("Error in route:", error);
     return NextResponse.json(
-      { success: false, message: err.message || "Internal Server Error" },
+      { message: "Internal Server Error", error: error.message },
       { status: 500 }
     );
   }

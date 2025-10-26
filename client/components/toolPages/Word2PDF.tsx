@@ -74,7 +74,6 @@ const Word2PDF = () => {
       })
 
       if (!res.ok) throw new Error("Failed to convert PDF")
-      console.log(res)
 
       const blob = await res.blob()
       setConvertedBlob(blob)
@@ -119,7 +118,7 @@ const Word2PDF = () => {
           <div className="flex flex-col items-center space-y-2">
             <FileText size={48} className="text-blue-500" />
             <div>
-              <p className="font-semibold text-lg sm:text-xl text-foreground">
+              <p className="font-semibold text-lg sm:text-xl text-foreground text-center">
                 {file?.name.replace('.docx', '.pdf')}
               </p>
             </div>

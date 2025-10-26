@@ -26,7 +26,7 @@ const PPT2PDF = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
     if (selected) {
-      if (!selected.name.toLowerCase().endsWith('.pptx') || !selected.name.toLowerCase().endsWith('.ppt')) {
+      if (!selected.name.toLowerCase().endsWith('.pptx') && !selected.name.toLowerCase().endsWith('.ppt')) {
         handleInvalidFileType()
         e.target.value = ''
         return
@@ -45,7 +45,7 @@ const PPT2PDF = () => {
     setDragActive(false)
     const droppedFile = e.dataTransfer.files?.[0]
     if (droppedFile) {
-      if (!droppedFile.name.toLowerCase().endsWith('.pptx') || !droppedFile.name.toLowerCase().endsWith('.ppt')) {
+      if (!droppedFile.name.toLowerCase().endsWith('.pptx') && !droppedFile.name.toLowerCase().endsWith('.ppt')) {
         handleInvalidFileType()
         return
       }
@@ -118,7 +118,7 @@ const PPT2PDF = () => {
           <div className="flex flex-col items-center space-y-2">
             <PanelLeftOpen size={48} className="text-orange-500" />
             <div>
-              <p className="font-semibold text-lg sm:text-xl text-foreground">
+              <p className="font-semibold text-lg sm:text-xl text-foreground text-center">
                 {file?.name.replace('.pptx', '.pdf')}
               </p>
             </div>
