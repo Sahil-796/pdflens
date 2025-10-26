@@ -130,7 +130,7 @@ const Generate = () => {
       return
     }
 
-    if (creditsLeft == 0) {
+    if (creditsLeft < 4) {
       setLimitModalOpen(true)
       return
     }

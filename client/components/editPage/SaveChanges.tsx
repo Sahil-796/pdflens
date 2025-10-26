@@ -10,7 +10,7 @@ import { Button } from '../ui/button'
 
 const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSuccess?: () => void }) => {
   const { pdfId } = usePdfStore()
-  const { renderedHtml, saveChange, setSaveChange } = useEditPdfStore()
+  const { renderedHtml, saveChange, setSaveChange, setRenderedHtml } = useEditPdfStore()
   const { pdfs } = usePdf()
   const [loading, setLoading] = useState(false)
 
@@ -18,11 +18,17 @@ const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSucc
     if (!renderedHtml) return
     setLoading(true)
     try {
-
       if (filename.trim() == '') {
         toast.error("Filename can't be empty")
         return
       }
+
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(renderedHtml, 'text/html')
+      const el = doc.querySelector('.selected')
+      if (el) el.classList.remove('selected')
+      setRenderedHtml(doc.documentElement.outerHTML)
+
       const res = await fetch("/api/updatePdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

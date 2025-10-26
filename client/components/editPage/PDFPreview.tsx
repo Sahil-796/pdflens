@@ -126,80 +126,76 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
   }, [showAiResponse, selectedId, aiResponse, acceptChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
 
   return (
-    <div className="h-full w-full bg-background">
+    <div className="h-full w-full bg-white p-6 overflow-y-auto">
       {loading ? (
-        <div className="h-full overflow-y-auto p-6">
-          <div className="space-y-6 bg-white rounded-lg p-6">
-            {Array.from({ length: 5 }).map((_, pIndex) => (
-              <div key={pIndex} className="space-y-2">
-                {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-4 rounded bg-muted animate-pulse"
-                    style={{ width: `${60 + Math.random() * 40}%` }}
-                  />
-                ))}
-              </div>
-            ))}
-          </div>
+        <div className="space-y-6">
+          {Array.from({ length: 5 }).map((_, pIndex) => (
+            <div key={pIndex} className="space-y-2">
+              {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-4 rounded bg-muted animate-pulse"
+                  style={{ width: `${60 + Math.random() * 40}%` }}
+                />
+              ))}
+            </div>
+          ))}
         </div>
       ) : (
-        <div className="h-full overflow-y-auto">
-          <div
-            className="mx-auto w-full p-6 bg-white text-black"
-            dangerouslySetInnerHTML={{ __html: renderedHtml }}
-            onMouseOver={(e) => {
-              const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-              if (target) target.classList.add("hovered")
-            }}
-            onMouseOut={(e) => {
-              const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-              if (target) target.classList.remove("hovered")
-            }}
-            onClick={(e) => {
-              if (aiResponse || showAiResponse) {
-                toast.info("Accept or reject the current changes.")
-                return
-              }
-              const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-              if (target) {
-                const parser = new DOMParser()
-                const doc = parser.parseFromString(renderedHtml, 'text/html')
+        <div
+          className="mx-auto w-full text-black"
+          dangerouslySetInnerHTML={{ __html: renderedHtml }}
+          onMouseOver={(e) => {
+            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+            if (target) target.classList.add("hovered")
+          }}
+          onMouseOut={(e) => {
+            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+            if (target) target.classList.remove("hovered")
+          }}
+          onClick={(e) => {
+            if (aiResponse || showAiResponse) {
+              toast.info("Accept or reject the current changes.")
+              return
+            }
+            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
+            if (target) {
+              const parser = new DOMParser()
+              const doc = parser.parseFromString(renderedHtml, 'text/html')
 
-                // Toggle selection if clicking the same element
-                if (selectedId === target.id) {
-                  // Deselect - remove selected class from HTML string
-                  const el = doc.getElementById(target.id)
-                  if (el) {
-                    el.classList.remove("selected")
-                    setRenderedHtml(doc.documentElement.outerHTML)
-                  }
-                  setSelectedId('')
-                  setSelectedText('')
-                  setOriginalHtml('')
-                } else {
-                  // Remove selected class from previously selected element
-                  if (selectedId) {
-                    const prevEl = doc.getElementById(selectedId)
-                    if (prevEl) prevEl.classList.remove("selected")
-                  }
+              // Toggle selection if clicking the same element
+              if (selectedId === target.id) {
+                // Deselect - remove selected class from HTML string
+                const el = doc.getElementById(target.id)
+                if (el) {
+                  el.classList.remove("selected")
+                  setRenderedHtml(doc.documentElement.outerHTML)
+                }
+                setSelectedId('')
+                setSelectedText('')
+                setOriginalHtml('')
+              } else {
+                // Remove selected class from previously selected element
+                if (selectedId) {
+                  const prevEl = doc.getElementById(selectedId)
+                  if (prevEl) prevEl.classList.remove("selected")
+                }
 
-                  // Add selected class to new element
-                  const el = doc.getElementById(target.id)
-                  if (el) {
-                    el.classList.add("selected")
-                    setRenderedHtml(doc.documentElement.outerHTML)
-                    setSelectedId(target.id)
-                    setSelectedText(el.innerText)
-                    setOriginalHtml(el.outerHTML)
-                    // Trigger sidebar open on mobile
-                    onTextSelect?.()
-                  }
+                // Add selected class to new element
+                const el = doc.getElementById(target.id)
+                if (el) {
+                  el.classList.add("selected")
+                  setRenderedHtml(doc.documentElement.outerHTML)
+                  setSelectedId(target.id)
+                  setSelectedText(el.innerText)
+                  setOriginalHtml(el.outerHTML)
+                  // Trigger sidebar open on mobile
+                  onTextSelect?.()
                 }
               }
-            }}
-          />
-        </div>
+            }
+          }}
+        />
       )}
     </div>
   )
