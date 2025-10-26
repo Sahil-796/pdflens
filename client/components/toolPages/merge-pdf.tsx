@@ -110,7 +110,7 @@ const MergePdf = () => {
         formData.append('files', file)
       })
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/merge_pdf`, {
+      const res = await fetch(`/api/tools/merge_pdf`, {
         method: 'POST',
         body: formData,
       })
@@ -347,7 +347,7 @@ const MergePdf = () => {
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Upgrade to Pro</DialogTitle>
             <DialogDescription>
-              You've reached the free tier limit of <span className='text-purple-600 font-semibold'>{MAX_FREE_FILES} files per merge</span>.
+              {`You've reached the free tier limit of <span className='text-purple-600 font-semibold'>{MAX_FREE_FILES} files per merge</span>.`}
             </DialogDescription>
           </DialogHeader>
           <div className="font-medium text-foreground">

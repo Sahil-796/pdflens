@@ -68,12 +68,12 @@ const Word2PDF = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/docx_to_pdf`, {
+      const res = await fetch('/api/tools/docx-to-pdf', {
         method: 'POST',
         body: formData,
       })
 
-      if (!res.ok) throw new Error("Failed to convert Word")
+      if (!res.ok) throw new Error("Failed to convert PDF")
 
       const blob = await res.blob()
       setConvertedBlob(blob)

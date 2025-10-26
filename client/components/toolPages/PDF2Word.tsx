@@ -68,7 +68,7 @@ const PDF2Word = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/pdf_to_docx`, {
+      const res = await fetch(`/api/tools/pdf-to-docx`, {
         method: 'POST',
         body: formData,
       })

@@ -68,7 +68,7 @@ const PPT2PDF = () => {
       const formData = new FormData()
       formData.append('file', file)
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_PYTHON_URL}/tools/pptx_to_pdf`, {
+      const res = await fetch(`/api/tools/pptx-to-pdf`, {
         method: 'POST',
         body: formData,
       })

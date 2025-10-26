@@ -44,7 +44,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) 
     setStatus('prompt')
     setPromptValue('')
     setSaveChange(true)
-  }, [renderedHtml, selectedId, setAiResponse, setPromptValue, setRenderedHtml, setShowAiResponse, setStatus])
+  }, [renderedHtml, selectedId, setAiResponse, setPromptValue, setRenderedHtml, setShowAiResponse, setStatus, setSaveChange])
 
   // Handle AI response display inline
   useEffect(() => {
