@@ -167,7 +167,7 @@ export default function EditClient({ id }: { id: string }) {
                   className="font-medium text-sm w-64"
                 />
                 {fileName !== initialName && (
-                  <Dot className="absolute right-3 text-primary scale-140 animate-caret-blink" />
+                  <Dot className="text-primary scale-200 animate-caret-blink" />
                 )}
               </div>
             </div>
