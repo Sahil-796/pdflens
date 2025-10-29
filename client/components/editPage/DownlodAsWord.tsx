@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import { useEditPdfStore } from "@/app/store/useEditPdfStore";
 import { Button } from "../ui/button";
 
-const DownloadPDF = () => {
+const DownloadAsWord = () => {
   const [loading, setLoading] = useState(false);
 
   const { fileName, htmlContent } = usePdfStore();
@@ -25,37 +25,51 @@ const DownloadPDF = () => {
       wrapper.style.padding = "16px";
       wrapper.innerHTML = renderedHtml;
 
+      // 1️⃣ Send HTML → PDF
       const res = await fetch("/api/downloadPDF", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ html: wrapper.outerHTML }),
       });
 
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+      if (!res.ok) throw new Error("Failed to convert to PDF");
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${fileName || "documentFromPDFLens"}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      const pdfBlob = await res.blob();
+
+      // 2️⃣ Send PDF → DOCX
+      const formData = new FormData();
+      formData.append("file", pdfBlob, "document.pdf");
+
+      const finalRes = await fetch(`/api/tools/pdf-to-docx`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!finalRes.ok) throw new Error("Failed to convert to DOCX");
+
+      const docxBlob = await finalRes.blob();
+      const url = URL.createObjectURL(docxBlob);
+
+      // 3️⃣ Trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${fileName || "documentFromPDFLens"}.docx`;
+      a.click();
+      URL.revokeObjectURL(url);
     } catch (err) {
-      console.error(err.message)
-      toast.error("Failed to download PDF.")
+      console.error(err.message);
+      toast.error("Failed to download file.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   return (
     <Button
-      variant="secondary"
       size="lg"
       onClick={handleDownload}
       disabled={loading}
-      className="hover:scale-103 cursor-pointer"
+      className="hover:scale-103 cursor-pointer text-foreground/80 bg-blue-500/70 hover:bg-blue-500 hover:text-foreground"
     >
       <Download
         className={`
@@ -63,9 +77,9 @@ const DownloadPDF = () => {
       ${loading ? 'animate-bounce' : ''}
     `}
       />
-      As PDF
+      As Word
     </Button>
   );
 };
 
-export default DownloadPDF;
+export default DownloadAsWord;

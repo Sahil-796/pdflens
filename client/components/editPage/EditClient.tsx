@@ -14,6 +14,7 @@ import { Dot, Menu, X } from 'lucide-react'
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
 import { Button } from '../ui/button'
 import { useSidebar } from '../ui/sidebar'
+import DownloadAsWord from './DownlodAsWord'
 
 export default function EditClient({ id }: { id: string }) {
   const router = useRouter()
@@ -174,6 +175,7 @@ export default function EditClient({ id }: { id: string }) {
             <div className="flex items-center gap-2">
               <SaveChanges filename={fileName} onSaveSuccess={() => setInitialName(fileName)} />
               <DownloadPDF />
+              <DownloadAsWord />
             </div>
           </div>
 
@@ -200,6 +202,7 @@ export default function EditClient({ id }: { id: string }) {
             <div className="flex gap-2 items-center justify-end">
               <SaveChanges filename={fileName} onSaveSuccess={() => setInitialName(fileName)} />
               <DownloadPDF />
+              <DownloadAsWord />
             </div>
           </div>
         </div>
