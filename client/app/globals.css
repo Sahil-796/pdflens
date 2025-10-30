@@ -181,11 +181,11 @@
   }
 
   .hovered {
-    @apply bg-accent/20 rounded-md cursor-pointer;
+    @apply bg-accent/10 rounded-md cursor-pointer;
   }
 
   .selected {
-    @apply bg-accent/30 rounded-md;
+    @apply bg-primary/20 border-2 border-primary rounded-md p-1;
   }
 
   /* Sidebar smooth transitions */
@@ -222,7 +222,6 @@
   }
 }
 
-
 :root {
   --elegant-font: 'Great Vibes';
 }
@@ -254,32 +253,12 @@
 }
 
 
-/* PDF Edit Styles */
-.selectable {
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.selectable:hover {
-  background-color: rgba(59, 130, 246, 0.1);
-  border-radius: 2px;
-}
-
-.selectable.selected {
-  background-color: rgba(59, 130, 246, 0.2);
-  border: 2px solid rgba(59, 130, 246, 0.5);
-  border-radius: 4px;
-  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3);
-}
 
 /* AI Response Inline Styles */
 .ai-response-container {
   background: linear-gradient(135deg, var(--muted) 0%, var(--accent) 100%);
-  border: 2px solid var(--primary);
   border-radius: 8px;
   padding: 12px;
-  margin: 4px 0;
-  box-shadow: var(--shadow-md);
 }
 
 .ai-response-content {
@@ -288,7 +267,6 @@
   gap: 8px;
 }
 
-.ai-original,
 .ai-suggestion {
   display: flex;
   flex-direction: column;
@@ -304,30 +282,21 @@
 }
 
 .ai-text {
-  font-size: 14px;
+  font-size: 10px;
   line-height: 1.4;
   padding: 6px 8px;
   border-radius: 4px;
 }
 
-.original-text {
-  background-color: oklch(from var(--destructive) l c h / 0.1);
-  color: var(--destructive);
-  text-decoration: line-through;
-  border: 1px solid oklch(from var(--destructive) l c h / 0.3);
-}
-
 .suggestion-text {
-  background-color: oklch(from var(--primary) l c h / 0.1);
+  background-color: oklch(from var(--primary)/ 0.1);
   color: var(--primary);
-  border: 1px solid oklch(from var(--primary) l c h / 0.3);
-  font-weight: 500;
+  border: 1px solid oklch(from var(--primary)/ 0.3);
 }
 
 .ai-actions {
   display: flex;
   gap: 8px;
-  margin-top: 4px;
 }
 
 .ai-btn {

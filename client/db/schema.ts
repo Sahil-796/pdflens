@@ -85,4 +85,13 @@ export const context = pgTable("context", {
   files: text('files').array(),
 })
 
-export const schema = { user, pdf, verification, account, session, context }
+export const credit_history = pgTable("credit_history", {
+  id: text("id").primaryKey().notNull(),
+  userId: text("user_id").notNull()
+    .references(() => user.id, { onDelete: "cascade" }), 
+  amount: integer('amount').notNull(),
+  reason: text('reason').notNull().default("Unknown"),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
+})
+
+export const schema = { user, pdf, verification, account, session, context, credit_history }

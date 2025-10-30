@@ -1,12 +1,12 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePdfStore } from '@/app/store/usePdfStore'
 import { useUserStore } from '@/app/store/useUserStore'
 import { Button } from '@/components/ui/button'
 import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import { Wand2, RotateCcw } from 'lucide-react'
+import { Wand2, RotateCcw, Coins } from 'lucide-react'
 import Link from 'next/link'
 import {
   AlertDialog,
@@ -19,6 +19,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { useEditPdfStore } from '@/app/store/useEditPdfStore'
+import { Badge } from '../ui/badge'
 
 const EditPlaceholder = () => (
   <div className="flex flex-col items-center justify-center h-32 text-center rounded-lg border border-dashed border-border bg-muted/20 backdrop-blur-sm">
@@ -31,14 +32,18 @@ const EditPlaceholder = () => (
 const SelectedTextView = ({ text }) => (
   <div className="text-sm text-muted-foreground border border-border/70 rounded-lg p-3 bg-card/60 backdrop-blur-sm shadow-inner">
     <p className="font-medium mb-1 text-foreground/80">Selected Text</p>
-    <p className="italic text-xs leading-relaxed max-h-20 overflow-y-auto text-muted-foreground">
+    <p className="italic text-xs leading-relaxed max-h-40 overflow-y-auto text-muted-foreground">
       {text}
     </p>
   </div>
 )
 
-const EditPDF = () => {
-  const { pdfId } = usePdfStore()
+interface EditPDFProps {
+  onSidebarToggle?: () => void
+}
+
+const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
+  const { pdfId, isContext } = usePdfStore()
 
   const {
     promptValue,
@@ -47,11 +52,15 @@ const EditPDF = () => {
     selectedId,
     originalHtml,
     renderedHtml,
+    setSelectedId,
+    setSelectedText,
     setPromptValue,
     setRenderedHtml,
     setAiResponse,
     setShowAiResponse,
-    setStatus
+    setStatus,
+    setSaveChange,
+    clearEditPdf,
   } = useEditPdfStore()
 
   const { setUser, creditsLeft } = useUserStore()
@@ -60,26 +69,42 @@ const EditPDF = () => {
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
   useEffect(() => {
+    clearEditPdf()
+  }, [])
+
+  useEffect(() => {
     if (!selectedText) return
     setPromptValue(activeTab === 'replace' ? selectedText : "")
-  }, [selectedText, activeTab])
+  }, [selectedText, activeTab, setPromptValue])
 
-  const applyChanges = useCallback((newContent: string) => {
+  const handleReplace = (newContent: string) => {
     if (!selectedId || !renderedHtml) return
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(renderedHtml, "text/html")
-    const el = doc.getElementById(selectedId)
-    if (el) {
-      // Preserve line breaks and multiple spaces
-      const formatted = newContent
-        .replace(/\n/g, "<br>")
-        .replace(/ {2}/g, "&nbsp;&nbsp;")
-      el.innerHTML = formatted
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(renderedHtml, "text/html")
+      const el = doc.getElementById(selectedId)
+      if (el) {
+        // Preserve line breaks and multiple spaces
+        const formatted = newContent
+          .replace(/\n/g, "<br>")
+          .replace(/ {2}/g, "&nbsp;&nbsp;")
+        el.innerHTML = formatted
+        el.classList.remove('selected')
+      }
+      setRenderedHtml(doc.documentElement.outerHTML)
+      setSaveChange(true)
     }
-    setRenderedHtml(doc.documentElement.outerHTML)
-    setPromptValue("")
-    setStatus('prompt')
-  }, [selectedId, renderedHtml, setRenderedHtml])
+    catch (error) {
+      console.error(error)
+    } finally {
+      setPromptValue("")
+      setSelectedText("")
+      setSelectedId("")
+      setStatus('prompt')
+
+      onSidebarToggle?.()
+    }
+  }
 
   const handleAiEdit = async () => {
     if (creditsLeft === 0) {
@@ -87,9 +112,8 @@ const EditPDF = () => {
       return
     }
     if (!promptValue) return
-
+    setStatus('loading')
     try {
-      setStatus('loading')
       const res = await fetch('/api/editHTML', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -97,7 +121,7 @@ const EditPDF = () => {
           userPrompt: promptValue,
           html: originalHtml,
           pdfId,
-          isContext: false,
+          isContext: isContext,
         }),
       })
       if (!res.ok) throw new Error('API failed')
@@ -108,17 +132,7 @@ const EditPDF = () => {
       setStatus('aiResult')
     } catch (err) {
       console.error(err)
-      setStatus('prompt')
     }
-  }
-
-  const handleRegenerate = () => {
-    setStatus('loading')
-    handleAiEdit()
-  }
-
-  const handleReplace = () => {
-    applyChanges(promptValue)
   }
 
   return (
@@ -128,9 +142,9 @@ const EditPDF = () => {
         <h2 className="text-sm font-semibold text-muted-foreground tracking-wide flex items-center gap-1.5">
           Tools
         </h2>
-        <span className="font-medium text-xs bg-muted px-2 py-0.5 rounded-full text-primary">
-          {creditsLeft} credits left
-        </span>
+        <Badge variant='secondary'>
+          <Coins className='h-4 w-4' />{creditsLeft} credits left
+        </Badge>
       </div>
 
       {/* Tabs */}
@@ -172,7 +186,7 @@ const EditPDF = () => {
                     size="sm"
                     variant="outline"
                     className="w-full h-7 text-xs"
-                    onClick={handleRegenerate}
+                    onClick={handleAiEdit}
                   >
                     <RotateCcw className="w-3 h-3 mr-1" /> Regenerate
                   </Button>
@@ -212,7 +226,7 @@ const EditPDF = () => {
           {selectedText ? (
             <>
               <textarea
-                rows={10}
+                rows={14}
                 value={promptValue}
                 onChange={(e) => setPromptValue(e.target.value)}
                 placeholder="Type the replacement text here..."
@@ -221,7 +235,7 @@ const EditPDF = () => {
               <Button
                 size="sm"
                 className="w-full h-8 text-xs font-medium shadow-md"
-                onClick={handleReplace}
+                onClick={() => handleReplace(promptValue)}
                 disabled={!promptValue || promptValue === selectedText}
               >
                 Replace Text

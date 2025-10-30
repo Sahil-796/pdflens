@@ -1,3 +1,4 @@
+import logging
 from tempfile import TemporaryDirectory
 from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import StreamingResponse, JSONResponse
@@ -15,6 +16,7 @@ logger = logging.getLogger(__name__)
 # regex for sanitizing filenames
 def safe_filename(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_-]", "_", name.strip().replace(" ", "_"))
+
 
 
 @router.post("/pdf_to_docx")
@@ -218,7 +220,8 @@ async def split_pdf_by_range(file: UploadFile = File(...), ranges: str = Form(..
                 return StreamingResponse(
                     BytesIO(zip_path.read_bytes()),
                     media_type="application/zip",
-                    headers={"Content-Disposition": "attachment; filename=split_results.zip"}
+                    headers={
+                        "Content-Disposition": "attachment; filename=split_results.zip"}
                 )
 
             return StreamingResponse(

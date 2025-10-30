@@ -2,10 +2,8 @@
 
 import {
   ChevronsUpDown,
-  CreditCard,
   User,
   Coins,
-  ArrowUpCircle,
 } from "lucide-react"
 
 import {
@@ -31,6 +29,7 @@ import {
 import LogoutButton from "../auth/logout-button"
 import { useRouter } from "next/navigation"
 import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
 
 export function NavUser({
   user,
@@ -73,57 +72,54 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
 
-<DropdownMenuContent
-  className="min-w-56 rounded-xl border border-border/60 bg-gradient-to-br from-background to-card shadow-lg"
-  side={isMobile ? "bottom" : "right"}
-  align="end"
-  sideOffset={6}
->
-  {/* Top section */}
-  <DropdownMenuLabel className="flex flex-col gap-1.5 px-3 py-2 border-b border-border/60">
-    <p className="text-sm font-medium text-foreground">{user.name}</p>
-    <p className="text-xs text-muted-foreground">{user.email}</p>
+          <DropdownMenuContent
+            className="min-w-56 rounded-xl border border-border/60 bg-gradient-to-br from-background to-card shadow-lg"
+            side={isMobile ? "bottom" : "right"}
+            align="end"
+            sideOffset={6}
+          >
+            {/* Top section */}
+            <DropdownMenuLabel className="flex flex-col gap-2 px-3 py-2 border-b border-border/60">
+              <div className="flex flex-col justify-center">
+                <p className="text-sm font-medium text-foreground">{user.name}</p>
+                {user.isPro && (
+                  <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
+                    PRO
+                  </span>
+                )}
+                <p className="text-xs text-muted-foreground">{user.email}</p>
+              </div>
 
-    {/* Credits left */}
-    <div className="flex items-center gap-1 mt-1">
-      <Badge
-        variant="outline"
-        className="text-[11px] font-medium bg-muted px-3 py-1 rounded-md text-foreground flex items-center"
-      >
-        <Coins className="w-3.5 h-3.5 mr-1 text-primary" />
-        {user.creditsLeft} credits left
-      </Badge>
-    </div>
+              {/* Credits left */}
+              <div className="flex items-center gap-1">
+                <Badge
+                  variant="secondary"
+                >
+                  <Coins className="w-4 h-4 mr-1 text-primary" />
+                  {user.creditsLeft} credits left
+                </Badge>
+              </div>
 
-    {/* Upgrade to Pro button (only for non-pro users) */}
-    {!user.isPro && (
-      <button
-        onClick={() => router.push("/pricing")}
-        className="mt-2 w-full bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium py-1.5 rounded-md transition-colors flex items-center justify-center gap-1"
-      >
-        <ArrowUpCircle className="w-4 h-4" />
-        Upgrade to Pro
-      </button>
-    )}
-  </DropdownMenuLabel>
+              {/* Upgrade to Pro button (only for non-pro users) */}
+              {!user.isPro && (
+                <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                  Get More Credits →
+                </Link>
+              )}
+            </DropdownMenuLabel>
 
-  <DropdownMenuGroup>
-    <DropdownMenuItem onSelect={() => router.push("/account")}>
-      <User className="mr-2 h-4 w-4 text-muted-foreground" />
-      Account Settings
-    </DropdownMenuItem>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onSelect={() => router.push("/account")}>
+                <User className="mr-2 h-4 w-4 text-muted-foreground" />
+                Account Settings
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
 
-    <DropdownMenuItem onSelect={() => router.push("/billing")}>
-      <CreditCard className="mr-2 h-4 w-4 text-muted-foreground" />
-      Billing
-    </DropdownMenuItem>
-  </DropdownMenuGroup>
-
-  <DropdownMenuSeparator />
-  <DropdownMenuGroup className="w-full">
-    <LogoutButton />
-  </DropdownMenuGroup>
-</DropdownMenuContent>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup className="w-full">
+              <LogoutButton />
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
