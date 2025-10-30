@@ -40,7 +40,7 @@ export async function POST(req: Request) {
         "Content-Disposition": `attachment; filename=${file.name.replace('.pdf', '.md')}`,
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in route:", error);
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },

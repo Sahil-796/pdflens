@@ -70,7 +70,7 @@ const EditPDF = ({ onSidebarToggle }: EditPDFProps) => {
 
   useEffect(() => {
     clearEditPdf()
-  }, [])
+  }, [clearEditPdf])
 
   useEffect(() => {
     if (!selectedText) return

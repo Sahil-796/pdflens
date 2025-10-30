@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    const ranges = formData.get("ranges") as string;
+    // const ranges = formData.get("ranges") as string;
 
     if (!file) {
       return NextResponse.json({ message: "No file provided" }, { status: 400 });
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       headers: res.headers
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },
