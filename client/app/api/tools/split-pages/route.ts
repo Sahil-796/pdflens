@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       headers: res.headers
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error("API Error:", error);
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },

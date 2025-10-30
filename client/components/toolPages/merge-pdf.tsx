@@ -354,7 +354,7 @@ const MergePdf = () => {
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">Upgrade to Pro</DialogTitle>
             <DialogDescription>
-              You've reached the free tier limit of {MAX_FREE_FILES} files per merge.
+              {`You've reached the free tier limit of ${MAX_FREE_FILES} files per merge.`}
             </DialogDescription>
           </DialogHeader>
           <div className="font-medium text-foreground">
