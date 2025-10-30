@@ -4,8 +4,9 @@ WORKDIR /app
 
 # Install LibreOffice + dependencies
 RUN apt-get update && \
-    apt-get install -y libreoffice libicu-dev libfontconfig1 fonts-dejavu-core && \
+    apt-get install -y libreoffice libicu-dev libfontconfig1 zip fonts-dejavu-core && \
     rm -rf /var/lib/apt/lists/*
+
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
