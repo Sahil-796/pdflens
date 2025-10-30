@@ -86,10 +86,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: BetweenVerticalEnd,
         items: [
-          { title: "Edit PDF", url: "/tools/edit-pdf", isActive: pathname === '/tools/edit-pdf' },
           { title: "Merge PDF", url: "/tools/merge-pdf", isActive: pathname === '/tools/merge-pdf' },
-          { title: "Split PDF", url: "/tools/split-pdf", isActive: pathname === '/tools/split-pdf' },
-          { title: "Organize Pages", url: "/tools/organize-pdf", isActive: pathname === '/tools/organize-pdf' },
+          // { title: "Split PDF", url: "/tools/split-pdf", isActive: pathname === '/tools/split-pdf' },
         ]
       },
     ]

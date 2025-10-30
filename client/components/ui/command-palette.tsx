@@ -24,6 +24,8 @@ import {
   Code,
   LogIn,
   DollarSign,
+  Layers,
+  PanelLeftOpen,
 } from 'lucide-react'
 import { useCommandPalette } from '@/hooks/useCommandPalette'
 import { authClient } from '@/lib/auth-client'
@@ -179,6 +181,18 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
 
   const tools = [
     {
+      name: 'Word to PDF',
+      value: '/tools/word-to-pdf',
+      icon: FileText,
+      keywords: ['word', 'pdf', 'convert', 'doc', 'docx']
+    },
+    {
+      name: 'PPT to PDF',
+      value: '/tools/ppt-to-pdf',
+      icon: PanelLeftOpen,
+      keywords: ['ppt', 'presentation', 'pdf', 'convert']
+    },
+    {
       name: 'PDF to MD',
       value: '/tools/pdf-to-md',
       icon: Code,
@@ -190,6 +204,24 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
       icon: FileText,
       keywords: ['word', 'convert', 'tools', 'pdf', 'doc', 'docx']
     },
+    {
+      name: 'Merge PDF',
+      value: '/tools/merge-pdf',
+      icon: Layers,
+      keywords: ['merge', 'combine', 'pdf', 'join', 'tools']
+    },
+    // {
+    //   name: 'Split PDF',
+    //   value: '/tools/split-pdf',
+    //   icon: FileText,
+    //   keywords: ['split', 'extract', 'pages', 'pdf', 'tools']
+    // },
+    // {
+    //   name: 'Compress PDF',
+    //   value: '/tools/compress-pdf',
+    //   icon: FileText,
+    //   keywords: ['compress', 'reduce', 'size', 'pdf', 'tools']
+    // },
   ]
 
   // 🔍 Filter PDFs by name (case-insensitive)

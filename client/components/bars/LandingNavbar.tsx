@@ -79,21 +79,16 @@ const navigationLinks = [
         "label": "Merge PDF",
         "description": "Combine your PDFs into one neat file — quick and simple."
       },
-      {
-        "href": "/tools/split-pdf",
-        "label": "Split PDF",
-        "description": "Extract and split pages from large PDFs into smaller, separate files."
-      },
-      {
-        "href": "/tools/organize-pdf",
-        "label": "Organize Pages",
-        "description": "Reorder, rotate, or delete pages in your PDF for better structure."
-      },
-      {
-        "href": "/tools/compress-pdf",
-        "label": "Compress PDF",
-        "description": "Reduce the file size of PDFs for faster sharing and easy storage."
-      }
+      // {
+      //   "href": "/tools/split-pdf",
+      //   "label": "Split PDF",
+      //   "description": "Extract and split pages from large PDFs into smaller, separate files."
+      // },
+      // {
+      //   "href": "/tools/compress-pdf",
+      //   "label": "Compress PDF",
+      //   "description": "Reduce the file size of PDFs for faster sharing and easy storage."
+      // }
     ]
   },
 ]
