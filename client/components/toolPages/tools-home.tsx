@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { FileText, File, Scissors, Layers, ArrowDownLeft, Layout, PanelLeftOpen } from "lucide-react"
+import { FileText, File, Layers, PanelLeftOpen } from "lucide-react"
 
 export const tools = [
   {
