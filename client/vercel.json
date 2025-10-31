@@ -1,0 +1,3 @@
+{
+  "buildCommand": "npx playwright install chromium"
+}
