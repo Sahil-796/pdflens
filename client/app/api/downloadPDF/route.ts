@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
 import { z } from "zod";
 
 const HtmlSchema = z.object({
@@ -51,8 +52,9 @@ export async function POST(req) {
 
     // 👇 Puppeteer version
     const browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // Required on Vercel
     });
     const page = await browser.newPage();
 
