@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+import { chromium as playwright } from "playwright-core";
 import { z } from "zod";
 
 const HtmlSchema = z.object({
@@ -51,14 +51,14 @@ export async function POST(req) {
     `;
 
     // 👇 Puppeteer version
-    const browser = await puppeteer.launch({
+    const browser = await playwright.launch({
       args: chromium.args,
       executablePath: await chromium.executablePath(),
-      headless: true,
     });
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    const page = await context.newPage();
 
-    await page.setContent(styledHTML, { waitUntil: "networkidle0" });
+    await page.setContent(styledHTML, { waitUntil: "networkidle" });
 
     const pdfBuffer = await page.pdf({
       format: "A4",
