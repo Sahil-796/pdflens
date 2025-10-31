@@ -2,7 +2,18 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { LoaderCircle, Upload, X } from "lucide-react"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { usePdfStore } from "@/app/store/usePdfStore"
+import Link from "next/link"
 
 interface UploadedFile {
   name: string
@@ -14,9 +25,15 @@ export default function UploadFiles() {
   const [loading, setLoading] = useState(false)
   const [, setDragActive] = useState(false)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [limitFilesModalOpen, setLimitFilesModalOpen] = useState(false)
 
   const uploadFile = async (newFile: File) => {
     if (!newFile || loading) return
+    if (files.length >= 5) {
+      console.log(files.length)
+      setLimitFilesModalOpen(true)
+      return
+    }
     setLoading(true)
 
     let createdPdfId: string | null = null
@@ -67,8 +84,6 @@ export default function UploadFiles() {
 
         throw new Error("Upload failed")
       }
-
-      await res.json()
 
       setFiles(prev => [...prev, { name: newFile.name }])
       setPdf({ isContext: true })
@@ -207,6 +222,38 @@ export default function UploadFiles() {
           </div>
         )}
       </div>
-    </div>
+
+      {
+        <AlertDialog open={limitFilesModalOpen} onOpenChange={setLimitFilesModalOpen}>
+          <AlertDialogContent className="bg-gradient-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
+            <AlertDialogHeader className="space-y-2">
+              <div className="flex items-center justify-center mb-2">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-primary text-xl">⚠️</span>
+                </div>
+              </div>
+              <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
+                File Upload Limit Reached
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-center text-sm text-muted-foreground">
+                You can upload <span className="font-medium text-foreground">5 files per document</span>.
+                Upgrade to <span className="font-medium text-primary">Premium</span> to upload
+                <span className="font-medium text-foreground"> 10 files per document</span> and more benefits.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
+              <AlertDialogCancel className="border-border w-full sm:w-auto">
+                Close
+              </AlertDialogCancel>
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <AlertDialogAction className="w-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition cursor-pointer">
+                  View Pricing
+                </AlertDialogAction>
+              </Link>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      }
+    </div >
   )
 }
