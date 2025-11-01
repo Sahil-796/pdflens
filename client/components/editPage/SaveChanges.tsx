@@ -10,7 +10,7 @@ import { Button } from '../ui/button'
 
 const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSuccess?: () => void }) => {
   const { pdfId } = usePdfStore()
-  const { renderedHtml, saveChange, setSaveChange, setRenderedHtml } = useEditPdfStore()
+  const { renderedHtml, saveChange, setSaveChange, setRenderedHtml, setSelectedId, setSelectedText } = useEditPdfStore()
   const { pdfs } = usePdf()
   const [loading, setLoading] = useState(false)
 
@@ -28,6 +28,8 @@ const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSucc
       const el = doc.querySelector('.selected')
       if (el) el.classList.remove('selected')
       setRenderedHtml(doc.documentElement.outerHTML)
+      setSelectedText('')
+      setSelectedId('')
 
       const res = await fetch("/api/updatePdf", {
         method: "POST",
