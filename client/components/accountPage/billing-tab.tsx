@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import useUser from "@/hooks/useUser"
 import { useUserStore } from "@/app/store/useUserStore"
 import { useRouter } from "next/navigation"
+import CreditsTable from "./credits-table"
 
 const BillingTab = () => {
 
@@ -56,9 +57,7 @@ const BillingTab = () => {
 
       <div className="space-y-2">
         <h3 className="text-sm font-medium">Usage History</h3>
-        <div className="p-4 border border-border rounded-lg bg-muted/10">
-          <p className="text-sm text-muted-foreground text-center">Coming soon...</p>
-        </div>
+        <CreditsTable />
       </div>
     </>
   )
