@@ -33,7 +33,7 @@ const SaveChanges = ({ filename, onSaveSuccess }: { filename: string, onSaveSucc
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          html: renderedHtml,
+          html: doc.documentElement.outerHTML,
           id: pdfId,
           filename
         }),
