@@ -19,7 +19,6 @@ export default function useUser() {
   const [loading, setLoading] = useState(!fetched);
 
   useEffect(() => {
-    // ✅ only fetch if not fetched yet
     if (fetched) return;
 
     const fetchUser = async () => {
@@ -34,6 +33,15 @@ export default function useUser() {
             userEmail: session.user.email,
             userAvatar: session.user.image,
           });
+
+          try {
+            const res = await fetch('/api/getCreditHistory')
+            if (!res.ok) throw new Error("Failed to fetch credit history")
+            const data = await res.json()
+            setUser({ creditsHistory: data })
+          } catch (error) {
+            console.error("Error fetching credit history:", error)
+          }
 
           try {
             const res = await fetch("/api/getUserDetails", { cache: "no-store" });
@@ -56,7 +64,6 @@ export default function useUser() {
         console.error("Failed to fetch user:", error);
         clearUser();
       } finally {
-        // ✅ mark user as fetched
         setUser({ fetched: true });
         setLoading(false);
       }

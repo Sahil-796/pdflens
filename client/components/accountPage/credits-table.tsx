@@ -1,4 +1,5 @@
 'use client'
+import { useUserStore } from "@/app/store/useUserStore"
 import {
   Table,
   TableBody,
@@ -7,10 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
 
-type CreditHistory = {
+export type CreditHistory = {
   id: string,
   user_id: string,
   amount: number,
@@ -19,22 +18,7 @@ type CreditHistory = {
 }
 
 const CreditsTable = () => {
-  const [creditsHistory, setCreditsHistory] = useState<CreditHistory[]>([])
-
-  const fetchCreditHistory = async () => {
-    try {
-      const res = await fetch('/api/getCreditHistory')
-      if (!res.ok) throw new Error("Failed to fetch credit history")
-      const data = await res.json()
-      setCreditsHistory(data)
-    } catch (error) {
-      console.error("Error fetching credit history:", error)
-      toast.error("Error fetching credit history")
-    }
-  }
-  useEffect(() => {
-    fetchCreditHistory()
-  }, [])
+  const { creditsHistory } = useUserStore()
   return (
     <Table className="p-4 border border-border rounded-lg bg-muted/10">
       <TableHeader>
