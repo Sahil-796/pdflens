@@ -8,7 +8,7 @@ export default async function AppLayout({
   children: React.ReactNode;
 }) {
   return (
-    <nav className="flex h-svh w-screen">
+    <nav className="flex h-dvh w-screen">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

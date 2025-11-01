@@ -169,7 +169,7 @@ const Word2PDF = () => {
               <p className="text-sm sm:text-base text-blue-500 text-center">
                 Drop your Word file here or click to upload
               </p>
-              <p className='text-muted-foreground text-sm mt-1'>
+              <p className='text-muted-foreground text-sm'>
                 (Max File Size: 5MB)
               </p>
               <input
