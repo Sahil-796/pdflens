@@ -29,10 +29,23 @@ export default function UploadFiles() {
 
   const uploadFile = async (newFile: File) => {
     if (!newFile || loading) return
+
     if (files.length >= 5) {
       setLimitFilesModalOpen(true)
       return
     }
+
+    if (newFile.type !== 'application/pdf') {
+      toast.error("Only PDF files are allowed")
+      return
+    }
+
+    const maxSize = 5 * 1024 * 1024
+    if (newFile.size > maxSize) {
+      toast.error("File size exceeds 5MB limit")
+      return
+    }
+
     setLoading(true)
 
     let createdPdfId: string | null = null
@@ -186,6 +199,7 @@ export default function UploadFiles() {
               disabled={loading}
               id="fileInput"
               type="file"
+              accept="application/pdf"
               className="hidden"
               onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
             />
