@@ -33,7 +33,7 @@ export async function POST(req: Request) {
     forwardData.append("userId", userId)
     forwardData.append("pdfId", parsed.data.pdfId)
 
-    const PYTHON_URL = process.env.NEXT_PUBLIC_PYTHON_URL || "http://localhost:8000"
+    const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000"
 
     const response = await fetch(`${PYTHON_URL}/context/upload`, {
       headers: { "secret1": process.env.secret || "" },
