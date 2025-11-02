@@ -21,7 +21,7 @@ async def upload_context(
 ):
 
     contents = await file.read()
-
+    filename = file.filename
     if not filename.endswith(".pdf") and file.content_type != "application/pdf":
         return JSONResponse(status_code=400, content={"message": "Only PDF files are allowed"})
     if not contents.startswith(b"%PDF"):
