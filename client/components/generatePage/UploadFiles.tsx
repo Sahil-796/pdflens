@@ -30,7 +30,6 @@ export default function UploadFiles() {
   const uploadFile = async (newFile: File) => {
     if (!newFile || loading) return
     if (files.length >= 5) {
-      console.log(files.length)
       setLimitFilesModalOpen(true)
       return
     }

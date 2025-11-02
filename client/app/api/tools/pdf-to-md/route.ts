@@ -29,8 +29,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const data = await res.json()
-    const mdText = data["Md content"]
+    const mdText = await res.text()
     const buffer = new TextEncoder().encode(mdText)
 
     return new Response(buffer, {
