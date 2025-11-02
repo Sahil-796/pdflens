@@ -55,10 +55,11 @@ export default function UploadFiles() {
 
       // Step 1: Create PDF if missing
       if (!currentPdfId) {
+        const asciiFilename = fileName.split(" ").join("\ ")
         const createRes = await fetch('/api/createPdf', {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ html: '', pdfName: fileName }),
+          body: JSON.stringify({ html: '', pdfName: asciiFilename }),
         })
 
         if (!createRes.ok) throw new Error("Failed to create PDF")
@@ -110,12 +111,13 @@ export default function UploadFiles() {
 
   const removeFile = async (fileName: string, idx: number) => {
     if (!pdfId) return
+    const asciiFilename = fileName.split(" ").join("\ ")
     try {
       setIsRemoving(true)
       const res = await fetch("/api/removeContext", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfId, filename: fileName }),
+        body: JSON.stringify({ pdfId, filename: asciiFilename }),
       })
 
       if (!res.ok) {
