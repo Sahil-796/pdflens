@@ -1,6 +1,6 @@
 import { db } from "./client";
 import { user, credit_history } from "./schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { formatInTimeZone } from "date-fns-tz";
 import { v4 as uuidv4 } from "uuid";
 
@@ -10,8 +10,10 @@ const DAILY_ALLOWANCE = {
 };
 
 const history = {
- 4: "AI pdf generation",
- 1: "Edit using AI",
+ "4": "AI pdf generation",
+ "1": "Edit using AI",
+ "-4": "Refund",
+ "-1": "Refund"
 }
 
 export const deduceCredits = async (userId: string, cost: number) => {
@@ -27,60 +29,73 @@ export const deduceCredits = async (userId: string, cost: number) => {
       }
 
       const todayUTC = formatInTimeZone(new Date(), "UTC", "yyyy-MM-dd");
-      let currentCredits = currentUser.creditsLeft;
-console.log(typeof(tx))
 
-
-
-      // Check if a reset is needed
+      // Reset branch
       if (currentUser.creditsResetAt < todayUTC) {
-        currentCredits = DAILY_ALLOWANCE[currentUser.plan] - cost;
-        
-        //add credit history 
-        
+        const newCredits = DAILY_ALLOWANCE[currentUser.plan] - cost;
+
+        const [updatedUser] = await tx
+          .update(user)
+          .set({ creditsLeft: newCredits, creditsResetAt: todayUTC })
+          .where(eq(user.id, userId))
+          .returning({ creditsLeft: user.creditsLeft });
+
         if (cost !== 0) {
           await tx.insert(credit_history).values({
             id: uuidv4(),
             userId,
             amount: cost,
-            reason: history[cost],
+            reason: history[cost] ?? "Unknown",
           });
         }
-        
-        const [updatedUser] = await tx
-          .update(user)
-          .set({ creditsLeft: currentCredits, creditsResetAt: todayUTC })
-          .where(eq(user.id, userId))
-          .returning({ creditsLeft: user.creditsLeft });
 
         return updatedUser.creditsLeft;
       }
 
-      if (currentCredits < cost) {
-        throw new Error("Insufficient credits");
+      // Non-reset branch: perform atomic guarded update to avoid lost updates
+      if (cost >= 0) {
+        const updated = await tx
+          .update(user)
+          .set({
+            // credits_left = credits_left - cost
+            creditsLeft: sql`${user.creditsLeft} - ${cost}`,
+          })
+          .where(sql`${user.id} = ${userId} AND ${user.creditsLeft} >= ${cost}`)
+          .returning({ creditsLeft: user.creditsLeft });
+
+        if (updated.length === 0) {
+          throw new Error("Insufficient credits");
+        }
+
+        if (cost !== 0) {
+          await tx.insert(credit_history).values({
+            id: uuidv4(),
+            userId,
+            amount: cost,
+            reason: history[cost] ?? "Unknown",
+          });
+        }
+
+        return updated[0].creditsLeft;
       }
 
-      // no reset needed
-      const newCreditTotal = currentCredits - cost;
-      
-      //add credit history 
+      // Refunds (negative cost): atomic increment
+      const updated = await tx
+        .update(user)
+        .set({ creditsLeft: sql`${user.creditsLeft} - ${cost}` })
+        .where(eq(user.id, userId))
+        .returning({ creditsLeft: user.creditsLeft });
 
       if (cost !== 0) {
         await tx.insert(credit_history).values({
           id: uuidv4(),
           userId,
           amount: cost,
-          reason: history[cost],
+          reason: history[cost] ?? "Unknown",
         });
       }
-      
-      const [updatedUser] = await tx
-        .update(user)
-        .set({ creditsLeft: newCreditTotal })
-        .where(eq(user.id, userId))
-        .returning({ creditsLeft: user.creditsLeft });
 
-      return updatedUser.creditsLeft;
+      return updated[0].creditsLeft;
     });
 
     return result;

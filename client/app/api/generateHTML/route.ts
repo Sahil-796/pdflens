@@ -10,6 +10,8 @@ const GenerateSchema = z.object({
 })
 
 export async function POST(req: Request) {
+  let userId: string | undefined
+  let deducted = false
     try {
         const body = await req.json()
         const parsed = GenerateSchema.safeParse(body)
@@ -22,13 +24,14 @@ export async function POST(req: Request) {
 
         const { userPrompt, pdfId, isContext } = parsed.data
         const session = await auth.api.getSession({ headers: req.headers })
-        const userId = session!.user.id
+        userId = session!.user.id
 
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
         const creditsLeft = await deduceCredits(userId, 4)
+        deducted = true
 
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
 
@@ -48,12 +51,24 @@ export async function POST(req: Request) {
         if (!res.ok) {
             try {
                 const body = await res.json();
+                if (deducted) {
+                  await deduceCredits(userId, -4)
+                  deducted = false
+                }
                 return NextResponse.json(
                     { error: body.message || "Python API failed" },
                     { status: res.status }
                 );
             } catch {
                 // in case Python returns non-JSON error
+                if (deducted) {
+                  await deduceCredits(userId, -4)
+                  deducted = false
+                }
+                return NextResponse.json(
+                  { error: "Python API failed" },
+                  { status: res.status }
+                )
             }
         }
 
@@ -62,15 +77,19 @@ export async function POST(req: Request) {
 
     } catch (err) {
         console.error("API Error:", err)
+        
+      if (userId && deducted) {
+        await deduceCredits(userId, -4)
+      }
 
-        if (err.message.includes("Insufficient credits")) {
+        if (err instanceof Error && err.message.includes("Insufficient credits")) {
             return NextResponse.json(
                 { error: "Insufficient credits" },
                 { status: 429 }
             )
         }
         return NextResponse.json(
-            { success: false, message: err.message || "Internal Server Error" },
+            { success: false, message: (err as Error)?.message || "Internal Server Error" },
             { status: 500 }
         );
     }
