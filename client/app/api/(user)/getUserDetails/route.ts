@@ -25,7 +25,7 @@ export async function GET(req: Request) {
             .where(eq(user.id, session.user.id))
             .limit(1)
         
-        deduceCredits(session?.user?.id, 0)
+        await deduceCredits(session?.user?.id, 0)
 
         if (!userDetails) {
             return NextResponse.json({ 
