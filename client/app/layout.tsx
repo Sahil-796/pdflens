@@ -17,8 +17,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Zendra",
-  description: "Zendra - Create, edit, and manage your PDFs with ease.",
+  icons: {
+    icon: "/icon.png"
+  },
+  title: "ZendraPdf",
+  description: "ZendraPdf - AI PDF generator.....Create, edit, and manage your PDFs with ease.",
 };
 
 export default function RootLayout({
