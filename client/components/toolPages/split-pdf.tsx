@@ -125,6 +125,7 @@ const SplitPDF = () => {
       const formData = new FormData()
       formData.append("file", file)
       formData.append("ranges", splitRangeString)
+      const shouldZip = splitRangeString.split(",").length > 1
 
       const res = await fetch(`/api/tools/split-range`, {
         method: "POST",
@@ -139,7 +140,7 @@ const SplitPDF = () => {
       setSplitPagesString("")
       setSplitRangeString("")
 
-      const zipName = file.name.split(" ").join("_").replace(".pdf", ".zip")
+      const zipName = file.name.split(" ").join("_").replace(".pdf", `${shouldZip ? ".zip" : ".pdf"}`)
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
