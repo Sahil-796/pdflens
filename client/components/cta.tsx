@@ -16,12 +16,12 @@ export function CallToAction() {
       </div>
       <div className="flex items-center justify-center gap-2">
         <Link href='/signup'>
-          <Button className="shadow" variant="secondary">
+          <Button className="shadow cursor-pointer" variant="secondary">
             Start Creating Free
           </Button>
         </Link>
         <Link href='/pricing'>
-          <Button className="shadow">
+          <Button className="shadow cursor-pointer">
             View Pricing
           </Button>
         </Link>

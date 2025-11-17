@@ -16,7 +16,6 @@ const LandingPage = () => {
       <HeroSection />
       <Features />
       <HowItWorks />
-      {/* Use cases */}
       <Features4 />
       <FAQsFour />
       <CallToAction />

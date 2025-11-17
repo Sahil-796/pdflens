@@ -96,7 +96,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="mx-auto mb-16 max-w-4xl text-center">
-          <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h2 className="text-4xl text-primary font-bold tracking-tight sm:text-5xl">
             How it works
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">

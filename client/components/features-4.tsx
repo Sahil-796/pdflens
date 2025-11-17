@@ -46,9 +46,9 @@ export default function Features4() {
     <section className="py-12 md:py-20">
       <div className="mx-auto max-w-5xl space-y-8 px-6 md:space-y-16">
         <div className="relative z-10 mx-auto max-w-xl space-y-6 text-center md:space-y-12">
-          <h2 className="text-balance text-4xl font-medium lg:text-5xl">More Than Just Generation—Complete PDF Control
+          <h2 className="text-balance text-primary text-4xl font-medium lg:text-5xl">More Than Just Generation—Complete PDF Control
           </h2>
-          <p>All your PDF needs, in one platform</p>
+          <p className='-mt-6'>Everything you need to work with PDFs, all in one intelligent platform. Convert, edit, merge, and optimize your documents effortlessly.</p>
         </div>
 
         <div className="relative mx-auto grid max-w-4xl divide-x divide-y border *:p-12 sm:grid-cols-2 lg:grid-cols-3">

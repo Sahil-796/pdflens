@@ -1,8 +1,6 @@
 'use client'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Github, Twitter } from 'lucide-react'
-import Image from 'next/image'
 
 export default function FAQsFour() {
   const faqItems = [
@@ -52,7 +50,7 @@ export default function FAQsFour() {
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-5xl px-4 md:px-6">
         <div className="mx-auto max-w-xl text-center">
-          <h2 className="text-balance text-3xl font-bold md:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
+          <h2 className="text-balance text-primary text-3xl font-bold md:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
           <p className="text-muted-foreground mt-4 text-balance">Discover quick and comprehensive answers to common questions about our platform, services, and features.</p>
         </div>
 
