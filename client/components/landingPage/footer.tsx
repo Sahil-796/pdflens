@@ -1,9 +1,8 @@
 import React from 'react';
 import { Github, Twitter } from 'lucide-react';
-import { Logo } from './Logo';
 import Link from 'next/link';
 
-export default function ZendraFooter() {
+export default function FooterSection() {
   const productLinks = [
     { name: 'Dashboard', href: '/dashboard' },
     { name: 'Generate', href: '/generate' },
@@ -60,6 +59,7 @@ export default function ZendraFooter() {
             <div className="space-y-3">
               {toolLinks.map((link) => (
                 <Link
+                  key={link.name}
                   href={link.href}
                   className="text-muted-foreground hover:text-foreground transition-colors duration-200 text-sm flex items-center gap-2"
                 >

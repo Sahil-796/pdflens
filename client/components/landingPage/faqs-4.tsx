@@ -31,21 +31,6 @@ export default function FAQsFour() {
     },
   ]
 
-  const members = [
-    {
-      name: "Rudra",
-      image: "/rudra.jpg",
-      github: "https://github.com/",
-      x: "https://x.com/",
-    },
-    {
-      name: "Sahil",
-      image: "/rudra.jpg",
-      github: "https://github.com/",
-      x: "https://x.com/",
-    }
-  ]
-
   return (
     <section className="py-16 md:py-24">
       <div className="mx-auto max-w-5xl px-4 md:px-6">
@@ -77,7 +62,7 @@ export default function FAQsFour() {
           </Accordion>
 
           <p className="text-muted-foreground mt-6 px-8">
-            Can't find what you're looking for? Call the <span className='text-primary font-bold'>devs</span>.
+            {`Can't find what you're looking for? Call the `}<span className='text-primary font-bold'>devs</span>.
           </p>
 
         </div>

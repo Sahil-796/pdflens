@@ -1,5 +1,5 @@
-import { Cpu, Fingerprint, Pencil, Settings2, Sparkles, Zap, FileText, FileType, FileDown, Split, Combine, FileSpreadsheet } from 'lucide-react'
-import { Button } from './ui/button'
+import { FileText, FileType, FileDown, Split, Combine, FileSpreadsheet } from 'lucide-react'
+import { Button } from '../ui/button'
 import Link from 'next/link'
 
 export default function Features4() {
