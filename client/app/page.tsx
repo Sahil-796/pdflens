@@ -6,6 +6,8 @@ import Features4 from "@/components/features-4";
 import { HowItWorks } from "@/components/ui/how-it-works";
 import FAQsFour from "@/components/faqs-4";
 import TeamSection from "@/components/landingPage/team";
+import { CallToAction } from "@/components/cta";
+import FooterSection from "@/components/footer";
 const LandingPage = () => {
   return (
     <div className="bg-background">
@@ -17,8 +19,8 @@ const LandingPage = () => {
       {/* Use cases */}
       <Features4 />
       <FAQsFour />
-
-
+      <CallToAction />
+      <FooterSection />
     </div>
   );
 };
