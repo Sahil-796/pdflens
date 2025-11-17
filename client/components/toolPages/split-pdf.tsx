@@ -139,10 +139,11 @@ const SplitPDF = () => {
       setSplitPagesString("")
       setSplitRangeString("")
 
+      const zipName = file.name.split(" ").join("_").replace(".pdf", ".zip")
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = file?.name.replace('.pdf', '.zip')
+      a.download = zipName
       a.click()
       window.URL.revokeObjectURL(url)
 
@@ -317,7 +318,7 @@ const SplitPDF = () => {
         <TabsContent value="range">
           {success ? (
             <Card className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl border-border bg-background p-6 sm:p-8 flex flex-col items-center justify-center rounded-2xl shadow-md space-y-6">
-              // {/* Success Message */}
+              {/* Success Message */}
               <div className="flex flex-col sm:flex-row items-center gap-2 text-orange-300 font-medium text-center sm:text-left text-lg sm:text-xl">
                 <CheckCircle2 className="size-5 sm:size-6" />
                 <span>Your PDF file has been converted splitted!</span>
