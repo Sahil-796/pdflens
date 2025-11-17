@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { FileText, File, Layers, PanelLeftOpen } from "lucide-react"
+import { FileText, File, Layers, PanelLeftOpen, Scissors } from "lucide-react"
 
 export const tools = [
   {
@@ -41,20 +41,13 @@ export const tools = [
     description: 'Combine your PDFs into one neat file — quick and simple.',
     accent: 'text-purple-600 dark:text-purple-400',
   },
-  // {
-  //   name: 'Split PDF',
-  //   href: '/tools/split-pdf',
-  //   icon: <Scissors className="w-8 h-8 text-orange-300 dark:text-orange-200" />,
-  //   description: 'Separate large PDFs into smaller files or extract specific pages easily.',
-  //   accent: 'text-orange-400 dark:text-orange-200',
-  // },
-  // {
-  //   name: 'Compress PDF',
-  //   href: '/tools/compress-pdf',
-  //   icon: <ArrowDownLeft className="w-8 h-8 text-red-500 dark:text-red-400" />,
-  //   description: 'Reduce the file size of PDFs for faster sharing and easy storage.',
-  //   accent: 'text-red-600 dark:text-red-400',
-  // },
+  {
+    name: 'Split PDF',
+    href: '/tools/split-pdf',
+    icon: <Scissors className="w-8 h-8 text-orange-300 dark:text-orange-200" />,
+    description: 'Separate large PDFs into smaller files or extract specific pages easily.',
+    accent: 'text-orange-400 dark:text-orange-200',
+  },
 ]
 
 const ToolsHome = () => {

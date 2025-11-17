@@ -4,9 +4,9 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;
-    // const ranges = formData.get("ranges") as string;
+    const ranges = formData.get("ranges") as string;
 
-    if (!file) {
+    if (!file || !ranges) {
       return NextResponse.json({ message: "No file provided" }, { status: 400 });
     }
 
