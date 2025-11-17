@@ -415,8 +415,8 @@ const SplitPDF = () => {
                     </Empty>
                   ) : (
                     <div className=' flex flex-col gap-4'>
-                      <Label htmlFor='exclude-pages'>Enter range of pages to include (comman separated)</Label>
-                      <Input type='text' name='exclude-pages' placeholder='1-4,5-7,...' className='-mt-2'
+                      <Label htmlFor='include-range'>Enter range of pages to include (comman separated)</Label>
+                      <Input type='text' name='include-range' placeholder='1-4,5-7,...' className='-mt-2'
                         value={splitRangeString} onChange={(e) => {
                           const value = e.target.value
                           const valid = /^[0-9,\-]*$/.test(value);
