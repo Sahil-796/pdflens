@@ -1,12 +1,15 @@
 import React from "react";
 import Navbar from '@/components/bars/LandingNavbar'
-import { redirect } from "next/navigation";
+import HeroSection from "@/components/hero-section";
+import Features from "@/components/features-1";
 const LandingPage = () => {
-  redirect('/tools')
   return (
     <div className="bg-background">
 
       <Navbar />
+      <HeroSection />
+      <Features />
+      {/*How it works */}
 
     </div>
   );
