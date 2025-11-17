@@ -210,18 +210,12 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
       icon: Layers,
       keywords: ['merge', 'combine', 'pdf', 'join', 'tools']
     },
-    // {
-    //   name: 'Split PDF',
-    //   value: '/tools/split-pdf',
-    //   icon: FileText,
-    //   keywords: ['split', 'extract', 'pages', 'pdf', 'tools']
-    // },
-    // {
-    //   name: 'Compress PDF',
-    //   value: '/tools/compress-pdf',
-    //   icon: FileText,
-    //   keywords: ['compress', 'reduce', 'size', 'pdf', 'tools']
-    // },
+    {
+      name: 'Split PDF',
+      value: '/tools/split-pdf',
+      icon: FileText,
+      keywords: ['split', 'extract', 'pages', 'pdf', 'tools']
+    },
   ]
 
   // 🔍 Filter PDFs by name (case-insensitive)
