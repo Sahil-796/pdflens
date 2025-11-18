@@ -83,7 +83,7 @@ export default function FooterSection() {
                           href={social.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-8 h-8 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center transition-all duration-200 hover:scale-110"
+                          className="group w-8 h-8 rounded-lg bg-muted hover:bg-secondary text-primary flex items-center justify-center transition-all duration-200 hover:scale-110"
                           aria-label={`${person.name}'s ${social.label}`}
                         >
                           <social.icon className="w-4 h-4" />
