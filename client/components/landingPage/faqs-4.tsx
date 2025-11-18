@@ -61,8 +61,8 @@ export default function FAQsFour() {
             ))}
           </Accordion>
 
-          <p className="text-muted-foreground mt-6 px-8">
-            {`Can't find what you're looking for? Call the `}<span className='text-primary font-bold'>devs</span>.
+          <p className="text-muted-foreground mt-6 flex justify-center items-center">
+            {`Can't find what you're looking for? Message the devs.`}
           </p>
 
         </div>
