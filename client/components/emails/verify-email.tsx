@@ -79,14 +79,7 @@ const EmailVerification = (props: EmailVerificationProps) => {
                         {/* Footer */}
                         <Section className="text-center">
                             <Text className="text-[12px] text-gray-500 leading-[16px] m-0">
-                                © 2025 Your Company Name. All rights reserved.
-                            </Text>
-                            <Text className="text-[12px] text-gray-500 leading-[16px] m-0">
-                                123 Business Street, Suite 100, City, State 12345
-                            </Text>
-                            <Text className="text-[12px] text-gray-500 leading-[16px] m-0">
-                                <a href="#" className="text-gray-500 underline">Unsubscribe</a>
-                            </Text>
+                                 2025 ZendraPdf.                            </Text>
                         </Section>
                     </Container>
                 </Body>
