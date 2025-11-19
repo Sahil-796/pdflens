@@ -120,31 +120,43 @@ const PdfList: React.FC<PdfListProps> = ({
             >
               <Card
                 onClick={() => handlePdfClick(pdf)}
-                className="group h-28 border border-primary/20 sm:border-border bg-muted/50 sm:bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer"
+                className="group h-32 border border-border bg-card hover:border-primary/50 hover:shadow-md transition-all duration-300 cursor-pointer relative overflow-hidden"
               >
                 <CardContent className="p-4 h-full flex flex-col justify-between">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <div className="p-1.5 rounded-md bg-muted/50 group-hover:bg-muted transition-colors">
-                        <FileText className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-sm text-foreground truncate">
-                          {pdf.fileName}
-                        </h3>
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <h3 className="font-semibold text-sm text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
+                        {pdf.fileName}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Calendar className="w-3 h-3" />
+                        <span>
+                          {pdf.createdAt
+                            ? new Date(pdf.createdAt).toLocaleDateString(undefined, {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric"
+                            })
+                            : "N/A"}
+                        </span>
                       </div>
                     </div>
+                  </div>
 
+                  <div className="flex justify-end">
                     {showDelete && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                            className="h-7 w-7 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all duration-200"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </Button>
                         </AlertDialogTrigger>
 
@@ -170,18 +182,6 @@ const PdfList: React.FC<PdfListProps> = ({
                         </AlertDialogContent>
                       </AlertDialog>
                     )}
-                  </div>
-
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    <span>
-                      {pdf.createdAt
-                        ? new Date(pdf.createdAt).toLocaleDateString(undefined, {
-                          day: "2-digit",
-                          month: "short"
-                        })
-                        : "N/A"}
-                    </span>
                   </div>
                 </CardContent>
               </Card>

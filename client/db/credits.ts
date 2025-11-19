@@ -10,10 +10,10 @@ const DAILY_ALLOWANCE = {
 };
 
 const history = {
- "4": "AI pdf generation",
- "1": "Edit using AI",
- "-4": "Refund",
- "-1": "Refund"
+  "4": "AI pdf generation",
+  "1": "Edit using AI",
+  "-4": "Refund",
+  "-1": "Refund"
 }
 
 export const deduceCredits = async (userId: string, cost: number) => {
@@ -22,7 +22,8 @@ export const deduceCredits = async (userId: string, cost: number) => {
       const [currentUser] = await tx
         .select()
         .from(user)
-        .where(eq(user.id, userId));
+        .where(eq(user.id, userId))
+        .for("update");
 
       if (!currentUser) {
         throw new Error(`User not found with id: ${userId}`);

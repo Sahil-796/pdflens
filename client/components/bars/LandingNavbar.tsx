@@ -115,11 +115,17 @@ export default function Navbar() {
   }
 
   // Monogram (first letter of name or email fallback)
-  const monogram =
-    user.avatar ||
-    user.name?.[0]?.toUpperCase() ||
-    user.email?.[0]?.toUpperCase() ||
-    "U"
+  const monogram = loading ? (
+    <Loader2 className="h-4 w-4 animate-spin" />
+  ) : user.avatar ? (
+    <img
+      src={user.avatar}
+      alt={user.name || "User"}
+      className="w-full h-full rounded-full object-cover"
+    />
+  ) : (
+    user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
+  )
 
   return (
     <>

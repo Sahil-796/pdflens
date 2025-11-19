@@ -4,9 +4,10 @@ import { ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { TextEffect } from '@/components/ui/text-effect'
 import { AnimatedGroup } from '@/components/ui/animated-group'
-import { Badge } from '../ui/badge'
 
-const transitionVariants = {
+import { Variants } from 'motion/react'
+
+const transitionVariants: { container?: Variants; item?: Variants } = {
   item: {
     hidden: {
       opacity: 0,
@@ -56,7 +57,7 @@ export default function HeroSection() {
                   opacity: 1,
                   y: 0,
                   transition: {
-                    type: 'spring',
+                    type: 'spring' as const,
                     bounce: 0.3,
                     duration: 2,
                   },
@@ -169,11 +170,16 @@ export default function HeroSection() {
               },
               ...transitionVariants,
             }}>
-            <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
+            <div className="relative mt-8 overflow-hidden px-2 sm:mt-12 md:mt-20">
               <div className=" relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 ">
-                <video width='3276' height='4095' autoPlay={true} controls>
-                  <source src='/heroVideo.mp4' className='aspect-15/8 relative hidden rounded-2xl dark:block' />
-                  <source src='/heroVideo.mp4' className='z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden' />
+                <video
+                  width='3276'
+                  height='4095'
+                  autoPlay={true}
+                  controls
+                  className="w-full h-auto rounded-2xl border border-border/25 dark:border-none"
+                >
+                  <source src='/heroVideo.mp4' type="video/mp4" />
                 </video>
 
                 {
