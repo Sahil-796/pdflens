@@ -8,8 +8,4 @@
     <loc>https://zendrapdf.vercel.app/tools</loc>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://zendrapdf.vercel.app/ai-pdf-generator</loc>
-    <priority>0.9</priority>
-  </url>
 </urlset>
