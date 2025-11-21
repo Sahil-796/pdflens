@@ -20,6 +20,11 @@ export function CallToAction() {
             Start Creating Free
           </Button>
         </Link>
+        <Link href='/tools'>
+          <Button className="shadow cursor-pointer" variant="outline">
+            Explore PDF Tools
+          </Button>
+        </Link>
         <Link href='/pricing'>
           <Button className="shadow cursor-pointer">
             View Pricing

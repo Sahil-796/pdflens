@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   authors: [{ name: "ZendraPdf Team" }],
   creator: "ZendraPdf",
   publisher: "ZendraPdf",
+  alternates: {
+    canonical: "https://zendrapdf.vercel.app",
+  },
   openGraph: {
     title: "ZendraPdf — AI PDF Generator",
     description:
@@ -60,8 +63,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "ZendraPdf",
+    url: "https://zendrapdf.vercel.app",
+    logo: "https://zendrapdf.vercel.app/icon.png",
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+      </head>
       <Analytics />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
