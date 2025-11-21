@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zendrapdf.vercel.app/sitemap.xml
