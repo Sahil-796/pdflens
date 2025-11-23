@@ -54,6 +54,10 @@ export const deduceCredits = async (userId: string, cost: number) => {
       }
 
       // Non-reset branch: perform atomic guarded update to avoid lost updates
+      if (cost === 0) {
+        return currentUser.creditsLeft;
+      }
+
       if (cost >= 0) {
         const updated = await tx
           .update(user)

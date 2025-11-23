@@ -14,6 +14,8 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
+        await deduceCredits(session?.user?.id, 0)
+
         // Get user details including verification status
         const [userDetails] = await db
             .select({
@@ -24,11 +26,9 @@ export async function GET(req: Request) {
             .from(user)
             .where(eq(user.id, session.user.id))
             .limit(1)
-        
-        await deduceCredits(session?.user?.id, 0)
 
         if (!userDetails) {
-            return NextResponse.json({ 
+            return NextResponse.json({
                 plan: null,
                 emailVerified: null,
                 creditsLeft: 0,
@@ -42,7 +42,7 @@ export async function GET(req: Request) {
             .from(account)
             .where(eq(account.userId, session.user.id))
 
-        if(!userProvider) {
+        if (!userProvider) {
             return NextResponse.json({
                 providerId: '',
             })
@@ -53,14 +53,14 @@ export async function GET(req: Request) {
             emailVerified: userDetails.emailVerified,
             creditsLeft: userDetails.creditsLeft,
             providerId: userProvider.providerId,
-        }, {status: 200})
+        }, { status: 200 })
     } catch (error) {
         console.error('Error fetching user details:', error)
-        return NextResponse.json({ 
+        return NextResponse.json({
             error: "Internal server error",
-            message: error.message 
-        }, { 
-            status: 500 
+            message: error.message
+        }, {
+            status: 500
         })
     }
 }

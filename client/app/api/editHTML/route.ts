@@ -11,25 +11,28 @@ const GenerateSchema = z.object({
 })
 
 export async function POST(req: Request) {
+    let userId: string | undefined
+    let deducted = false
     try {
         const body = await req.json()
         const parsed = GenerateSchema.safeParse(body)
         if (!parsed.success) {
             return NextResponse.json(
-                { error: "Invalid request"},
+                { error: "Invalid request" },
                 { status: 400 }
             )
         }
 
         const { userPrompt, pdfId, isContext, html } = parsed.data
         const session = await auth.api.getSession({ headers: req.headers })
-        const userId = session!.user.id
+        userId = session!.user.id
 
         if (!userId || typeof userId !== "string") {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
         const creditsLeft = await deduceCredits(userId, 1)
+        deducted = true
 
         const PYTHON_URL = process.env.PYTHON_URL || 'http://localhost:8000'
         const res = await fetch(`${PYTHON_URL}/ai/edit`, {
@@ -41,18 +44,25 @@ export async function POST(req: Request) {
             body: JSON.stringify({
                 userPrompt,
                 html,
-                pdfId, 
+                pdfId,
                 isContext,
                 userId
             })
         })
         if (!res.ok) {
+            if (deducted) {
+                await deduceCredits(userId, -1)
+                deducted = false
+            }
             return NextResponse.json({ error: "Python API failed" }, { status: res.status })
         }
         const data = await res.json()
-        return NextResponse.json({data, creditsLeft, status: 200})
+        return NextResponse.json({ data, creditsLeft, status: 200 })
     } catch (err) {
         console.error("API Error:", err)
+        if (userId && deducted) {
+            await deduceCredits(userId, -1)
+        }
         return NextResponse.json({ error: "Server error" }, { status: 500 })
     }
 }

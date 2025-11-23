@@ -10,8 +10,8 @@ const GenerateSchema = z.object({
 })
 
 export async function POST(req: Request) {
-  let userId: string | undefined
-  let deducted = false
+    let userId: string | undefined
+    let deducted = false
     try {
         const body = await req.json()
         const parsed = GenerateSchema.safeParse(body)
@@ -52,8 +52,8 @@ export async function POST(req: Request) {
             try {
                 const body = await res.json();
                 if (deducted) {
-                  await deduceCredits(userId, -4)
-                  deducted = false
+                    await deduceCredits(userId, -4)
+                    deducted = false
                 }
                 return NextResponse.json(
                     { error: body.message || "Python API failed" },
@@ -62,12 +62,12 @@ export async function POST(req: Request) {
             } catch {
                 // in case Python returns non-JSON error
                 if (deducted) {
-                  await deduceCredits(userId, -4)
-                  deducted = false
+                    await deduceCredits(userId, -4)
+                    deducted = false
                 }
                 return NextResponse.json(
-                  { error: "Python API failed" },
-                  { status: res.status }
+                    { error: "Python API failed" },
+                    { status: res.status }
                 )
             }
         }
@@ -77,10 +77,10 @@ export async function POST(req: Request) {
 
     } catch (err) {
         console.error("API Error:", err)
-        
-      if (userId && deducted) {
-        await deduceCredits(userId, -4)
-      }
+
+        // We do NOT refund here anymore because timeouts often mean the job is still running
+        // and will eventually succeed. If we refund, the user gets the result for free.
+
 
         if (err instanceof Error && err.message.includes("Insufficient credits")) {
             return NextResponse.json(
