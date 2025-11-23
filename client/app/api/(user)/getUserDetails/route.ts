@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/db/client"
-import { deduceCredits } from "@/db/credits"
+import { ensureDailyAllowance } from "@/db/credits"
 import { account, user } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -14,8 +14,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
-        await deduceCredits(session?.user?.id, 0)
-
+        await ensureDailyAllowance(session.user.id);
         // Get user details including verification status
         const [userDetails] = await db
             .select({

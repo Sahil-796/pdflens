@@ -16,100 +16,71 @@ const history = {
   "-1": "Refund"
 }
 
+
 export const deduceCredits = async (userId: string, cost: number) => {
-  try {
-    const result = await db.transaction(async (tx) => {
-      const [currentUser] = await tx
-        .select()
-        .from(user)
-        .where(eq(user.id, userId))
-        .for("update");
 
-      if (!currentUser) {
-        throw new Error(`User not found with id: ${userId}`);
-      }
 
-      const todayUTC = formatInTimeZone(new Date(), "UTC", "yyyy-MM-dd");
+    try {
+        const result = await db.transaction(async (tx) => {
 
-      // Reset branch
-      if (currentUser.creditsResetAt < todayUTC) {
-        const newCredits = DAILY_ALLOWANCE[currentUser.plan] - cost;
+            const [currentUser] = await tx
+                .select()
+                .from(user)
+                .where(eq(user.id, userId))
+                .for("update");
+                
+            if (!currentUser) {
+                throw new Error(`User not found with id: ${userId}`);
+            }
 
-        const [updatedUser] = await tx
-          .update(user)
-          .set({ creditsLeft: newCredits, creditsResetAt: todayUTC })
-          .where(eq(user.id, userId))
-          .returning({ creditsLeft: user.creditsLeft });
+            if (cost > 0) {
+                const updated = await tx
+                    .update(user)
+                    .set({
+                        creditsLeft: sql`${user.creditsLeft} - ${cost}`,
+                    })
+                    .where(sql`${user.id} = ${userId} AND ${user.creditsLeft} >= ${cost}`)
+                    .returning({ creditsLeft: user.creditsLeft });
 
-        if (cost !== 0) {
-          await tx.insert(credit_history).values({
-            id: uuidv4(),
-            userId,
-            amount: cost,
-            reason: history[cost] ?? "Unknown",
-          });
-        }
+                if (updated.length === 0) {
+                    throw new Error("Insufficient credits");
+                }
+                
+                await tx.insert(credit_history).values({
+                    id: uuidv4(),
+                    userId,
+                    amount: cost,
+                    reason: history[cost] ?? "Unknown",
+                });
 
-        return updatedUser.creditsLeft;
-      }
+                return updated[0].creditsLeft;
+            }
 
-      // Non-reset branch: perform atomic guarded update to avoid lost updates
-      if (cost === 0) {
-        return currentUser.creditsLeft;
-      }
+            if (cost < 0) {
+                 const updated = await tx
+                    .update(user)
+                    .set({ creditsLeft: sql`${user.creditsLeft} - ${cost}` }) 
+                    .where(eq(user.id, userId))
+                    .returning({ creditsLeft: user.creditsLeft });
 
-      if (cost >= 0) {
-        const updated = await tx
-          .update(user)
-          .set({
-            // credits_left = credits_left - cost
-            creditsLeft: sql`${user.creditsLeft} - ${cost}`,
-          })
-          .where(sql`${user.id} = ${userId} AND ${user.creditsLeft} >= ${cost}`)
-          .returning({ creditsLeft: user.creditsLeft });
+                // Log refund history
+                await tx.insert(credit_history).values({
+                    id: uuidv4(),
+                    userId,
+                    amount: cost,
+                    reason: history[cost] ?? "Unknown",
+                });
 
-        if (updated.length === 0) {
-          throw new Error("Insufficient credits");
-        }
-
-        if (cost !== 0) {
-          await tx.insert(credit_history).values({
-            id: uuidv4(),
-            userId,
-            amount: cost,
-            reason: history[cost] ?? "Unknown",
-          });
-        }
-
-        return updated[0].creditsLeft;
-      }
-
-      // Refunds (negative cost): atomic increment
-      const updated = await tx
-        .update(user)
-        .set({ creditsLeft: sql`${user.creditsLeft} - ${cost}` })
-        .where(eq(user.id, userId))
-        .returning({ creditsLeft: user.creditsLeft });
-
-      if (cost !== 0) {
-        await tx.insert(credit_history).values({
-          id: uuidv4(),
-          userId,
-          amount: cost,
-          reason: history[cost] ?? "Unknown",
+                return updated[0].creditsLeft;
+            }
+            
+            return currentUser.creditsLeft; 
         });
-      }
 
-      return updated[0].creditsLeft;
-    });
-
-    return result;
-  } catch (err) {
-    if (err instanceof Error) {
-      throw new Error(`Failed to use credits: ${err.message}`);
+        return result;
+    } catch (err) {
+        throw new Error(`Failed to use credits: ${err.message}`);
     }
-    throw new Error("An unknown error occurred while trying to use credits.");
-  }
 };
 
 export const getCreditHistory = async (userId: string) => {
@@ -126,3 +97,48 @@ export const getCreditHistory = async (userId: string) => {
   return history;
 };
 
+// db/credits.ts (New function)
+
+export const ensureDailyAllowance = async (userId: string) => {
+    try {
+        const result = await db.transaction(async (tx) => {
+            // 1. SELECT and LOCK the user row
+            const [currentUser] = await tx
+                .select()
+                .from(user)
+                .where(eq(user.id, userId))
+                .for("update"); // Lock row to prevent race conditions during check/reset
+
+            if (!currentUser) {
+                throw new Error(`User not found with id: ${userId}`);
+            }
+
+            const todayUTC = formatInTimeZone(new Date(), "UTC", "yyyy-MM-dd");
+
+            // 2. CHECK: Only proceed if a reset is needed
+            if (currentUser.creditsResetAt < todayUTC) {
+                // 3. RESET: Set credits to the full daily allowance
+                const newCredits = DAILY_ALLOWANCE[currentUser.plan]; // Use full allowance, cost is 0
+
+                const [updatedUser] = await tx
+                    .update(user)
+                    .set({ creditsLeft: newCredits, creditsResetAt: todayUTC })
+                    .where(eq(user.id, userId))
+                    .returning({ creditsLeft: user.creditsLeft });
+                
+                // Return the newly reset amount
+                return updatedUser.creditsLeft;
+            }
+
+            // 4. NO RESET NEEDED: Return current credits without DB update
+            return currentUser.creditsLeft;
+        });
+
+        return result;
+    } catch (err) {
+        if (err instanceof Error) {
+            throw new Error(`Failed to ensure daily allowance: ${err.message}`);
+        }
+        throw new Error("An unknown error occurred while trying to check/reset credits.");
+    }
+};
