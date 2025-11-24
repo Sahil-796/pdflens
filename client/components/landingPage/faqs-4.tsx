@@ -1,6 +1,7 @@
 'use client'
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import Script from 'next/script'
 
 export default function FAQsFour() {
   const faqItems = [
@@ -30,9 +31,28 @@ export default function FAQsFour() {
       answer: 'Export to PDF and Word. Convert from Word, PPT, and PDF to various formats.',
     },
   ]
+  
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqItems.map(item => ({
+      "@type": "Question",
+      "name": item.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": item.answer,
+      },
+    })),
+  }
 
   return (
     <section className="py-16 md:py-24">
+      
+      <Script
+        id="faq-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="mx-auto max-w-5xl px-4 md:px-6">
         <div className="mx-auto max-w-xl text-center">
           <h2 className="text-balance text-primary text-3xl font-bold md:text-4xl lg:text-5xl">Frequently Asked Questions</h2>
