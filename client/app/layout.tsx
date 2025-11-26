@@ -4,7 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommandPaletteProvider } from "@/components/providers/CommandPaletteProvider";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,49 +20,12 @@ export const metadata: Metadata = {
   title: "ZendraPdf — AI PDF Generator",
   description:
     "AI PDF Generator: Create, edit, and manage your PDFs with ZendraPdf. AI-powered simplicity for smarter document handling.",
-  applicationName: "ZendraPdf",
-  authors: [{ name: "ZendraPdf Team" }],
-  creator: "ZendraPdf",
-  publisher: "ZendraPdf",
-  alternates: {
-    canonical: "https://zendrapdf.vercel.app",
-  },
-  openGraph: {
-    title: "ZendraPdf — AI PDF Generator",
-    description:
-      "Create, edit, and manage your PDFs with ZendraPdf. AI-powered simplicity for smarter document handling.",
-    url: "https://zendrapdf.vercel.app",
-    siteName: "ZendraPdf",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "ZendraPdf — AI PDF Generator",
-      },
-    ],
-    locale: "en_US",
-    type: "website",
-  },
   metadataBase: new URL("https://zendrapdf.vercel.app"),
-  twitter: {
-    card: "summary_large_image",
-    title: "ZendraPdf — AI PDF Generator",
-    description:
-      "AI PDF Generator: Create, edit, and manage your PDFs with ZendraPdf. AI-powered simplicity for smarter document handling.",
-    images: ["/og-image.png"],
-  },
-  icons: {
-    icon: "/icon.png",
-  },
+  alternates: { canonical: "https://zendrapdf.vercel.app" },
+  icons: { icon: "/icon.png" }, 
 };
 
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -74,15 +37,29 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* REQUIRED FIRST */}
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+        {/* title + meta description should be early */}
+        <title>ZendraPdf — AI PDF Generator</title>
+        <meta
+          name="description"
+          content="AI PDF Generator to create, edit, and manage PDFs with AI-powered simplicity."
+        />
+
+        {/* favicon - MUST BE .ico */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="canonical" href="https://zendrapdf.vercel.app" />
+
+        {/* structured data MUST come after meta tags */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
         />
       </head>
-      <Analytics />
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -94,6 +71,9 @@ export default function RootLayout({
             <Toaster position="top-center" richColors />
           </CommandPaletteProvider>
         </ThemeProvider>
+
+        {/* 🚀 MUST BE INSIDE BODY, NEVER ABOVE HEAD */}
+        <Analytics />
       </body>
     </html>
   );
