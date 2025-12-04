@@ -1,4 +1,3 @@
-
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -66,7 +65,7 @@ export const Logo = ({
               sizeClasses.text,
             )}
           >
-            ZendraPDF
+            ZendraPdf
           </span>
           {showSubtitle && (
             <span
