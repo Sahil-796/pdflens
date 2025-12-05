@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     "AI PDF Generator: Create, edit, and manage your PDFs with ZendraPdf. AI-powered simplicity for smarter document handling.",
   metadataBase: new URL("https://zendrapdf.app"),
   alternates: { canonical: "https://zendrapdf.app" },
-  icons: { icon: "/icon.png" },
+  icons: { icon: "/favicon.ico" },
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
     "@type": "Organization",
     name: "ZendraPdf",
     url: "https://zendrapdf.app",
-    logo: "https://zendrapdf.app/icon.png",
+    logo: "https://zendrapdf.app/favicon.ico",
   };
 
   return (

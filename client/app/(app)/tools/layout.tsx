@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   icons: {
-    icon: "/icon.png",
+    icon: "/favicon.ico",
   },
 };
 export default async function AppLayout({
