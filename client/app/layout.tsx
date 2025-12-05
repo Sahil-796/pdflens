@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommandPaletteProvider } from "@/components/providers/CommandPaletteProvider";
 import { Analytics } from "@vercel/analytics/next";
+import type { Metadata, Viewport } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,73 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
+export const metadata: Metadata = {
+  title: "ZendraPdf — AI PDF Generator",
+  description:
+    "AI PDF Generator: Create, edit, and manage your PDFs with AI-powered simplicity. Fast, smart, and easy document handling.",
+  keywords: [
+    "AI PDF Generator",
+    "PDF editor",
+    "ZendraPdf",
+    "PDF Generator",
+    "AI document editor",
+    "create PDF",
+    "edit PDF",
+  ],
+  metadataBase: new URL("https://zendrapdf.app"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "ZendraPdf — AI PDF Generator",
+    description:
+      "AI PDF Generator: Create, edit, and manage your PDFs with AI-powered simplicity.",
+    url: "https://zendrapdf.app",
+    siteName: "ZendraPdf — AI PDF Generator",
+    type: "website",
+    locale: "en_IN",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 500,
+        height: 500,
+        alt: "ZendraPdf — AI PDF Generator",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ZendraPdf — AI PDF Generator",
+    description: "Create, edit, and manage PDFs with AI-powered simplicity.",
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const orgData = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -50,66 +117,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Required core tags */}
-        <meta charSet="utf-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, viewport-fit=cover"
-        />
-
-        <title>ZendraPdf — AI PDF Generator</title>
-
-        <meta
-          name="description"
-          content="AI PDF Generator: Create, edit, and manage your PDFs with AI-powered simplicity. Fast, smart, and easy document handling."
-        />
-        <meta
-          name="keywords"
-          content="AI PDF Generator, PDF editor, ZendraPdf, PDF Generator, AI document editor, create PDF, edit PDF"
-        />
-
-        {/* Canonical */}
-        <link rel="canonical" href="https://zendrapdf.app" />
-
-        {/* Robots */}
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-
-        {/* OpenGraph */}
-        <meta property="og:title" content="ZendraPdf — AI PDF Generator" />
-        <meta
-          property="og:description"
-          content="AI PDF Generator: Create, edit, and manage your PDFs with AI-powered simplicity."
-        />
-        <meta property="og:url" content="https://zendrapdf.app" />
-        <meta property="og:site_name" content="ZendraPdf — AI PDF Generator" />
-        <meta property="og:type" content="website" />
-        <meta property="og:locale" content="en_IN" />
-        <meta property="og:image" content="https://zendrapdf.app/icon.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="ZendraPdf — AI PDF Generator" />
-        <meta
-          name="twitter:description"
-          content="Create, edit, and manage PDFs with AI-powered simplicity."
-        />
-        <meta name="twitter:image" content="https://zendrapdf.app/icon.png" />
-
-        {/* Icons */}
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-
-        {/* Performance optimizations */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-
-        {/* Preload hero image if you have 👇 */}
-        {/* <link rel="preload" as="image" href="/hero.png" /> */}
-
-        {/* Structured Data */}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgData) }}
@@ -122,9 +132,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productData) }}
         />
-      </head>
-
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
