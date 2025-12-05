@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://zendrapdf.vercel.app/sitemap.xml",
+    sitemap: "https://zendrapdf.app/sitemap.xml",
   };
 }

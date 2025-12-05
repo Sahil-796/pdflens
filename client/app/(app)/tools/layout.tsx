@@ -5,10 +5,10 @@ export const metadata: Metadata = {
   description:
     "Choose from multiple PDF tools: convert, edit, organize, merge, and split PDFs easily.",
   alternates: {
-    canonical: "https://zendrapdf.vercel.app/tools",
+    canonical: "https://zendrapdf.app/tools",
   },
   robots: {
-    index: true,    
+    index: true,
     follow: true,
   },
   applicationName: "ZendraPdf",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: "PDF Tools — ZendraPdf",
     description:
       "Choose from multiple PDF tools: convert, edit, organize, merge, and split PDFs easily.",
-    url: "https://zendrapdf.vercel.app/tools",
+    url: "https://zendrapdf.app/tools",
     siteName: "ZendraPdf",
     images: [
       {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-  metadataBase: new URL("https://zendrapdf.vercel.app"),
+  metadataBase: new URL("https://zendrapdf.app"),
   twitter: {
     card: "summary_large_image",
     title: "PDF Tools — ZendraPdf",
@@ -45,13 +45,14 @@ export const metadata: Metadata = {
   },
 };
 export default async function AppLayout({
-    children,
+  children,
 }: {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-    return (
-        <main className="flex-1 overflow-auto bg-background text-foreground">
-            {children}
-        </main>
-    );
+  return (
+    <main className="flex-1 overflow-auto bg-background text-foreground">
+      {children}
+    </main>
+  );
 }
+
