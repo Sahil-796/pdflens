@@ -3,7 +3,7 @@ import tempfile
 import logging
 from fastapi import APIRouter, UploadFile, File, Form, Header
 from fastapi.responses import JSONResponse
-from langchain.text_splitter import MarkdownTextSplitter
+from langchain_text_splitters import MarkdownTextSplitter
 from langchain_pinecone import PineconeVectorStore
 from app.config import cfEmbeddings, INDEX_NAME
 import pymupdf4llm  # for PDF → Markdown conversion

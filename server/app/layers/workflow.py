@@ -1,3 +1,4 @@
+from bisect import insort
 from .prompt_refine import extract_formatting_and_content
 from .formatting import generate_formatting_kwargs
 from .content_draft import create_draft
@@ -20,7 +21,7 @@ vector_store = PineconeVectorStore(
 )
 
 
-async def workflow(req = PromptRequest) -> str:
+async def workflow(req: PromptRequest) -> str:
     # No more try...except block. Let errors bubble up!
     userId = req.userId
     user_input = req.userPrompt
@@ -47,7 +48,7 @@ async def workflow(req = PromptRequest) -> str:
 
     draft = await create_draft(extractor[0], extractor[2], context)
     print({"context": context})
-    content = await refine_structure(extractor[0] + " " + context, draft, extractor[2])
+    content = await refine_structure(content_description=extractor[0], context=context, initial_content=draft, instructions=extractor[2])
     print({"refined_content": content})
     formatting = await generate_formatting_kwargs(extractor[1], content, extractor[2])
 

@@ -105,7 +105,7 @@ const Generate = () => {
   const [showAIWorking, setShowAIWorking] = useState(false)
   const [limitModalOpen, setLimitModalOpen] = useState(false)
 
-  const { userId, creditsLeft, setUser } = useUserStore()
+  const {creditsLeft, setUser } = useUserStore()
   const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf } = usePdfStore()
 
   const template = searchParams.get('template') // Check for template param
@@ -139,45 +139,52 @@ const Generate = () => {
     setShowAIWorking(true)
 
     try {
-      let currentPdfId = pdfId
-      if (!currentPdfId) {
-        const createRes = await fetch('/api/createPdf', {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ html: '', pdfName: fileName }),
-        })
-        if (!createRes.ok) throw new Error("Failed to create PDF")
-        const createData = await createRes.json()
-        currentPdfId = createData.id
-        setPdf({ pdfId: currentPdfId })
-      }
-
-      const generateRes = await fetch('/api/generateHTML', {
+      // V2 ATOMIC API CALL
+      // This handles Creation -> Deduction -> Generation -> Update in one go.
+      // Note: (v2) is a route group and doesn't appear in the URL
+      const res = await fetch('/api/generate', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, userPrompt: input, pdfId: currentPdfId, isContext }),
+        body: JSON.stringify({
+          userPrompt: input,
+          fileName: fileName,
+          isContext: isContext,
+          existingPdfId: pdfId || undefined // Pass ID if we are regenerating an existing one
+        }),
       })
-      if (!generateRes.ok) throw new Error("Failed to generate HTML")
 
-      const generateData = await generateRes.json()
-      setPdf({ htmlContent: generateData.data })
-      setUser({ creditsLeft: generateData.creditsLeft })
+      const data = await res.json()
 
-      const updateRes = await fetch('/api/updatePdf', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: generateData.data, id: currentPdfId, filename: fileName }),
-      })
-      const updateData = await updateRes.json()
-      const resPdf = updateData.pdf
-      if (updateData.status === 200) {
-        setSuccess(true)
-        toast.success(`"${fileName}" Generated Successfully!`)
-        addPdf({ id: resPdf.id, fileName, htmlContent: resPdf.data, createdAt: resPdf.createdAt })
+      if (!res.ok) {
+        // Handle specific errors
+        if (res.status === 429) {
+          setLimitModalOpen(true)
+          return
+        }
+        throw new Error(data.message || "Generation failed")
       }
+
+      // Success!
+      setPdf({
+        htmlContent: data.data,
+        pdfId: data.pdfId
+      })
+      setUser({ creditsLeft: data.creditsLeft })
+
+      setSuccess(true)
+      toast.success(`"${fileName}" Generated Successfully!`)
+
+      // Add to local store list
+      addPdf({
+        id: data.pdfId,
+        fileName,
+        htmlContent: data.data,
+        createdAt: new Date().toISOString() // Approximate
+      })
+
     } catch (err) {
       console.error("Error in handleSend:", err)
-      toast.error("Something went wrong while generating")
+      toast.error(err instanceof Error ? err.message : "Something went wrong while generating")
     } finally {
       setLoading(false)
     }

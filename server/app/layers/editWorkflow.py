@@ -7,13 +7,23 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 import re
 
 def clean_markdown(text: str) -> str:
-    """
-    Cleans LLM output to remove accidental Markdown code fences.
-    """
-    # Remove leading/trailing triple backticks with or without language hints
-    text = re.sub(r"^```[a-zA-Z]*\n", "", text.strip())
-    text = re.sub(r"\n```$", "", text)
-    return text.strip()
+
+    text = text.strip()
+
+    # check if the entire response is wrapped in ``` ... ```
+    if text.startswith("```") and text.endswith("```"):
+        lines = text.splitlines()
+        
+        # Get the language hint from the first line (e.g., ```markdown -> markdown)
+        first_line = lines[0].strip().lower()
+        
+        # Only strip if it's explicitly 'markdown' or a generic empty fence.
+        # This protects ```mermaid, ```python, etc., if they appear at the very start.
+        if first_line == "```" or first_line.startswith("```markdown"):
+            
+            return "\n".join(lines[1:-1]).strip()
+    
+    return text
 
 load_dotenv()
 
