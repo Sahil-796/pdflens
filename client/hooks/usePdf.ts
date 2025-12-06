@@ -23,23 +23,7 @@ export function usePdf(initialLimit?: number) {
         setStatus("loading");
         const res = await fetch("/api/getALL");
         const data = await res.json();
-
-        const TWO_MINS = 2 * 60 * 1000;
-        const now = Date.now();
-        const invalidPdfs = data.filter((pdf: Pdf) => {
-          if (!pdf.createdAt) return false;
-          const createdTime = new Date(pdf.createdAt).getTime();
-          const isOlderThan2 = now - createdTime > TWO_MINS;
-          return pdf.htmlContent === "" && isOlderThan2;
-        });
-        if (invalidPdfs.length > 0) {
-          invalidPdfs.map((pdf: Pdf) => {
-            handleDelete(pdf.id);
-          });
-        }
-        const validPdfs = data.filter((pdf: Pdf) => !invalidPdfs.includes(pdf));
-
-        setPdfs(validPdfs);
+        setPdfs(data);
       } catch (error) {
         console.error("Error fetching PDFs:", error);
         setStatus("error");
