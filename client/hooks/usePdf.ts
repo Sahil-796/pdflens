@@ -21,18 +21,23 @@ export function usePdf(initialLimit?: number) {
       try {
         setLoading(true);
         setStatus("loading");
-        // Always fetch all PDFs, but display limited amount initially
         const res = await fetch("/api/getALL");
         const data = await res.json();
-        const invalidPdfs = data.filter((pdf: Pdf) => pdf.htmlContent === "");
+
+        const TWO_MINS = 2 * 60 * 1000;
+        const now = Date.now();
+        const invalidPdfs = data.filter((pdf: Pdf) => {
+          if (!pdf.createdAt) return false;
+          const createdTime = new Date(pdf.createdAt).getTime();
+          const isOlderThan2 = now - createdTime > TWO_MINS;
+          return pdf.htmlContent === "" && isOlderThan2;
+        });
         if (invalidPdfs.length > 0) {
-          data.map((pdf: Pdf) => {
-            if (pdf.htmlContent === "") {
-              handleDelete(pdf.id);
-            }
+          invalidPdfs.map((pdf: Pdf) => {
+            handleDelete(pdf.id);
           });
         }
-        const validPdfs = data.filter((pdf: Pdf) => pdf.htmlContent !== "");
+        const validPdfs = data.filter((pdf: Pdf) => !invalidPdfs.includes(pdf));
 
         setPdfs(validPdfs);
       } catch (error) {
@@ -82,4 +87,3 @@ export function usePdf(initialLimit?: number) {
     showAll,
   };
 }
-
