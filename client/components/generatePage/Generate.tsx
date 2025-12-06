@@ -1,15 +1,15 @@
-'use client'
-import React, { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
-import { toast } from 'sonner'
-import { useUserStore } from '@/app/store/useUserStore'
-import { useAuthRehydrate } from '@/hooks/useAuthRehydrate'
-import { usePdfStore } from '@/app/store/usePdfStore'
-import { useRouter } from 'next/navigation'
-import { TextShimmerWave } from '../motion-primitives/text-shimmer-wave'
-import UploadFiles from '@/components/generatePage/UploadFiles'
-import AIWorking from '@/components/generatePage/AIWorking'
+"use client";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { useUserStore } from "@/app/store/useUserStore";
+import { useAuthRehydrate } from "@/hooks/useAuthRehydrate";
+import { usePdfStore } from "@/app/store/usePdfStore";
+import { useRouter } from "next/navigation";
+import { TextShimmerWave } from "../motion-primitives/text-shimmer-wave";
+import UploadFiles from "@/components/generatePage/UploadFiles";
+import AIWorking from "@/components/generatePage/AIWorking";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,13 +19,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Badge } from '../ui/badge'
-import { Coins } from 'lucide-react'
-import { Button } from '../ui/button'
+} from "@/components/ui/alert-dialog";
+import { Badge } from "../ui/badge";
+import { Coins } from "lucide-react";
+import { Button } from "../ui/button";
 
 const templatePrompts: Record<string, string> = {
-  "Resume": `
+  Resume: `
 Create a professional resume with the following details:
 - Name: [Your Name]
 - Email: [Your Email]
@@ -73,7 +73,7 @@ Write a professional cover letter with placeholders for:
 - Conclusion: [Concluding Remarks]
 - References: [List of References]
   `,
-  "Agreement": `
+  Agreement: `
   Draft a legal agreement with placeholders for:
 - Agreement Title: [Agreement Name]
 - Parties Involved: [Party A, Party B]
@@ -83,7 +83,7 @@ Write a professional cover letter with placeholders for:
 - Duration: [Contract Duration]
 - Signatures: [Party A Signature, Party B Signature] 
   `,
-  "Report": `
+  Report: `
   Generate a structured report with placeholders for:
 - Report Title: [Title of Report]
 - Author: [Your Name]
@@ -92,104 +92,104 @@ Write a professional cover letter with placeholders for:
 - Body: [Main Content Sections]
 - Conclusion: [Final Remarks]
 - Appendices: [Supporting Material] 
-  `
-}
+  `,
+};
 
 const Generate = () => {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  useAuthRehydrate()
-  const [input, setInput] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [showAIWorking, setShowAIWorking] = useState(false)
-  const [limitModalOpen, setLimitModalOpen] = useState(false)
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  useAuthRehydrate();
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [showAIWorking, setShowAIWorking] = useState(false);
+  const [limitModalOpen, setLimitModalOpen] = useState(false);
 
-  const {creditsLeft, setUser } = useUserStore()
-  const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf } = usePdfStore()
+  const { creditsLeft, setUser } = useUserStore();
+  const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf } =
+    usePdfStore();
 
-  const template = searchParams.get('template') // Check for template param
+  const template = searchParams.get("template"); // Check for template param
 
   useEffect(() => {
-    clearPdf()
+    clearPdf();
     // If template exists, pre-fill prompt
     if (template && templatePrompts[template]) {
-      setInput(templatePrompts[template].trim())
+      setInput(templatePrompts[template].trim());
     }
-  }, [clearPdf, template])
+  }, [clearPdf, template]);
 
   useEffect(() => {
     if (success) {
-      router.push(`/edit/${pdfId}`)
+      router.push(`/edit/${pdfId}`);
     }
-  }, [success, pdfId, router])
+  }, [success, pdfId, router]);
 
   const handleSend = async () => {
     if (!input.trim()) {
-      toast.error("Prompt cannot be empty")
-      return
+      toast.error("Prompt cannot be empty");
+      return;
     }
 
     if (creditsLeft < 4) {
-      setLimitModalOpen(true)
-      return
+      setLimitModalOpen(true);
+      return;
     }
 
-    setLoading(true)
-    setShowAIWorking(true)
+    setLoading(true);
+    setShowAIWorking(true);
 
     try {
       // V2 ATOMIC API CALL
       // This handles Creation -> Deduction -> Generation -> Update in one go.
       // Note: (v2) is a route group and doesn't appear in the URL
-      const res = await fetch('/api/generate', {
+      const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userPrompt: input,
           fileName: fileName,
           isContext: isContext,
-          existingPdfId: pdfId || undefined // Pass ID if we are regenerating an existing one
         }),
-      })
-
-      const data = await res.json()
+      });
 
       if (!res.ok) {
         // Handle specific errors
         if (res.status === 429) {
-          setLimitModalOpen(true)
-          return
+          setLimitModalOpen(true);
+          return;
         }
-        throw new Error(data.message || "Generation failed")
+        throw new Error("PDF Generation failed");
       }
 
-      // Success!
+      const data = await res.json();
+
       setPdf({
         htmlContent: data.data,
-        pdfId: data.pdfId
-      })
-      setUser({ creditsLeft: data.creditsLeft })
+        pdfId: data.pdfId,
+      });
+      setUser({ creditsLeft: data.creditsLeft });
 
-      setSuccess(true)
-      toast.success(`"${fileName}" Generated Successfully!`)
+      setSuccess(true);
+      toast.success(`"${fileName}" Generated Successfully!`);
 
-      // Add to local store list
       addPdf({
         id: data.pdfId,
         fileName,
         htmlContent: data.data,
-        createdAt: new Date().toISOString() // Approximate
-      })
-
+        createdAt: new Date().toISOString(), // Approximated
+      });
     } catch (err) {
-      console.error("Error in handleSend:", err)
-      toast.error(err instanceof Error ? err.message : "Something went wrong while generating")
+      console.error("Error in handleSend:", err);
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Something went wrong while generating",
+      );
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
+  };
 
   // Show AI Working interface when generating
   if (showAIWorking) {
@@ -197,9 +197,9 @@ const Generate = () => {
       <AIWorking
         prompt={input}
         fileName={fileName}
-        status={success ? 'success' : loading ? 'working' : 'error'}
+        status={success ? "success" : loading ? "working" : "error"}
       />
-    )
+    );
   }
 
   return (
@@ -243,8 +243,8 @@ const Generate = () => {
 
           {/* Token Display */}
           <div className="flex items-center gap-4 rounded-md">
-            <Badge variant='secondary' className="text-sm">
-              <Coins className='h-4 w-4' />
+            <Badge variant="secondary" className="text-sm">
+              <Coins className="h-4 w-4" />
               {creditsLeft} credits remaining
             </Badge>
             <Link
@@ -283,10 +283,22 @@ const Generate = () => {
         <div className="space-y-4">
           <h4 className="font-medium mb-3">Tips for better results:</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2"><span className="text-primary">•</span>Be specific about the document type and purpose</li>
-            <li className="flex items-start gap-2"><span className="text-primary">•</span>Include key details like names, dates, and requirements</li>
-            <li className="flex items-start gap-2"><span className="text-primary">•</span>Upload reference files for better context</li>
-            <li className="flex items-start gap-2"><span className="text-primary">•</span>Use clear, descriptive language</li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary">•</span>Be specific about the
+              document type and purpose
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary">•</span>Include key details like
+              names, dates, and requirements
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary">•</span>Upload reference files for
+              better context
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-primary">•</span>Use clear, descriptive
+              language
+            </li>
           </ul>
         </div>
 
@@ -297,9 +309,9 @@ const Generate = () => {
             {Object.keys(templatePrompts).map((templateName) => (
               <Button
                 key={templateName}
-                variant='outline'
+                variant="outline"
                 onClick={() => setInput(templatePrompts[templateName].trim())}
-                className='cursor-pointer'
+                className="cursor-pointer"
               >
                 {templateName}
               </Button>
@@ -310,20 +322,29 @@ const Generate = () => {
 
       {/* Improved Alert Dialog */}
       <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
-        <AlertDialogContent className="bg-gradient-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
+        <AlertDialogContent className="bg-linear-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
           <AlertDialogHeader className="space-y-2">
             <div className="flex items-center justify-center mb-2">
               <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-primary text-xl">⚠️</span>
+                <span className="text-primary text-xl">!</span>
               </div>
             </div>
             <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
               Daily Token Limit Reached
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-sm text-muted-foreground">
-              You’ve used up your <span className="font-medium text-foreground">20 daily credits</span>.
-              Upgrade to <span className="font-medium text-primary">Premium</span> to unlock
-              <span className="font-medium text-foreground"> 100 credits per day</span> and more benefits.
+              You’ve used up your{" "}
+              <span className="font-medium text-foreground">
+                20 daily credits
+              </span>
+              . Upgrade to{" "}
+              <span className="font-medium text-primary">Premium</span> to
+              unlock
+              <span className="font-medium text-foreground">
+                {" "}
+                100 credits per day
+              </span>{" "}
+              and more benefits.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
@@ -339,7 +360,7 @@ const Generate = () => {
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
-}
+  );
+};
 
-export default Generate
+export default Generate;
