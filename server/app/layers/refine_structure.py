@@ -7,7 +7,8 @@ load_dotenv()
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash-lite",
     api_key=os.environ["GOOGLE_API_KEY3"]
-)async def refine_structure(content_description: str, context: str, initial_content: str, instructions: str) -> str:
+)
+async def refine_structure(content_description: str, context: str, initial_content: str, instructions: str) -> str:
 
     try:
         system = (
