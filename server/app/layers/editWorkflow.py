@@ -5,7 +5,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 import re
-
+import os
 def clean_markdown(text: str) -> str:
 
     text = text.strip()
@@ -27,8 +27,10 @@ def clean_markdown(text: str) -> str:
 
 load_dotenv()
 
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
-
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite",
+    api_key=os.environ["GOOGLE_API_KEY0"]
+)
 class EditRequest(BaseModel):
     userPrompt: str
     html: str

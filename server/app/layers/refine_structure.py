@@ -1,10 +1,14 @@
 from dotenv import load_dotenv
-load_dotenv()
 import logging
-logger = logging.getLogger(__name__)
+import os
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
+logger = logging.getLogger(__name__)
+load_dotenv()
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite",
+    api_key=os.environ["GOOGLE_API_KEY3"]
+)
 async def refine_structure(content_description: str, context: str, initial_content: str, instructions: str) -> str:
 
     try:

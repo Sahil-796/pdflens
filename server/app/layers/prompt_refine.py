@@ -1,12 +1,16 @@
 import re
+import os
 from dotenv import load_dotenv
 load_dotenv()
 import logging
 logger = logging.getLogger(__name__)
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash-lite")
 
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash-lite",
+    api_key=os.environ["GOOGLE_API_KEY0"]
+)
 # for extracting formatting and content details from the user prompt.
 
 async def extract_formatting_and_content(user_input: str) -> tuple:

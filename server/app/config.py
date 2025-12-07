@@ -1,5 +1,5 @@
+from langchain_cloudflare import CloudflareWorkersAIEmbeddings
 from pinecone import Pinecone, ServerlessSpec
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 import os
 from dotenv import load_dotenv
@@ -22,10 +22,7 @@ if not pc.has_index(INDEX_NAME):
     )
 index = pc.Index(INDEX_NAME)  
 
-embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-exp-03-07')
-embeddings = GoogleGenerativeAIEmbeddings(model='models/gemini-embedding-001')
 
-from langchain_cloudflare import CloudflareWorkersAIEmbeddings
 
 account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
 api_token = os.environ.get("CLOUDFLARE_AUTH_TOKEN")
