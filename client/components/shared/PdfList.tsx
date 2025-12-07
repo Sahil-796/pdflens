@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import React from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+} from "@/components/ui/alert-dialog";
 import {
   Empty,
   EmptyContent,
@@ -21,29 +21,29 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@/components/ui/empty"
-import { FileText, Trash2, Calendar, Plus } from "lucide-react"
-import { useRouter } from 'next/navigation'
-import { motion, AnimatePresence } from 'framer-motion'
-import { usePdf } from '@/hooks/usePdf';
+} from "@/components/ui/empty";
+import { FileText, Trash2, Calendar, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { usePdf } from "@/hooks/usePdf";
+import { toast } from "sonner";
 
 interface Pdf {
-  id: string
-  fileName: string
-  createdAt: string | null
-  htmlContent: string
+  id: string;
+  fileName: string;
+  createdAt: string | null;
+  htmlContent: string;
 }
 
 interface PdfListProps {
-  limit?: number
-  showDelete?: boolean
-  showViewMore?: boolean
-  emptyTitle?: string
-  emptyDescription?: string
-  emptyActionText?: string
-  emptyActionPath?: string
-  onPdfClick?: (pdf: Pdf) => void
-  className?: string
+  limit?: number;
+  showDelete?: boolean;
+  showViewMore?: boolean;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyActionText?: string;
+  emptyActionPath?: string;
+  className?: string;
 }
 
 const PdfList: React.FC<PdfListProps> = ({
@@ -54,26 +54,32 @@ const PdfList: React.FC<PdfListProps> = ({
   emptyDescription = "Create or upload one to get started!",
   emptyActionText = "Create PDF",
   emptyActionPath = "/generate",
-  onPdfClick,
-  className = ""
+  className = "",
 }) => {
-  const { pdfs, loading, handleDelete, handleViewMore, showAll, totalCount } = usePdf(limit);
+  const { pdfs, loading, handleDelete, handleViewMore, showAll, totalCount } =
+    usePdf(limit);
   const router = useRouter();
 
   const handlePdfClick = (pdf: Pdf) => {
-    if (onPdfClick) {
-      onPdfClick(pdf)
+    const TWO_MINS = 2 * 60 * 1000;
+    const now = Date.now();
+    const createdTime = new Date(pdf.createdAt).getTime();
+    if (pdf.htmlContent === "" && createdTime - now < TWO_MINS) {
+      toast.info("PDF is being created");
     } else {
-      router.push(`/edit/${pdf.id}`)
+      router.push(`/edit/${pdf.id}`);
     }
-  }
+  };
 
   if (loading)
     return (
       <div className={`space-y-6 ${className}`}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="h-28 rounded-lg border border-border bg-card p-4 flex flex-col justify-between">
+            <div
+              key={i}
+              className="h-28 rounded-lg border border-border bg-card p-4 flex flex-col justify-between"
+            >
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 rounded-md bg-muted animate-pulse" />
                 <div className="h-4 w-3/4 rounded bg-muted animate-pulse" />
@@ -83,7 +89,7 @@ const PdfList: React.FC<PdfListProps> = ({
           ))}
         </div>
       </div>
-    )
+    );
 
   if (pdfs.length === 0)
     return (
@@ -103,7 +109,7 @@ const PdfList: React.FC<PdfListProps> = ({
           </div>
         </EmptyContent>
       </Empty>
-    )
+    );
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -135,11 +141,14 @@ const PdfList: React.FC<PdfListProps> = ({
                         <Calendar className="w-3 h-3" />
                         <span>
                           {pdf.createdAt
-                            ? new Date(pdf.createdAt).toLocaleDateString(undefined, {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric"
-                            })
+                            ? new Date(pdf.createdAt).toLocaleDateString(
+                                undefined,
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                },
+                              )
                             : "N/A"}
                         </span>
                       </div>
@@ -160,20 +169,28 @@ const PdfList: React.FC<PdfListProps> = ({
                           </Button>
                         </AlertDialogTrigger>
 
-                        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogContent
+                          onClick={(e) => e.stopPropagation()}
+                        >
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete PDF</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete <strong>{pdf.fileName}</strong>? This action cannot be undone.
+                              Are you sure you want to delete{" "}
+                              <strong>{pdf.fileName}</strong>? This action
+                              cannot be undone.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel onClick={(e) => e.stopPropagation()}>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               className="bg-destructive hover:bg-destructive/80"
                               onClick={(e) => {
-                                e.stopPropagation()
-                                handleDelete(pdf.id, pdf.fileName)
+                                e.stopPropagation();
+                                handleDelete(pdf.id, pdf.fileName);
                               }}
                             >
                               Delete
@@ -203,7 +220,7 @@ const PdfList: React.FC<PdfListProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PdfList
+export default PdfList;

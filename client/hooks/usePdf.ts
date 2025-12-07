@@ -21,20 +21,9 @@ export function usePdf(initialLimit?: number) {
       try {
         setLoading(true);
         setStatus("loading");
-        // Always fetch all PDFs, but display limited amount initially
         const res = await fetch("/api/getALL");
         const data = await res.json();
-        const invalidPdfs = data.filter((pdf: Pdf) => pdf.htmlContent === "");
-        if (invalidPdfs.length > 0) {
-          data.map((pdf: Pdf) => {
-            if (pdf.htmlContent === "") {
-              handleDelete(pdf.id);
-            }
-          });
-        }
-        const validPdfs = data.filter((pdf: Pdf) => pdf.htmlContent !== "");
-
-        setPdfs(validPdfs);
+        setPdfs(data);
       } catch (error) {
         console.error("Error fetching PDFs:", error);
         setStatus("error");
@@ -82,4 +71,3 @@ export function usePdf(initialLimit?: number) {
     showAll,
   };
 }
-
