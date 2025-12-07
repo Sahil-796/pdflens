@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import logging
+import os
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 logger = logging.getLogger(__name__)
