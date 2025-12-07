@@ -1,16 +1,15 @@
-"use client"
+"use client";
 
 import {
   ChevronsUpDown,
   User,
   Coins,
-} from "lucide-react"
+  ArrowRightFromLine,
+  ArrowRight,
+} from "lucide-react";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,34 +18,57 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@/components/ui/sidebar"
-import LogoutButton from "../auth/logout-button"
-import { useRouter } from "next/navigation"
-import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
+} from "@/components/ui/sidebar";
+import LogoutButton from "../auth/logout-button";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
 }: {
   user: {
-    name: string
-    email: string
-    avatar: string
-    isPro: boolean
-    creditsLeft: number
-  }
+    name: string;
+    email: string;
+    avatar: string;
+    isPro: boolean;
+    creditsLeft: number;
+  };
 }) {
-  const { isMobile } = useSidebar()
-  const router = useRouter()
+  const { isMobile } = useSidebar();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
+      <SidebarMenuItem className="group-data-[collapsible=icon]:hidden pb-1">
+        <div className="mx-2 flex flex-col gap-2 rounded-lg bg-background/50 p-3 shadow-sm transition-all">
+          <div className="flex items-center justify-center gap-2">
+            <span className="flex items-center gap-1.5 text-secondary-foreground text-xs font-medium">
+              <Coins className="h-3.5 w-3.5" />
+              <span className="text-sm font-bold">
+                {user.creditsLeft.toLocaleString()}
+              </span>
+              Credits Left
+            </span>
+          </div>
+
+          {!user.isPro && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="cursor-pointer"
+              onClick={() => router.push("/pricing")}
+            >
+              Get More Credits
+              <ArrowRight className="mr-1.5 h-3 w-3" />
+            </Button>
+          )}
+        </div>
+      </SidebarMenuItem>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -81,7 +103,9 @@ export function NavUser({
             {/* Top section */}
             <DropdownMenuLabel className="flex flex-col gap-2 px-3 py-2 border-b border-border/60">
               <div className="flex flex-col justify-center">
-                <p className="text-sm font-medium text-foreground">{user.name}</p>
+                <p className="text-sm font-medium text-foreground">
+                  {user.name}
+                </p>
                 {user.isPro && (
                   <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                     PRO
@@ -89,23 +113,6 @@ export function NavUser({
                 )}
                 <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
-
-              {/* Credits left */}
-              <div className="flex items-center gap-1">
-                <Badge
-                  variant="secondary"
-                >
-                  <Coins className="w-4 h-4 mr-1 text-primary" />
-                  {user.creditsLeft} credits left
-                </Badge>
-              </div>
-
-              {/* Upgrade to Pro button (only for non-pro users) */}
-              {!user.isPro && (
-                <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
-                  Get More Credits →
-                </Link>
-              )}
             </DropdownMenuLabel>
 
             <DropdownMenuGroup>
@@ -123,5 +130,5 @@ export function NavUser({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
