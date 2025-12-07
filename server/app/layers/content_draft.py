@@ -7,7 +7,8 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash-lite",
     api_key=os.environ["GOOGLE_API_KEY1"]
-)import logging
+)
+import logging
 logger = logging.getLogger(__name__)
 import re
 
