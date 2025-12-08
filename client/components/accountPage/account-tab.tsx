@@ -18,11 +18,12 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Trash2 } from "lucide-react";
 import { Input } from "../ui/input";
-import { queryClient } from "@/lib/queryClient";
 import { useEditorStore } from "@/store/useEditorStore";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AccountTab = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const [confirmText, setConfirmText] = useState("");
   const [, setDeleteLoading] = useState(false);

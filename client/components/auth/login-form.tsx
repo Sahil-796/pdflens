@@ -26,8 +26,8 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
-import { queryClient } from "@/lib/queryClient";
 import { userKeys } from "@/lib/queryKeys";
+import { useQueryClient } from "@tanstack/react-query";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -42,6 +42,7 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { data: session, isPending } = authClient.useSession();
 
   const form = useForm<z.infer<typeof formSchema>>({

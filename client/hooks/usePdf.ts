@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { pdfKeys } from "@/lib/queryKeys";
-import { queryClient } from "@/lib/queryClient";
 
 interface Pdf {
   id: string;
@@ -12,6 +11,7 @@ interface Pdf {
 }
 
 export function usePdf(initialLimit: number = 8) {
+  const queryClient = useQueryClient();
   const [showAll, setShowAll] = useState(false);
 
   const {

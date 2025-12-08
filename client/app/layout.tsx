@@ -3,10 +3,10 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommandPaletteProvider } from "@/components/providers/CommandPaletteProvider";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
+import Providers from "@/components/providers/Providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -117,6 +117,8 @@ export default function RootLayout({
     image: "https://zendrapdf.app/icon.png",
   };
 
+  const queryClient = new QueryClient();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -137,19 +139,7 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productData) }}
         />
-        <QueryClientProvider client={queryClient}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <CommandPaletteProvider>
-              {children}
-              <Toaster position="top-center" richColors />
-            </CommandPaletteProvider>
-          </ThemeProvider>
-        </QueryClientProvider>
+        <Providers>{children}</Providers>
 
         <Analytics />
       </body>

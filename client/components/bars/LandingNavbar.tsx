@@ -203,9 +203,9 @@ export default function Navbar() {
 
           {/* Right: Auth/User */}
           <div
-            className={`hidden sm:flex items-center gap-2 flex-shrink-0 ${loading ? "scale-0" : "scale-100"}`}
+            className={`hidden sm:flex items-center gap-2 shrink-0 ${loading ? "scale-0" : "scale-100"}`}
           >
-            {!user.id ? (
+            {!user ? (
               <>
                 <Button
                   asChild
@@ -281,7 +281,9 @@ export default function Navbar() {
                       <div className="mt-3 flex items-center justify-between">
                         <Badge variant="secondary">
                           <Coins className="h-3.5 w-3.5 text-primary" />
-                          <span className="">{creditsLeft} credits left</span>
+                          <span className="">
+                            {user.creditsLeft} credits left
+                          </span>
                         </Badge>
 
                         {/* Upgrade Button for non-pro users */}
