@@ -1,89 +1,58 @@
-import { useUserStore } from "@/app/store/useUserStore";
 import { authClient } from "@/lib/auth-client";
-import { useEffect, useState } from "react";
+import { userKeys } from "@/lib/queryKeys";
+import { useQuery } from "@tanstack/react-query";
 
 export default function useUser() {
-  const {
-    userId,
-    userName,
-    userEmail,
-    userAvatar,
-    userPlan,
-    emailVerified,
-    setUser,
-    clearUser,
-    providerId,
-    fetched,
-  } = useUserStore();
-
-  const [loading, setLoading] = useState(!fetched);
-
-  useEffect(() => {
-    if (fetched) return;
-
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const { data: session } = await authClient.getSession();
-
-        if (session?.user) {
-          setUser({
-            userId: session.user.id,
-            userName: session.user.name,
-            userEmail: session.user.email,
-            userAvatar: session.user.image,
-          });
-
-          try {
-            const res = await fetch('/api/getCreditHistory')
-            if (!res.ok) throw new Error("Failed to fetch credit history")
-            const data = await res.json()
-            setUser({ creditsHistory: data })
-          } catch (error) {
-            console.error("Error fetching credit history:", error)
-          }
-
-          try {
-            const res = await fetch("/api/getUserDetails", { cache: "no-store" });
-            if (res.ok) {
-              const { plan, emailVerified, providerId, creditsLeft } = await res.json();
-              setUser({
-                userPlan: plan,
-                emailVerified,
-                creditsLeft,
-                providerId,
-              });
-            }
-          } catch (err) {
-            console.error("Error fetching user details:", err);
-          }
-        } else {
-          clearUser();
-        }
-      } catch (error) {
-        console.error("Failed to fetch user:", error);
-        clearUser();
-      } finally {
-        setUser({ fetched: true });
-        setLoading(false);
+  const { data: user, isLoading: loading } = useQuery({
+    queryKey: userKeys.profile(),
+    queryFn: async () => {
+      const { data: session } = await authClient.getSession();
+      if (!session.user) {
+        return null;
       }
-    };
 
-    fetchUser();
-  }, [fetched, setUser, clearUser]);
+      const [creditHistoryRes, detailsRes] = await Promise.all([
+        fetch("/api/getCreditHistory"),
+        fetch("/api/getUserDetails", { cache: "no-store" }),
+      ]);
+
+      const creditsHistory = creditHistoryRes.ok
+        ? await creditHistoryRes.json()
+        : [];
+
+      let details = {};
+      if (detailsRes.ok) {
+        details = await detailsRes.json();
+      }
+
+      return {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        avatar: session.user.image,
+        // @ts-ignore
+        plan: details.plan || "free",
+        // @ts-ignore
+        emailVerified: details.emailVerified,
+        // @ts-ignore
+        creditsLeft: details.creditsLeft,
+        // @ts-ignore
+        providerId: details.providerId,
+        creditsHistory,
+      };
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   return {
-    user: {
-      id: userId,
-      name: userName,
-      email: userEmail,
-      avatar: userAvatar,
-      plan: userPlan,
-      emailVerified,
-      isPro: userPlan === "premium",
-      isAuthenticated: !!userId && emailVerified,
-      userProvider: providerId,
-    },
+    user: user
+      ? {
+          ...user,
+          isPro: user.plan === "premium",
+          isAuthenticated: !!user.id,
+          userProvider: user.providerId,
+        }
+      : null,
     loading,
   };
 }
