@@ -19,25 +19,18 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import ThemeToggle from "../theme/ThemeToggle";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/app/store/useUserStore";
-import { authClient } from "@/lib/auth-client";
 import useUser from "@/hooks/useUser";
 import { Logo } from "../Logo";
-import { usePdfStore } from "@/app/store/usePdfStore";
 import { useCommandPalette } from "@/hooks/useCommandPalette";
 import MobileMenubar from "./mobile-menubar";
 import { Badge } from "../ui/badge";
+import { useLogout } from "@/hooks/mutations/useLogout";
 
 const navigationLinks = [
   {
     href: "/",
     label: "Home",
   },
-  // {
-  //   label: "About",
-  //   href: '/about'
-  // },
   {
     label: "Pricing",
     href: "/pricing",
@@ -94,32 +87,12 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
-  const [isLoading, setIsLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const router = useRouter();
   const { user, loading } = useUser();
-  const { clearUser, creditsLeft } = useUserStore();
-  const { clearPdf } = usePdfStore();
   const { setOpen } = useCommandPalette();
 
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push("/");
-          },
-        },
-      });
-      clearUser();
-      clearPdf();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { mutate: logout, isPending } = useLogout();
 
-  // Monogram (first letter of name or email fallback)
   const monogram = loading ? (
     <Loader2 className="h-4 w-4 animate-spin" />
   ) : user.avatar ? (
@@ -352,16 +325,16 @@ export default function Navbar() {
                     <div className="p-2">
                       <Button
                         variant="ghost"
-                        onClick={handleLogout}
-                        disabled={isLoading}
+                        onClick={() => logout()}
+                        disabled={isPending}
                         className="w-full justify-start gap-2 h-9 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
-                        {isLoading ? (
+                        {isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <LogOut className="h-4 w-4" />
                         )}
-                        <span>{isLoading ? "Logging out..." : "Log out"}</span>
+                        <span>{isPending ? "Logging out..." : "Log out"}</span>
                       </Button>
                     </div>
                   </PopoverContent>
@@ -377,9 +350,9 @@ export default function Navbar() {
           setMobileOpen={setMobileOpen}
           navigationLinks={navigationLinks}
           user={user}
-          handleLogout={handleLogout}
-          isLoading={isLoading}
-          creditsLeft={creditsLeft}
+          handleLogout={() => logout()}
+          isLoading={isPending}
+          creditsLeft={user.creditsLeft}
         />
       )}
     </>

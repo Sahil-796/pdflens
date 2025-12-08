@@ -1,22 +1,21 @@
-'use client'
-import { ArrowRightCircle, Coins } from "lucide-react"
-import { Button } from "../ui/button"
-import { Separator } from "../ui/separator"
-import { Badge } from "@/components/ui/badge"
-import useUser from "@/hooks/useUser"
-import { useUserStore } from "@/app/store/useUserStore"
-import { useRouter } from "next/navigation"
-import CreditsTable from "./credits-table"
+"use client";
+import { ArrowRightCircle, Coins } from "lucide-react";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Badge } from "@/components/ui/badge";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
+import CreditsTable from "./credits-table";
 
 const BillingTab = () => {
-
-  const { user } = useUser()
-  const { creditsLeft } = useUserStore()
-  const router = useRouter()
+  const { user } = useUser();
+  const router = useRouter();
   return (
     <>
       <div>
-        <h3 className="text-lg font-medium text-foreground mb-1">Credits & Billing</h3>
+        <h3 className="text-lg font-medium text-foreground mb-1">
+          Credits & Billing
+        </h3>
         <p className="text-sm text-muted-foreground">
           Manage your credits and subscription
         </p>
@@ -28,12 +27,18 @@ const BillingTab = () => {
             <Coins className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-medium text-muted-foreground">Available Credits</p>
-            <p className="text-2xl font-bold text-foreground">{creditsLeft}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Available Credits
+            </p>
+            <p className="text-2xl font-bold text-foreground">
+              {user.creditsLeft}
+            </p>
           </div>
         </div>
         {!user?.isPro && (
-          <Badge variant="outline" className="text-xs">Free Plan</Badge>
+          <Badge variant="outline" className="text-xs">
+            Free Plan
+          </Badge>
         )}
       </div>
 
@@ -60,7 +65,7 @@ const BillingTab = () => {
         <CreditsTable />
       </div>
     </>
-  )
-}
+  );
+};
 
-export default BillingTab
+export default BillingTab;

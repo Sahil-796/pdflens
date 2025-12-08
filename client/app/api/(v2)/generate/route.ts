@@ -93,6 +93,7 @@ export async function POST(req: Request) {
       success: true,
       data: htmlContent,
       pdfId,
+      fileName,
       creditsLeft,
       status: 200,
     });

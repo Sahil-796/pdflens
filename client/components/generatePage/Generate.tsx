@@ -1,12 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
-import { useUserStore } from "@/app/store/useUserStore";
-import { useAuthRehydrate } from "@/hooks/useAuthRehydrate";
-import { usePdfStore } from "@/app/store/usePdfStore";
-import { useRouter } from "next/navigation";
 import { TextShimmerWave } from "../motion-primitives/text-shimmer-wave";
 import UploadFiles from "@/components/generatePage/UploadFiles";
 import AIWorking from "@/components/generatePage/AIWorking";
@@ -23,6 +19,9 @@ import {
 import { Badge } from "../ui/badge";
 import { Coins } from "lucide-react";
 import { Button } from "../ui/button";
+import { useGeneratePdf } from "@/hooks/mutations/useGeneratePdf";
+import { useEditorStore } from "@/store/useEditorStore";
+import useUser from "@/hooks/useUser";
 
 const templatePrompts: Record<string, string> = {
   Resume: `
@@ -62,7 +61,7 @@ Write a professional cover letter with placeholders for:
 - Signature: [Your Full Name]
 `,
   "Research-Paper": `
-  Generate a structured research paper with placeholders for:
+Generate a structured research paper with placeholders for:
 - Title: [Paper Title]
 - Author(s): [Author Names]
 - Abstract: [Short Summary]
@@ -72,138 +71,90 @@ Write a professional cover letter with placeholders for:
 - Discussion: [Discussion Points]
 - Conclusion: [Concluding Remarks]
 - References: [List of References]
-  `,
+`,
   Agreement: `
-  Draft a legal agreement with placeholders for:
+Draft a legal agreement with placeholders for:
 - Agreement Title: [Agreement Name]
 - Parties Involved: [Party A, Party B]
 - Date: [Date of Agreement]
 - Terms & Conditions: [Key Terms]
 - Payment Details: [Payment Structure]
 - Duration: [Contract Duration]
-- Signatures: [Party A Signature, Party B Signature] 
-  `,
+- Signatures: [Party A Signature, Party B Signature]
+`,
   Report: `
-  Generate a structured report with placeholders for:
+Generate a structured report with placeholders for:
 - Report Title: [Title of Report]
 - Author: [Your Name]
 - Date: [Date of Report]
 - Executive Summary: [Summary of Report]
 - Body: [Main Content Sections]
 - Conclusion: [Final Remarks]
-- Appendices: [Supporting Material] 
-  `,
+- Appendices: [Supporting Material]
+`,
 };
 
 const Generate = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  useAuthRehydrate();
+
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [showAIWorking, setShowAIWorking] = useState(false);
   const [limitModalOpen, setLimitModalOpen] = useState(false);
 
-  const { creditsLeft, setUser } = useUserStore();
-  const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf } =
-    usePdfStore();
+  const { user } = useUser();
+  const { fileName, updateFileName, contextFiles, resetEditor } =
+    useEditorStore();
 
-  const template = searchParams.get("template"); // Check for template param
+  const { mutate: generatePdf, isPending } = useGeneratePdf();
+
+  const template = searchParams.get("template");
 
   useEffect(() => {
-    clearPdf();
-    // If template exists, pre-fill prompt
+    resetEditor();
+  }, [resetEditor]);
+
+  useEffect(() => {
     if (template && templatePrompts[template]) {
       setInput(templatePrompts[template].trim());
     }
-  }, [clearPdf, template]);
+  }, [template]);
 
-  useEffect(() => {
-    if (success) {
-      router.push(`/edit/${pdfId}`);
-    }
-  }, [success, pdfId, router]);
-
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!input.trim()) {
       toast.error("Prompt cannot be empty");
       return;
     }
 
-    if (creditsLeft < 4) {
+    const currentCredits = user?.creditsLeft ?? 0;
+    if (currentCredits < 4) {
       setLimitModalOpen(true);
       return;
     }
 
-    setLoading(true);
-    setShowAIWorking(true);
-
-    try {
-      // V2 ATOMIC API CALL
-      // This handles Creation -> Deduction -> Generation -> Update in one go.
-      // Note: (v2) is a route group and doesn't appear in the URL
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userPrompt: input,
-          fileName: fileName,
-          isContext: isContext,
-        }),
-      });
-
-      if (!res.ok) {
-        // Handle specific errors
-        if (res.status === 429) {
-          setLimitModalOpen(true);
-          return;
-        }
-        throw new Error("PDF Generation failed");
-      }
-
-      const data = await res.json();
-
-      setPdf({
-        htmlContent: data.data,
-        pdfId: data.pdfId,
-      });
-      setUser({ creditsLeft: data.creditsLeft });
-
-      setSuccess(true);
-      toast.success(`"${fileName}" Generated Successfully!`);
-
-      addPdf({
-        id: data.pdfId,
-        fileName,
-        htmlContent: data.data,
-        createdAt: new Date().toISOString(), // Approximated
-      });
-    } catch (err) {
-      console.error("Error in handleSend:", err);
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong while generating",
-      );
-    } finally {
-      setLoading(false);
-    }
+    generatePdf(
+      {
+        userPrompt: input,
+        fileName: fileName || "Untitled Document",
+        isContext: contextFiles.length > 0,
+      },
+      {
+        onError: (error) => {
+          if (
+            error.message === "DAILY TOKEN LIMIT REACHED" ||
+            error.message === "LIMIT_REACHED"
+          ) {
+            setLimitModalOpen(true);
+          }
+        },
+      },
+    );
   };
 
-  // Show AI Working interface when generating
-  if (showAIWorking) {
-    return (
-      <AIWorking
-        prompt={input}
-        fileName={fileName}
-        status={success ? "success" : loading ? "working" : "error"}
-      />
-    );
+  if (isPending) {
+    return <AIWorking prompt={input} fileName={fileName} status="working" />;
   }
 
   return (
-    <div className="flex-1  flex flex-col lg:flex-row overflow-auto">
+    <div className="flex-1 flex flex-col lg:flex-row overflow-auto">
       {/* Left Panel */}
       <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
         <div className="flex-1 p-4 space-y-6">
@@ -215,7 +166,7 @@ const Generate = () => {
             <input
               type="text"
               value={fileName}
-              onChange={(e) => setPdf({ fileName: e.target.value })}
+              onChange={(e) => updateFileName(e.target.value)} // Using Store Action
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
@@ -244,8 +195,8 @@ const Generate = () => {
           {/* Token Display */}
           <div className="flex items-center gap-4 rounded-md">
             <Badge variant="secondary" className="text-sm">
-              <Coins className="h-4 w-4" />
-              {creditsLeft} credits remaining
+              <Coins className="h-4 w-4 mr-1" />
+              {user?.creditsLeft ?? "..."} credits remaining
             </Badge>
             <Link
               href="/pricing"
@@ -258,10 +209,10 @@ const Generate = () => {
           {/* Generate Button */}
           <button
             onClick={handleSend}
-            disabled={loading || !input.trim()}
-            className="w-full bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition  cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isPending || !input.trim()}
+            className="w-full bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? (
+            {isPending ? (
               <div className="flex items-center justify-center gap-2">
                 <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
               </div>
@@ -311,16 +262,16 @@ const Generate = () => {
                 key={templateName}
                 variant="outline"
                 onClick={() => setInput(templatePrompts[templateName].trim())}
-                className="cursor-pointer"
+                className="cursor-pointer text-xs sm:text-sm justify-start"
               >
-                {templateName}
+                {templateName.replace("-", " ")}
               </Button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Improved Alert Dialog */}
+      {/* Limit Modal */}
       <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
         <AlertDialogContent className="bg-linear-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
           <AlertDialogHeader className="space-y-2">
@@ -333,18 +284,7 @@ const Generate = () => {
               Daily Token Limit Reached
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center text-sm text-muted-foreground">
-              You’ve used up your{" "}
-              <span className="font-medium text-foreground">
-                20 daily credits
-              </span>
-              . Upgrade to{" "}
-              <span className="font-medium text-primary">Premium</span> to
-              unlock
-              <span className="font-medium text-foreground">
-                {" "}
-                100 credits per day
-              </span>{" "}
-              and more benefits.
+              You’ve used up your daily credits. Upgrade to Premium for more.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
