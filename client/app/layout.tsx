@@ -3,6 +3,8 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommandPaletteProvider } from "@/components/providers/CommandPaletteProvider";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 
@@ -117,7 +119,9 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <head><link rel="canonical" href="https://zendrapdf.app"></link></head>
+      <head>
+        <link rel="canonical" href="https://zendrapdf.app"></link>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -133,17 +137,19 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productData) }}
         />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <CommandPaletteProvider>
-            {children}
-            <Toaster position="top-center" richColors />
-          </CommandPaletteProvider>
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <CommandPaletteProvider>
+              {children}
+              <Toaster position="top-center" richColors />
+            </CommandPaletteProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
 
         <Analytics />
       </body>
