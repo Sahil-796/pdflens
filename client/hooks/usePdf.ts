@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
-import { usePdfStore } from "@/app/store/usePdfStore";
+import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { pdfKeys } from "@/lib/queryKeys";
 import { queryClient } from "@/lib/queryClient";
 

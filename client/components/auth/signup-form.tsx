@@ -25,8 +25,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useUserStore } from "@/app/store/useUserStore";
 import Link from "next/link";
+import { userKeys } from "@/lib/queryKeys";
+import { queryClient } from "@/lib/queryClient";
 
 const formSchema = z.object({
   name: z.string().min(3, {
@@ -44,10 +45,7 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
   const { data: session, isPending } = authClient.useSession();
-
-  const { setUser } = useUserStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -75,21 +73,15 @@ export function SignupForm({
       password: values.password,
       callbackURL: "/dashboard",
     });
+
     if (!error && data?.user) {
-      const { id, name, email, image } = data.user;
-      setUser({
-        userId: id,
-        userName: name,
-        userEmail: email,
-        userAvatar: image,
-      });
-      // toast.success("Signed Up Successfully")
+      await queryClient.invalidateQueries({ queryKey: userKeys.profile() });
+
       toast.info(
         "Please check your email to verify your account. (Inbox or Spam)",
-        {
-          duration: 10000,
-        },
+        { duration: 10000 },
       );
+
       router.push("/dashboard");
     } else {
       toast.error(error?.message || "Failed to sign up.");
