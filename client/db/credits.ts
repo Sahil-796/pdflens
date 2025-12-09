@@ -4,79 +4,63 @@ import { eq, desc, sql } from "drizzle-orm";
 import { formatInTimeZone } from "date-fns-tz";
 import { v4 as uuidv4 } from "uuid";
 
-const DAILY_ALLOWANCE = {
+const DAILY_ALLOWANCE: Record<string, number> = {
   free: 20,
   premium: 100,
 };
 
-const history = {
-  "4": "AI pdf generation",
-  "1": "Edit using AI",
-  "-4": "Refund",
-  "-1": "Refund",
+const HISTORY_REASONS: Record<string, string> = {
+  "4": "AI PDF Generation",
+  "1": "AI Edit",
+  "-4": "Refund: Generation Failed",
+  "-1": "Refund: Edit Failed",
 };
 
 export const deduceCredits = async (userId: string, cost: number) => {
   await ensureDailyAllowance(userId);
+
   try {
-    const result = await db.transaction(async (tx) => {
-      const [currentUser] = await tx
-        .select()
-        .from(user)
-        .where(eq(user.id, userId))
-        .for("update");
+    return await db.transaction(async (tx) => {
+      const [updatedUser] = await tx
+        .update(user)
+        .set({
+          creditsLeft: sql`${user.creditsLeft} - ${cost}`,
+        })
+        .where(sql`${user.id} = ${userId} AND ${user.creditsLeft} >= ${cost}`)
+        .returning({ creditsLeft: user.creditsLeft });
 
-      if (!currentUser) {
-        throw new Error(`User not found with id: ${userId}`);
-      }
+      if (!updatedUser) {
+        const [userExists] = await tx
+          .select({ id: user.id })
+          .from(user)
+          .where(eq(user.id, userId))
+          .limit(1);
 
-      if (cost > 0) {
-        const updated = await tx
-          .update(user)
-          .set({
-            creditsLeft: sql`${user.creditsLeft} - ${cost}`,
-          })
-          .where(sql`${user.id} = ${userId} AND ${user.creditsLeft} >= ${cost}`)
-          .returning({ creditsLeft: user.creditsLeft });
-
-        if (updated.length === 0) {
-          throw new Error("Insufficient credits");
+        if (!userExists) {
+          throw new Error(`User not found with id: ${userId}`);
         }
 
-        await tx.insert(credit_history).values({
-          id: uuidv4(),
-          userId,
-          amount: cost,
-          reason: history[cost] ?? "Unknown",
-        });
-
-        return updated[0].creditsLeft;
+        throw new Error("Insufficient credits");
       }
 
-      if (cost < 0) {
-        const updated = await tx
-          .update(user)
-          .set({ creditsLeft: sql`${user.creditsLeft} - ${cost}` })
-          .where(eq(user.id, userId))
-          .returning({ creditsLeft: user.creditsLeft });
+      const reasonKey = String(cost);
+      const reason =
+        HISTORY_REASONS[reasonKey] ?? (cost < 0 ? "Refund" : "Usage");
 
-        // Log refund history
-        await tx.insert(credit_history).values({
-          id: uuidv4(),
-          userId,
-          amount: cost,
-          reason: history[cost] ?? "Unknown",
-        });
+      await tx.insert(credit_history).values({
+        id: uuidv4(),
+        userId,
+        amount: cost,
+        reason: reason,
+      });
 
-        return updated[0].creditsLeft;
-      }
-
-      return currentUser.creditsLeft;
+      return updatedUser.creditsLeft;
     });
-
-    return result;
   } catch (err) {
-    throw new Error(`Failed to use credits: ${err.message}`);
+    // Pass the error up so the API route can handle it (e.g. return 402)
+    throw new Error(
+      err instanceof Error ? err.message : "Credit deduction failed",
+    );
   }
 };
 
@@ -94,12 +78,8 @@ export const getCreditHistory = async (userId: string) => {
   return history;
 };
 
-// db/credits.ts (New function)
-
 export const ensureDailyAllowance = async (userId: string) => {
   try {
-    // 1. OPTIMIZATION: Check without locking first
-    // This prevents blocking 'deduceCredits' during normal reads
     const [userCheck] = await db
       .select({
         creditsResetAt: user.creditsResetAt,
@@ -115,24 +95,22 @@ export const ensureDailyAllowance = async (userId: string) => {
 
     const todayUTC = formatInTimeZone(new Date(), "UTC", "yyyy-MM-dd");
 
-    // If date is current, no need to lock or update
     if (userCheck.creditsResetAt >= todayUTC) {
       return userCheck.creditsLeft;
     }
 
-    // 2. RESET NEEDED: Now we lock and update safely
     const result = await db.transaction(async (tx) => {
       const [currentUser] = await tx
         .select()
         .from(user)
         .where(eq(user.id, userId))
-        .for("update"); // Lock row
+        .for("update");
 
-      if (!currentUser) return 0; // Should not happen
+      if (!currentUser) return 0;
 
-      // Double check inside lock (race condition protection)
       if (currentUser.creditsResetAt < todayUTC) {
-        const newCredits = DAILY_ALLOWANCE[currentUser.plan];
+        const newCredits =
+          DAILY_ALLOWANCE[currentUser.plan] ?? DAILY_ALLOWANCE.free;
 
         const [updatedUser] = await tx
           .update(user)
@@ -151,9 +129,6 @@ export const ensureDailyAllowance = async (userId: string) => {
     if (err instanceof Error) {
       throw new Error(`Failed to ensure daily allowance: ${err.message}`);
     }
-    throw new Error(
-      "An unknown error occurred while trying to check/reset credits.",
-    );
+    throw new Error("Unknown error checking credits.");
   }
 };
-

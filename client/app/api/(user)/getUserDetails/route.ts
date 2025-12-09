@@ -13,44 +13,32 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await ensureDailyAllowance(session.user.id);
-    const [userDetails] = await db
+    const userId = session.user.id;
+
+    await ensureDailyAllowance(userId);
+
+    const [data] = await db
       .select({
         plan: user.plan,
         emailVerified: user.emailVerified,
         creditsLeft: user.creditsLeft,
-      })
-      .from(user)
-      .where(eq(user.id, session.user.id))
-      .limit(1);
-
-    if (!userDetails) {
-      return NextResponse.json({
-        plan: null,
-        emailVerified: null,
-        creditsLeft: 0,
-      });
-    }
-
-    const [userProvider] = await db
-      .select({
         providerId: account.providerId,
       })
-      .from(account)
-      .where(eq(account.userId, session.user.id));
+      .from(user)
+      .leftJoin(account, eq(account.userId, user.id))
+      .where(eq(user.id, userId))
+      .limit(1);
 
-    if (!userProvider) {
-      return NextResponse.json({
-        providerId: "",
-      });
+    if (!data) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     return NextResponse.json(
       {
-        plan: userDetails.plan,
-        emailVerified: userDetails.emailVerified,
-        creditsLeft: userDetails.creditsLeft,
-        providerId: userProvider.providerId,
+        plan: data.plan,
+        emailVerified: data.emailVerified,
+        creditsLeft: data.creditsLeft,
+        providerId: data.providerId ?? "",
       },
       { status: 200 },
     );
@@ -59,7 +47,7 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         error: "Internal server error",
-        message: error.message,
+        // message: error.message,
       },
       {
         status: 500,

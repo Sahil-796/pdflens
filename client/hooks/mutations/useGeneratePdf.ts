@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { userKeys, pdfKeys } from "@/lib/queryKeys";
-import { useEditorStore } from "@/app/store/useEditorStore";
+import { useEditorStore } from "@/store/useEditorStore";
 
 export function useGeneratePdf() {
   const router = useRouter();

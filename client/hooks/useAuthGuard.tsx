@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useUser from "./useUser";
+import LumaSpin from "@/components/21st/LumaSpin";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const { user, loading } = useUser();
@@ -13,8 +14,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, router]);
 
-  if (loading) return <div>Loading...</div>; // Or a nice spinner
-  if (!user) return null; // Wait for redirect
+  if (loading)
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <LumaSpin />
+      </div>
+    );
+  if (!user) return null;
 
   return <>{children}</>;
 }
