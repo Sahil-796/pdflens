@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -16,48 +17,66 @@ const DownloadAsWord = () => {
     try {
       const parser = new DOMParser();
       const doc = parser.parseFromString(draftHtml, "text/html");
+
       doc.querySelector(".selected")?.classList.remove("selected");
+      doc
+        .querySelectorAll(".preview-mode")
+        .forEach((el) => el.classList.remove("preview-mode"));
       doc
         .querySelectorAll(".ai-response-container")
         .forEach((el) => el.remove());
-      const cleanContent = doc.documentElement.outerHTML;
+      doc.querySelectorAll(".ai-action-toolbar").forEach((el) => el.remove());
 
-      const wrapper = document.createElement("div");
-      wrapper.style.padding = "20px";
-      wrapper.innerHTML = cleanContent;
-
-      const res = await fetch("/api/downloadPDF", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: wrapper.outerHTML }),
+      doc.querySelectorAll("*").forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.style.fontSize = "";
+          el.style.margin = "";
+          el.style.lineHeight = "";
+        }
       });
 
-      if (!res.ok) throw new Error("Failed to convert to PDF");
+      const cleanContent = doc.body.innerHTML;
 
-      const pdfBlob = await res.blob();
+      const pdfRes = await fetch("/api/downloadPDF", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html: cleanContent }),
+      });
+
+      if (!pdfRes.ok) {
+        const errData = await pdfRes.json().catch(() => ({}));
+        throw new Error(
+          errData.details || "Failed to generate intermediate PDF",
+        );
+      }
+
+      const pdfBlob = await pdfRes.blob();
 
       const formData = new FormData();
       formData.append("file", pdfBlob, "document.pdf");
 
-      const finalRes = await fetch(`/api/tools/pdf-to-docx`, {
+      const docxRes = await fetch(`/api/tools/pdf-to-docx`, {
         method: "POST",
         body: formData,
       });
 
-      if (!finalRes.ok) throw new Error("Failed to convert to DOCX");
+      if (!docxRes.ok) throw new Error("Failed to convert to DOCX");
 
-      const docxBlob = await finalRes.blob();
+      const docxBlob = await docxRes.blob();
       const url = URL.createObjectURL(docxBlob);
+
       const a = document.createElement("a");
       a.href = url;
       a.download = `${fileName || "document"}.docx`;
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(url);
 
       toast.success("Word Document Downloaded");
     } catch (err: any) {
       console.error(err);
-      toast.error("Failed to download file.");
+      toast.error(err.message || "Failed to download Word file.");
     } finally {
       setLoading(false);
     }

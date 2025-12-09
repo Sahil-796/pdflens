@@ -171,6 +171,7 @@ export default function EditClient({ id }: { id: string }) {
             <div className="flex gap-2 justify-end">
               <SaveChanges />
               <DownloadPDF />
+              <DownloadAsWord />
             </div>
           </div>
         </div>
