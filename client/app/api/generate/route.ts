@@ -1,5 +1,5 @@
 import { deduceCredits } from "@/db/credits";
-import { createPdf, updatePdf, deletePdf } from "@/db/pdfs";
+import { createPdf } from "@/db/pdfs";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -13,33 +13,40 @@ const GenerateSchema = z.object({
 
 export async function POST(req: Request) {
   let userId: string | undefined;
-  let pdfId: string | undefined;
   let creditsDeducted = false;
 
   try {
-    const body = await req.json();
-    const parsed = GenerateSchema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json(
-        { error: "Invalid request", issues: parsed.error.flatten() },
-        { status: 400 },
-      );
-    }
-
-    const { userPrompt, fileName, isContext } = parsed.data;
     const session = await auth.api.getSession({ headers: req.headers });
-
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     userId = session.user.id;
 
-    // 1. Create PDF Entry
-    pdfId = uuidv4();
-    const name = fileName || "Untitled";
-    await createPdf(pdfId, userId, name, "");
+    const body = await req.json();
+    const parsed = GenerateSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+    }
+    const { userPrompt, fileName, isContext } = parsed.data;
 
-    // 2. Call Python API
+    console.log(`[V2/Generate] Deducting credits for user ${userId}`);
+    let creditsLeft: number;
+
+    try {
+      creditsLeft = await deduceCredits(userId, 4);
+      creditsDeducted = true;
+    } catch (creditErr: any) {
+      if (creditErr.message.includes("Insufficient")) {
+        return NextResponse.json(
+          { error: "Insufficient credits" },
+          { status: 429 },
+        );
+      }
+      throw creditErr;
+    }
+
+    const pdfId = uuidv4();
+
     console.log(`[V2/Generate] Calling Python API for PDF ${pdfId}`);
     const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
 
@@ -72,22 +79,11 @@ export async function POST(req: Request) {
       typeof htmlContent !== "string" ||
       htmlContent.length === 0
     ) {
-      console.error(
-        "[V2/Generate] Invalid content received from Python:",
-        data,
-      );
-      throw new Error("Received empty or invalid content from AI generation");
+      throw new Error("Invalid or empty content received from AI");
     }
 
-    // 3. Deduce Credits
-    console.log(`[V2/Generate] Deducting credits for user ${userId}`);
-    const creditsLeft = await deduceCredits(userId, 4);
-    creditsDeducted = true;
-
-    // 4. Update PDF with Content
-    console.log(`[V2/Generate] Received content length: ${htmlContent.length}`);
-    console.log(`[V2/Generate] Updating PDF ${pdfId} with content`);
-    await updatePdf(pdfId, fileName || "Untitled", htmlContent);
+    console.log(`[V2/Generate] Creating PDF ${pdfId}`);
+    await createPdf(pdfId, userId, fileName || "Untitled", htmlContent);
 
     return NextResponse.json({
       success: true,
@@ -97,39 +93,22 @@ export async function POST(req: Request) {
       creditsLeft,
       status: 200,
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error("[V2/Generate] Error:", err);
 
-    // ROLLBACK LOGIC
     if (userId && creditsDeducted) {
       try {
         console.log(`[V2/Generate] Refunding credits for user ${userId}`);
         await deduceCredits(userId, -4);
       } catch (refundErr) {
-        console.error("[V2/Generate] Failed to refund credits:", refundErr);
+        console.error("CRITICAL: Failed to refund credits:", refundErr);
       }
-    }
-
-    if (userId && pdfId) {
-      try {
-        console.log(`[V2/Generate] Deleting failed PDF ${pdfId}`);
-        await deletePdf(pdfId, userId);
-      } catch (deleteErr) {
-        console.error("[V2/Generate] Failed to delete PDF:", deleteErr);
-      }
-    }
-
-    if (err instanceof Error && err.message.includes("Insufficient credits")) {
-      return NextResponse.json(
-        { error: "Insufficient credits" },
-        { status: 429 },
-      );
     }
 
     return NextResponse.json(
       {
         success: false,
-        message: (err as Error)?.message || "Internal Server Error",
+        message: err.message || "Internal Server Error",
       },
       { status: 500 },
     );

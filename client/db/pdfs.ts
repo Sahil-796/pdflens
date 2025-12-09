@@ -1,6 +1,6 @@
 import { db } from "./client";
 import { pdf, context } from "./schema";
-import { eq, and, desc, lt } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 export const createPdf = async (
   id: string,
@@ -26,6 +26,7 @@ export const createPdf = async (
 
 export const updatePdf = async (
   id: string,
+  userId: string,
   filename: string,
   htmlContent?: string,
 ) => {
@@ -36,8 +37,13 @@ export const updatePdf = async (
         fileName: filename,
         htmlContent: htmlContent ?? "",
       })
-      .where(eq(pdf.id, id))
-      .returning();
+      .where(and(eq(pdf.id, id), eq(pdf.userId, userId)))
+      .returning({
+        id: pdf.id,
+        fileName: pdf.fileName,
+        createdAt: pdf.createdAt,
+        htmlContent: pdf.htmlContent,
+      });
 
     return updatedPdf;
   } catch (err) {
@@ -45,54 +51,42 @@ export const updatePdf = async (
   }
 };
 
-export const getAllpdf = async (userId: string, limit?: number) => {
+export const getAllPdfs = async (userId: string) => {
   try {
-    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
-    await db
-      .delete(pdf)
-      .where(
-        and(
-          eq(pdf.userId, userId),
-          eq(pdf.htmlContent, ""),
-          lt(pdf.createdAt, twoMinutesAgo),
-        ),
-      );
     return await db
-      .select()
+      .select({
+        id: pdf.id,
+        fileName: pdf.fileName,
+        createdAt: pdf.createdAt,
+      })
       .from(pdf)
       .where(eq(pdf.userId, userId))
       .orderBy(desc(pdf.createdAt));
+  } catch (err) {
+    throw new Error(`Failed to get pdfs: ${err}`);
+  }
+};
 
-    // ✅ only add limit if provided
-    // if (limit) {
-    //   return await query.limit(limit)
-    // }
+export const getPdf = async (pdfId: string, userId: string) => {
+  try {
+    const [currPdf] = await db
+      .select()
+      .from(pdf)
+      .where(and(eq(pdf.id, pdfId), eq(pdf.userId, userId)));
+    return currPdf;
   } catch (err) {
     throw new Error(`Failed to get pdf: ${err}`);
   }
 };
 
-export const getPdf = async (pdfId: string) => {
-  try {
-    const [currPdf] = await db.select().from(pdf).where(eq(pdf.id, pdfId));
-    return currPdf;
-  } catch (err) {
-    throw new Error(`Failed to get pdf : ${err}`);
-  }
-};
-
 export const deletePdf = async (pdfId: string, userId: string) => {
   try {
-    await db.delete(context).where(and(eq(context.pdfId, pdfId)));
-    const deletedPdf = await db.delete(pdf).where(
-      and(
-        eq(pdf.id, pdfId),
-        eq(pdf.userId, userId), // ensures the user owns the PDF
-      ),
-    );
+    const [deletedPdf] = await db
+      .delete(pdf)
+      .where(and(eq(pdf.id, pdfId), eq(pdf.userId, userId)))
+      .returning({ id: pdf.id });
     return deletedPdf;
   } catch (err) {
     throw new Error(`Failed to delete pdf: ${err}`);
   }
 };
-

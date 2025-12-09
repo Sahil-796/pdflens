@@ -28,7 +28,7 @@ export function useAiEdit() {
       });
 
       if (!res.ok) {
-        if (res.status === 402) throw new Error("DAILY TOKEN LIMIT REACHED");
+        if (res.status === 429) throw new Error("DAILY TOKEN LIMIT REACHED");
         throw new Error("AI Edit failed");
       }
       return res.json();
@@ -41,6 +41,7 @@ export function useAiEdit() {
     onSuccess: (data) => {
       setAiResponse(data.data);
       setAiStatus("aiResult");
+
       queryClient.setQueryData(userKeys.profile(), (oldData: any) => {
         if (!oldData) return oldData;
         return {
@@ -55,6 +56,7 @@ export function useAiEdit() {
     onError: (error: Error) => {
       console.error(error);
       setAiStatus("prompt");
+
       if (error.message === "DAILY TOKEN LIMIT REACHED") {
         toast.error("You have run out of credits!");
       } else {

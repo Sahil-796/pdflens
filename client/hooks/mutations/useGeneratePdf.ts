@@ -27,7 +27,7 @@ export function useGeneratePdf() {
       }
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       queryClient.setQueryData(userKeys.profile(), (oldUser: any) => {
         if (!oldUser) return oldUser;
         return {
@@ -38,8 +38,12 @@ export function useGeneratePdf() {
 
       queryClient.invalidateQueries({ queryKey: pdfKeys.lists() });
 
-      initializeEditor(data);
-
+      initializeEditor({
+        id: data.pdfId,
+        fileName: data.fileName,
+        html: data.data,
+        isContext: variables.isContext,
+      });
       toast.success(`"${data.fileName}" Generated Successfully!`);
       router.push(`/edit/${data.pdfId}`);
     },
