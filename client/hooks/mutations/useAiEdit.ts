@@ -3,6 +3,15 @@ import { toast } from "sonner";
 import { useEditorStore } from "@/store/useEditorStore";
 import { userKeys } from "@/lib/queryKeys";
 
+function cleanAiOutput(text: string) {
+  if (!text) return "";
+  return text
+    .replace(/^```html\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+}
+
 export function useAiEdit() {
   const queryClient = useQueryClient();
 
@@ -39,7 +48,9 @@ export function useAiEdit() {
     },
 
     onSuccess: (data) => {
-      setAiResponse(data.data);
+      const cleanHtml = cleanAiOutput(data.data);
+
+      setAiResponse(cleanHtml);
       setAiStatus("aiResult");
 
       queryClient.setQueryData(userKeys.profile(), (oldData: any) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useCallback, useRef } from "react";
 import { useEditorStore } from "@/store/useEditorStore";
 import { toast } from "sonner";
 
@@ -22,27 +22,54 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
     showAiResponse,
     setAiStatus,
     setAiResponse,
+    originalElementHtml,
   } = useEditorStore();
 
+  const previewNodeRef = useRef<HTMLElement | null>(null);
+
+  const cleanAiOutput = (raw: string) => {
+    return raw
+      .replace(/^```html/i, "")
+      .replace(/^```/, "")
+      .replace(/```$/, "")
+      .trim();
+  };
+
   const handleAccept = useCallback(() => {
-    if (!selectedId || !draftHtml || !aiResponse) return;
+    if (!selectedId || !previewNodeRef.current) return;
+
+    const finalHtml = previewNodeRef.current.outerHTML;
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = finalHtml;
+    const cleanEl = tempDiv.firstElementChild;
+    if (cleanEl) {
+      cleanEl.classList.remove("preview-mode", "selected");
+      cleanEl.removeAttribute("style");
+      cleanEl.id = selectedId;
+    }
+
+    const cleanContent = tempDiv.innerHTML;
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(draftHtml, "text/html");
-    const el = doc.getElementById(selectedId);
+    const originalEl = doc.getElementById(selectedId);
 
-    if (el) {
-      el.outerHTML = aiResponse;
+    if (originalEl) {
+      originalEl.outerHTML = cleanContent;
       updateDraftHtml(doc.documentElement.outerHTML);
-      setAiResponse("");
-      setAiStatus("prompt");
-      clearSelection();
       toast.success("Changes applied");
     }
+
+    setAiResponse("");
+    setAiStatus("prompt");
+    clearSelection();
+
+    previewNodeRef.current?.remove();
+    previewNodeRef.current = null;
   }, [
-    draftHtml,
     selectedId,
-    aiResponse,
+    draftHtml,
     updateDraftHtml,
     setAiResponse,
     setAiStatus,
@@ -50,55 +77,106 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
   ]);
 
   const handleReject = useCallback(() => {
+    if (!selectedId) return;
+
     setAiResponse("");
     setAiStatus("prompt");
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(draftHtml, "text/html");
+    const el = doc.getElementById(selectedId);
+    if (el) el.classList.remove("selected");
+
     updateDraftHtml(doc.documentElement.outerHTML);
-  }, [draftHtml, setAiResponse, setAiStatus, updateDraftHtml]);
+  }, [selectedId, draftHtml, updateDraftHtml, setAiResponse, setAiStatus]);
 
   useEffect(() => {
-    if (!showAiResponse || !selectedId || !aiResponse) return;
+    if (!showAiResponse || !selectedId || !aiResponse) {
+      if (previewNodeRef.current) {
+        previewNodeRef.current.remove();
+        previewNodeRef.current = null;
+      }
+      const original = document.getElementById(selectedId);
+      if (original) original.style.display = "";
+      return;
+    }
 
-    const timer = setTimeout(() => {
-      const el = document.getElementById(selectedId);
-      if (!el) return;
+    const originalEl = document.getElementById(selectedId);
+    if (!originalEl) return;
 
-      if (el.querySelector(".ai-response-container")) return;
+    if (previewNodeRef.current && document.contains(previewNodeRef.current))
+      return;
 
-      const overlay = document.createElement("div");
-      overlay.className =
-        "ai-response-container mt-2 p-3 bg-green-50 border border-green-200 rounded-md shadow-sm z-50 relative";
-      overlay.innerHTML = `
-        <div class="ai-suggestion mb-2 text-sm text-green-800">
-           <strong>AI Suggestion:</strong> <br/>
-           ${aiResponse}
-        </div>
-        <div class="flex gap-2">
-           <button class="accept-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs rounded transition">Accept</button>
-           <button class="reject-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded transition">Reject</button>
-        </div>
-      `;
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = cleanAiOutput(aiResponse);
+    const newEl = tempDiv.firstElementChild as HTMLElement;
 
-      el.appendChild(overlay);
+    if (!newEl) return;
 
-      el.querySelector(".accept-btn")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        handleAccept();
-      });
-      el.querySelector(".reject-btn")?.addEventListener("click", (e) => {
-        e.stopPropagation();
-        handleReject();
-      });
-    }, 0);
+    newEl.classList.add("preview-mode");
+    newEl.id = `${selectedId}-preview`;
 
-    return () => clearTimeout(timer);
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
+    wrapper.style.display = "block";
+
+    wrapper.appendChild(newEl);
+
+    const toolbar = document.createElement("div");
+    toolbar.className =
+      "ai-action-toolbar absolute z-50 flex gap-2 mt-2 bg-background border border-border shadow-lg rounded-md p-1.5";
+    toolbar.style.bottom = "-45px";
+    toolbar.style.right = "0px";
+    toolbar.style.whiteSpace = "nowrap";
+
+    toolbar.innerHTML = `
+      <button id="btn-accept" class="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-xs font-medium rounded transition cursor-pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Accept
+      </button>
+      <button id="btn-reject" class="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 text-xs font-medium rounded transition cursor-pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        Reject
+      </button>
+    `;
+    wrapper.appendChild(toolbar);
+
+    originalEl.insertAdjacentElement("afterend", wrapper);
+    originalEl.style.display = "none";
+
+    previewNodeRef.current = wrapper;
+
+    const acceptBtn = toolbar.querySelector("#btn-accept");
+    const rejectBtn = toolbar.querySelector("#btn-reject");
+
+    const onAccept = (e: Event) => {
+      e.stopPropagation();
+      handleAccept();
+    };
+    const onReject = (e: Event) => {
+      e.stopPropagation();
+      handleReject();
+    };
+
+    acceptBtn?.addEventListener("click", onAccept);
+    rejectBtn?.addEventListener("click", onReject);
+
+    return () => {
+      acceptBtn?.removeEventListener("click", onAccept);
+      rejectBtn?.removeEventListener("click", onReject);
+      if (wrapper && wrapper.parentNode) {
+        wrapper.remove();
+      }
+      if (originalEl) {
+        originalEl.style.display = "";
+      }
+      previewNodeRef.current = null;
+    };
   }, [showAiResponse, selectedId, aiResponse, handleAccept, handleReject]);
 
   const handlePdfClick = (e: React.MouseEvent) => {
     if (showAiResponse) {
-      toast.info("Accept or reject the current changes.");
+      toast.info("Please Accept or Reject the AI suggestion first.");
       return;
     }
 
@@ -112,32 +190,19 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
     if (!target.id)
       target.id = `gen-${Math.random().toString(36).substr(2, 9)}`;
 
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(draftHtml, "text/html");
-
     if (selectedId === target.id) {
-      const el = doc.getElementById(target.id);
+      const el = document.getElementById(target.id);
       if (el) el.classList.remove("selected");
-
-      updateDraftHtml(doc.documentElement.outerHTML);
       clearSelection();
     } else {
       if (selectedId) {
-        const prevEl = doc.getElementById(selectedId);
-        if (prevEl) prevEl.classList.remove("selected");
+        document.getElementById(selectedId)?.classList.remove("selected");
       }
 
-      const el = doc.getElementById(target.id);
-      if (el) {
-        el.classList.add("selected");
-        updateDraftHtml(doc.documentElement.outerHTML);
+      target.classList.add("selected");
+      selectElement(target.id, target.innerText, target.outerHTML);
 
-        selectElement(target.id, target.innerText, target.outerHTML);
-
-        if (onTextSelect) {
-          onTextSelect();
-        }
-      }
+      if (onTextSelect) onTextSelect();
     }
   };
 
@@ -161,6 +226,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
       className="h-full w-full bg-white p-8 overflow-y-auto shadow-sm text-black"
       dangerouslySetInnerHTML={{ __html: draftHtml }}
       onMouseOver={(e) => {
+        if (showAiResponse) return;
         const target = (e.target as HTMLElement).closest(
           ".selectable",
         ) as HTMLElement | null;
@@ -173,7 +239,7 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
         if (target) target.classList.remove("hovered");
       }}
       onClick={handlePdfClick}
-      style={{ cursor: "text" }}
+      style={{ cursor: showAiResponse ? "default" : "text" }}
     />
   );
 };

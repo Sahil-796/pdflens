@@ -147,14 +147,12 @@ export default function EditClient({ id }: { id: string }) {
                   onChange={(e) => updateFileName(e.target.value)}
                   className="font-medium text-sm w-64"
                 />
-                {/* Show dot if modified from server version */}
                 {serverPdf?.fileName !== fileName && (
                   <Dot className="text-primary scale-200 animate-caret-blink" />
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {/* Using Smart Components (No props needed!) */}
               <SaveChanges />
               <DownloadPDF />
               <DownloadAsWord />

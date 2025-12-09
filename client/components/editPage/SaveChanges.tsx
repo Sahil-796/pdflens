@@ -50,7 +50,7 @@ const SaveChanges = () => {
       <span>Save</span>
 
       {isDirty && (
-        <Dot className="text-primary -mr-2 scale-150 animate-pulse" />
+        <Dot className="text-primary -mr-2 scale-200 animate-caret-blink" />
       )}
     </Button>
   );
