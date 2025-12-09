@@ -107,9 +107,16 @@ export default function EditPDF({
       return;
     }
     if (!promptValue) return;
-
-    // Mutation handles the status updates (loading -> aiResult)
-    requestAiEdit({ pdfId });
+    requestAiEdit(
+      { pdfId },
+      {
+        onError: (error) => {
+          if (error.message === "DAILY TOKEN LIMIT REACHED") {
+            setLimitModalOpen(true);
+          }
+        },
+      },
+    );
   };
 
   return (

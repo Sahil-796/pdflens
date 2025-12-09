@@ -1,204 +1,181 @@
-'use client'
+"use client";
 
-import React, { useCallback, useEffect } from 'react'
-import { useEditPdfStore } from '@/app/store/useEditPdfStore'
-import { toast } from 'sonner'
+import React, { useEffect, useCallback } from "react";
+import { useEditorStore } from "@/store/useEditorStore";
+import { toast } from "sonner";
 
 interface PDFPreviewProps {
-  loading: boolean
-  html: string
-  pdfId: string
-  onTextSelect?: () => void
+  loading: boolean;
+  html?: string;
+  pdfId: string;
+  onTextSelect?: () => void;
 }
 
-const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) => {
+const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
   const {
-    renderedHtml,
-    setRenderedHtml,
-    setSelectedId,
-    setSelectedText,
-    setOriginalHtml,
+    draftHtml,
+    updateDraftHtml,
     selectedId,
+    selectElement,
+    clearSelection,
     aiResponse,
     showAiResponse,
-    setPromptValue,
-    setShowAiResponse,
+    setAiStatus,
     setAiResponse,
-    setStatus,
-    setSaveChange
-  } = useEditPdfStore()
+  } = useEditorStore();
+
+  const handleAccept = useCallback(() => {
+    if (!selectedId || !draftHtml || !aiResponse) return;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(draftHtml, "text/html");
+    const el = doc.getElementById(selectedId);
+
+    if (el) {
+      el.outerHTML = aiResponse;
+      updateDraftHtml(doc.documentElement.outerHTML);
+      setAiResponse("");
+      setAiStatus("prompt");
+      clearSelection();
+      toast.success("Changes applied");
+    }
+  }, [
+    draftHtml,
+    selectedId,
+    aiResponse,
+    updateDraftHtml,
+    setAiResponse,
+    setAiStatus,
+    clearSelection,
+  ]);
+
+  const handleReject = useCallback(() => {
+    setAiResponse("");
+    setAiStatus("prompt");
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(draftHtml, "text/html");
+    updateDraftHtml(doc.documentElement.outerHTML);
+  }, [draftHtml, setAiResponse, setAiStatus, updateDraftHtml]);
 
   useEffect(() => {
-    if (html) setRenderedHtml(html)
-  }, [html, setRenderedHtml])
+    if (!showAiResponse || !selectedId || !aiResponse) return;
 
-  const acceptChanges = useCallback((newContent: string) => {
-    if (!selectedId || !renderedHtml) return
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(renderedHtml, 'text/html')
-    const el = doc.getElementById(selectedId)
-    if (el) el.outerHTML = newContent
-    setRenderedHtml(doc.documentElement.outerHTML)
-    setShowAiResponse(false)
-    setAiResponse('')
-    setStatus('prompt')
-    setPromptValue('')
-    setSaveChange(true)
-  }, [renderedHtml, selectedId, setAiResponse, setPromptValue, setRenderedHtml, setShowAiResponse, setStatus, setSaveChange])
-
-  // Handle AI response display inline
-  useEffect(() => {
-    if (!showAiResponse || !selectedId || !aiResponse) return
-
-    // Use setTimeout to ensure DOM is updated after React render
     const timer = setTimeout(() => {
-      const el = document.getElementById(selectedId)
-      if (!el) {
-        console.error('Selected element not found:', selectedId)
-        return
+      const el = document.getElementById(selectedId);
+      if (!el) return;
+
+      if (el.querySelector(".ai-response-container")) return;
+
+      const overlay = document.createElement("div");
+      overlay.className =
+        "ai-response-container mt-2 p-3 bg-green-50 border border-green-200 rounded-md shadow-sm z-50 relative";
+      overlay.innerHTML = `
+        <div class="ai-suggestion mb-2 text-sm text-green-800">
+           <strong>AI Suggestion:</strong> <br/>
+           ${aiResponse}
+        </div>
+        <div class="flex gap-2">
+           <button class="accept-btn bg-green-600 hover:bg-green-700 text-white px-3 py-1 text-xs rounded transition">Accept</button>
+           <button class="reject-btn bg-red-500 hover:bg-red-600 text-white px-3 py-1 text-xs rounded transition">Reject</button>
+        </div>
+      `;
+
+      el.appendChild(overlay);
+
+      el.querySelector(".accept-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleAccept();
+      });
+      el.querySelector(".reject-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleReject();
+      });
+    }, 0);
+
+    return () => clearTimeout(timer);
+  }, [showAiResponse, selectedId, aiResponse, handleAccept, handleReject]);
+
+  const handlePdfClick = (e: React.MouseEvent) => {
+    if (showAiResponse) {
+      toast.info("Accept or reject the current changes.");
+      return;
+    }
+
+    const target = (e.target as HTMLElement).closest(
+      ".selectable",
+    ) as HTMLElement | null;
+
+    if (!target || target.id === "pdf-root" || target.tagName === "BODY")
+      return;
+
+    if (!target.id)
+      target.id = `gen-${Math.random().toString(36).substr(2, 9)}`;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(draftHtml, "text/html");
+
+    if (selectedId === target.id) {
+      const el = doc.getElementById(target.id);
+      if (el) el.classList.remove("selected");
+
+      updateDraftHtml(doc.documentElement.outerHTML);
+      clearSelection();
+    } else {
+      if (selectedId) {
+        const prevEl = doc.getElementById(selectedId);
+        if (prevEl) prevEl.classList.remove("selected");
       }
 
-      // Check if AI response is already displayed
-      const existingResponse = el.querySelector('.ai-response-container')
-      if (existingResponse) return // Don't recreate if already exists
+      const el = doc.getElementById(target.id);
+      if (el) {
+        el.classList.add("selected");
+        updateDraftHtml(doc.documentElement.outerHTML);
 
-      // Store original content AND classes/id before replacing
-      const originalContent = el.innerHTML
-      const originalClassName = el.className
-      const originalId = el.id
+        selectElement(target.id, target.innerText, target.outerHTML);
 
-      // Create AI response display
-      const aiResponseDiv = document.createElement('div')
-      aiResponseDiv.className = 'ai-response-container'
-      aiResponseDiv.innerHTML = `
-        <div class="ai-response-content">
-          <div class="ai-suggestion">
-            <span class="ai-label">AI Suggestion:</span>
-            <span class="ai-text suggestion-text">${aiResponse}</span>
-          </div>
-          <div class="ai-actions">
-            <button class="ai-btn accept-btn" data-action="accept">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-              Accept
-            </button>
-            <button class="ai-btn reject-btn" data-action="reject">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-              Reject
-            </button>
-          </div>
-        </div>
-      `
+        if (onTextSelect) {
+          onTextSelect();
+        }
+      }
+    }
+  };
 
-      // Replace content with AI response and remove original classes
-      el.innerHTML = ''
-      el.className = 'ai-response-wrapper' // Replace with neutral class
-      el.removeAttribute('id') // Remove ID to avoid conflicts
-      el.appendChild(aiResponseDiv)
-
-      // Add event listeners
-      const acceptBtn = el.querySelector('.accept-btn')
-      const rejectBtn = el.querySelector('.reject-btn')
-
-      acceptBtn?.addEventListener('click', (e) => {
-        e.stopPropagation()
-        acceptChanges(aiResponse)
-      })
-
-      rejectBtn?.addEventListener('click', (e) => {
-        e.stopPropagation()
-        // Restore original content, classes, and ID
-        el.innerHTML = originalContent
-        el.className = originalClassName
-        el.id = originalId
-        setShowAiResponse(false)
-        setAiResponse("")
-        setStatus('prompt')
-        setPromptValue("")
-      })
-    }, 0)
-
-    return () => clearTimeout(timer)
-  }, [showAiResponse, selectedId, aiResponse, acceptChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
+  if (loading) {
+    return (
+      <div className="space-y-6 p-8">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-4 bg-muted rounded animate-pulse"
+            style={{ width: `${Math.random() * 40 + 60}%` }}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full w-full bg-white p-6 overflow-y-auto">
-      {loading ? (
-        <div className="space-y-6">
-          {Array.from({ length: 5 }).map((_, pIndex) => (
-            <div key={pIndex} className="space-y-2">
-              {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-4 rounded bg-muted animate-pulse"
-                  style={{ width: `${60 + Math.random() * 40}%` }}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div
-          className="mx-auto w-full text-black"
-          dangerouslySetInnerHTML={{ __html: renderedHtml }}
-          onMouseOver={(e) => {
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) target.classList.add("hovered")
-          }}
-          onMouseOut={(e) => {
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) target.classList.remove("hovered")
-          }}
-          onClick={(e) => {
-            if (aiResponse || showAiResponse) {
-              toast.info("Accept or reject the current changes.")
-              return
-            }
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) {
-              const parser = new DOMParser()
-              const doc = parser.parseFromString(renderedHtml, 'text/html')
+    <div
+      id="pdf-root"
+      className="h-full w-full bg-white p-8 overflow-y-auto shadow-sm text-black"
+      dangerouslySetInnerHTML={{ __html: draftHtml }}
+      onMouseOver={(e) => {
+        const target = (e.target as HTMLElement).closest(
+          ".selectable",
+        ) as HTMLElement | null;
+        if (target) target.classList.add("hovered");
+      }}
+      onMouseOut={(e) => {
+        const target = (e.target as HTMLElement).closest(
+          ".selectable",
+        ) as HTMLElement | null;
+        if (target) target.classList.remove("hovered");
+      }}
+      onClick={handlePdfClick}
+      style={{ cursor: "text" }}
+    />
+  );
+};
 
-              // Toggle selection if clicking the same element
-              if (selectedId === target.id) {
-                // Deselect - remove selected class from HTML string
-                const el = doc.getElementById(target.id)
-                if (el) {
-                  el.classList.remove("selected")
-                  setRenderedHtml(doc.documentElement.outerHTML)
-                }
-                setSelectedId('')
-                setSelectedText('')
-                setOriginalHtml('')
-              } else {
-                // Remove selected class from previously selected element
-                if (selectedId) {
-                  const prevEl = doc.getElementById(selectedId)
-                  if (prevEl) prevEl.classList.remove("selected")
-                }
-
-                // Add selected class to new element
-                const el = doc.getElementById(target.id)
-                if (el) {
-                  el.classList.add("selected")
-                  setRenderedHtml(doc.documentElement.outerHTML)
-                  setSelectedId(target.id)
-                  setSelectedText(el.innerText)
-                  setOriginalHtml(el.outerHTML)
-                  // Trigger sidebar open on mobile
-                  onTextSelect?.()
-                }
-              }
-            }
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
-export default PDFPreview
+export default PDFPreview;

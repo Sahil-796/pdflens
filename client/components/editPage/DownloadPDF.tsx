@@ -1,29 +1,31 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Download } from "lucide-react";
-import { usePdfStore } from "@/app/store/usePdfStore";
-import { toast } from 'sonner'
-import { useEditPdfStore } from "@/app/store/useEditPdfStore";
+import { useState } from "react";
+import { Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useEditorStore } from "@/store/useEditorStore";
 
 const DownloadPDF = () => {
   const [loading, setLoading] = useState(false);
-
-  const { fileName, htmlContent } = usePdfStore();
-  const { renderedHtml, setRenderedHtml } = useEditPdfStore();
-
-  useEffect(() => {
-    if (htmlContent) setRenderedHtml(htmlContent);
-  }, [htmlContent, setRenderedHtml]);
+  const { fileName, draftHtml } = useEditorStore();
 
   async function handleDownload() {
-    if (!renderedHtml) return;
+    if (!draftHtml) return;
 
     setLoading(true);
     try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(draftHtml, "text/html");
+      doc.querySelector(".selected")?.classList.remove("selected");
+      doc
+        .querySelectorAll(".ai-response-container")
+        .forEach((el) => el.remove());
+
+      const cleanContent = doc.documentElement.outerHTML;
+
       const wrapper = document.createElement("div");
-      wrapper.style.padding = "16px";
-      wrapper.innerHTML = renderedHtml;
+      wrapper.style.padding = "20px";
+      wrapper.innerHTML = cleanContent;
 
       const res = await fetch("/api/downloadPDF", {
         method: "POST",
@@ -31,21 +33,22 @@ const DownloadPDF = () => {
         body: JSON.stringify({ html: wrapper.outerHTML }),
       });
 
-      if (res.ok) {
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
+      if (!res.ok) throw new Error("Generation failed");
 
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${fileName || "documentFromPDFLens"}.pdf`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${fileName || "document"}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+
+      toast.success("PDF Downloaded");
     } catch (err) {
-      console.error(err.message)
-      toast.error("Failed to download PDF.")
+      console.error(err);
+      toast.error("Failed to download PDF.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -55,14 +58,13 @@ const DownloadPDF = () => {
       size="lg"
       onClick={handleDownload}
       disabled={loading}
-      className="hover:scale-103 cursor-pointer"
+      className="hover:scale-105 transition-transform cursor-pointer"
     >
-      <Download
-        className={`
-      w-4 h-4 shrink-0
-      ${loading ? 'animate-bounce' : ''}
-    `}
-      />
+      {loading ? (
+        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4 mr-2" />
+      )}
       As PDF
     </Button>
   );

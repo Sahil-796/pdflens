@@ -16,7 +16,7 @@ export function useAiEdit() {
 
   return useMutation({
     mutationFn: async ({ pdfId }: { pdfId: string }) => {
-      const res = await fetch("/api/editHTML", {
+      const res = await fetch("/api/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

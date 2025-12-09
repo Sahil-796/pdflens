@@ -1,31 +1,31 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Download } from "lucide-react";
-import { usePdfStore } from "@/app/store/usePdfStore";
-import { toast } from 'sonner'
-import { useEditPdfStore } from "@/app/store/useEditPdfStore";
+import { useState } from "react";
+import { Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useEditorStore } from "@/store/useEditorStore";
 
 const DownloadAsWord = () => {
   const [loading, setLoading] = useState(false);
-
-  const { fileName, htmlContent } = usePdfStore();
-  const { renderedHtml, setRenderedHtml } = useEditPdfStore();
-
-  useEffect(() => {
-    if (htmlContent) setRenderedHtml(htmlContent);
-  }, [htmlContent, setRenderedHtml]);
+  const { fileName, draftHtml } = useEditorStore();
 
   async function handleDownload() {
-    if (!renderedHtml) return;
+    if (!draftHtml) return;
 
     setLoading(true);
     try {
-      const wrapper = document.createElement("div");
-      wrapper.style.padding = "16px";
-      wrapper.innerHTML = renderedHtml;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(draftHtml, "text/html");
+      doc.querySelector(".selected")?.classList.remove("selected");
+      doc
+        .querySelectorAll(".ai-response-container")
+        .forEach((el) => el.remove());
+      const cleanContent = doc.documentElement.outerHTML;
 
-      // 1️⃣ Send HTML → PDF
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "20px";
+      wrapper.innerHTML = cleanContent;
+
       const res = await fetch("/api/downloadPDF", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,7 +36,6 @@ const DownloadAsWord = () => {
 
       const pdfBlob = await res.blob();
 
-      // 2️⃣ Send PDF → DOCX
       const formData = new FormData();
       formData.append("file", pdfBlob, "document.pdf");
 
@@ -49,15 +48,15 @@ const DownloadAsWord = () => {
 
       const docxBlob = await finalRes.blob();
       const url = URL.createObjectURL(docxBlob);
-
-      // 3️⃣ Trigger download
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${fileName || "documentFromPDFLens"}.docx`;
+      a.download = `${fileName || "document"}.docx`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error(err.message);
+
+      toast.success("Word Document Downloaded");
+    } catch (err: any) {
+      console.error(err);
       toast.error("Failed to download file.");
     } finally {
       setLoading(false);
@@ -69,14 +68,13 @@ const DownloadAsWord = () => {
       size="lg"
       onClick={handleDownload}
       disabled={loading}
-      className="hover:scale-103 cursor-pointer text-foreground/80 bg-blue-500/70 hover:bg-blue-500 hover:text-foreground"
+      className="hover:scale-105 transition-transform cursor-pointer bg-blue-600/90 hover:bg-blue-600 text-white"
     >
-      <Download
-        className={`
-      w-4 h-4 shrink-0
-      ${loading ? 'animate-bounce' : ''}
-    `}
-      />
+      {loading ? (
+        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4 mr-2" />
+      )}
       As Word
     </Button>
   );
