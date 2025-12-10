@@ -1,11 +1,11 @@
-from bisect import insort
 from .prompt_refine import extract_formatting_and_content
 from .formatting import generate_formatting_kwargs
 from .content_draft import create_draft
 from .refine_structure import refine_structure
 from .renderer import create_html
 from pydantic import BaseModel
-from app.config import index, cfEmbeddings, INDEX_NAME
+from app.config import index, cfEmbeddings
+from langchain_pinecone import PineconeVectorStore
 
 class PromptRequest(BaseModel):
     userPrompt: str
@@ -14,7 +14,6 @@ class PromptRequest(BaseModel):
     isContext: bool
 
 
-from langchain_pinecone import PineconeVectorStore
 vector_store = PineconeVectorStore(
     embedding=cfEmbeddings,
     index=index
