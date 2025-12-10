@@ -72,7 +72,6 @@ RAG Query Expansion: …
             {"role": "user", "content": human},
         ]
 
-        # Call HuggingFace Hosted LLM
         response = client.chat.completions.create(
             model=MODEL_ID,
             messages=messages,
