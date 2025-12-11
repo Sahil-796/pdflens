@@ -118,13 +118,13 @@ A JSON dictionary containing CSS styling for WeasyPrint.
 SECTION 3 — FINAL OUTPUT FORMAT (MANDATORY)
 ================================================================
 
-Your final answer MUST contain two top-level fields like:
+- The `"content"` field contains the full Markdown content.
+- The `"styles"` field contains the CSS JSON object.
+Your final answer MUST be formatted exactly like, keep the full markdown in content: here:
 
-content: [md content here],
+content: ,
 styles: [the final json object here]
 
-- The `"content"` field contains the Markdown, escaped appropriately.
-- The `"styles"` field contains the CSS JSON object.
 
             '''
         )
@@ -148,55 +148,49 @@ styles: [the final json object here]
             "4. Start directly with the content (Title first)."
         )
 
-
+    
     chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content": human,
-        },
-        {
-            "role": "system",
-            "content": system,
-        }
-    ],
+        messages=[
+            {
+                "role": "system",
+                "content": system,
+            },
+            {
+                "role": "user",
+                "content": human,
+            }
+        ],
         model="llama-3.3-70b-versatile",
     )
-
-    result = chat_completion.choices[0].message.content
     
-    def extract(section):
-        pattern = rf"{section}:\s*(.*?)(?=Content Description:|Formatting Instructions:|General Instructions:|RAG Query Expansion:|$)"
-        match = re.search(pattern, result or "", re.DOTALL | re.IGNORECASE)
+    result = chat_completion.choices[0].message.content or ""
+    
+    print(result)
+    def extract(section: str):
+        # Matches:
+        # content: <anything including newlines> styles:
+        pattern = rf"{section}:\s*(.*?)(?=\n[a-z]+:\s|\Z)"
+        match = re.search(pattern, result, re.DOTALL | re.IGNORECASE)
         return match.group(1).strip() if match else ""
     
-        
-    content = clean_markdown(extract("content") or "")
     
-    return (
-        content,
-        extract("styles")
-    )
+    content = clean_markdown(extract("content"))
+    styles = extract("styles")
+    
+    return content, styles
+
     
 
 # a cleaner function
 def clean_markdown(text: str) -> str:
-
     text = text.strip()
 
-    # check if the entire response is wrapped in ``` ... ```
     if text.startswith("```") and text.endswith("```"):
         lines = text.splitlines()
-        
-        # Get the language hint from the first line (e.g., ```markdown -> markdown)
-        first_line = lines[0].strip().lower()
-        
-        # Only strip if it's explicitly 'markdown' or a generic empty fence.
-        # This protects ```mermaid, ```python, etc., if they appear at the very start.
-        if first_line == "```" or first_line.startswith("```markdown"):
-            
+        first = lines[0].strip().lower()
+
+        if first in ("```", "```markdown"):
             return "\n".join(lines[1:-1]).strip()
-    
+
     return text
-    
 
