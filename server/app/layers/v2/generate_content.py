@@ -5,13 +5,14 @@ from dotenv import load_dotenv
 
 from groq import Groq
 
+logger = logging.getLogger(__name__)
+load_dotenv()
+
 client = Groq(
     api_key=os.environ.get("GROQ_API_KEY"),
 )
 
-
-
-async def generate_content():
+async def generate_content(content_description: str, formatting_instructions: str, general_instructions: str, context: str):
     system = (
             '''
         You are a Principal Technical Writer AND an expert typographer/PDF layout designer.
@@ -117,18 +118,10 @@ A JSON dictionary containing CSS styling for WeasyPrint.
 SECTION 3 — FINAL OUTPUT FORMAT (MANDATORY)
 ================================================================
 
-Your final answer MUST contain two top-level fields in a JSON object:
+Your final answer MUST contain two top-level fields like:
 
-{
-  "content": "<the complete Markdown document here>",
-  "styles": { 
-  - Output ONLY a valid JSON object (no markdown, comments, or text).
-  - Use double quotes for all keys.
-  - Keys must be plain tag names like "body", "h1", "p", "blockquote", "ul", "li",
-    or positional variants like "p-3", "h2-1".
-  - All values must be valid CSS properties (camelCase is invalid). 
-  }
-}
+content: [md content here],
+styles: [the final json object here]
 
 - The `"content"` field contains the Markdown, escaped appropriately.
 - The `"styles"` field contains the CSS JSON object.
@@ -139,13 +132,13 @@ Your final answer MUST contain two top-level fields in a JSON object:
     human = (
             "Write a detailed document based on the following request.\n"
             "----------------------------------------------------------------\n"
-            "Content Description: {content_description}\n"
+            f"Content Description: {content_description}\n"
             "----------------------------------------------------------------\n"
-            "Formatting Instructions: {formatting_instructions}\n"
+            f"Formatting Instructions: {formatting_instructions}\n"
             "----------------------------------------------------------------\n"
-            "General Instructions: {general_instructions}\n"
+            f"General Instructions: {general_instructions}\n"
             "----------------------------------------------------------------\n"
-            "Context: {context}\n"
+            f"Context: {context}\n"
             "----------------------------------------------------------------\n"
 
             "Instructions:\n"
@@ -170,8 +163,21 @@ Your final answer MUST contain two top-level fields in a JSON object:
         model="llama-3.3-70b-versatile",
     )
 
-    # print(chat_completion.choices[0].message.content)
-
+    result = chat_completion.choices[0].message.content
+    
+    def extract(section):
+        pattern = rf"{section}:\s*(.*?)(?=Content Description:|Formatting Instructions:|General Instructions:|RAG Query Expansion:|$)"
+        match = re.search(pattern, result or "", re.DOTALL | re.IGNORECASE)
+        return match.group(1).strip() if match else ""
+    
+        
+    content = clean_markdown(extract("content") or "")
+    
+    return (
+        content,
+        extract("styles")
+    )
+    
 
 # a cleaner function
 def clean_markdown(text: str) -> str:
