@@ -1,4 +1,6 @@
 from pydantic import BaseModel
+
+from server.app.layers.v2.renderer import create_html
 from .refine_prompt import refine_prompt
 from .generate_content import generate_content
 
@@ -15,6 +17,7 @@ async def workflow(req: PromptRequest):
     
     content_description, formatting_instructions, general_instructions, rag_query = await refine_prompt(user_input)
     
-    answer = await generate_content(content_description, formatting_instructions, general_instructions, "")
+    content, formatting = await generate_content(content_description, formatting_instructions, general_instructions, "")
     
-    return answer
+    html = create_html(content, formatting)
+    return html

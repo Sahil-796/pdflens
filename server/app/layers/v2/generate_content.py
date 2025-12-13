@@ -1,6 +1,7 @@
 import os
 import re
 import logging
+import json
 from dotenv import load_dotenv
 
 from groq import Groq
@@ -165,7 +166,7 @@ styles: [the final json object here]
     
     result = chat_completion.choices[0].message.content or ""
     
-    print(result)
+    # print(result)
     def extract(section: str):
         # Matches:
         # content: <anything including newlines> styles:
@@ -174,10 +175,16 @@ styles: [the final json object here]
         return match.group(1).strip() if match else ""
     
     
-    content = clean_markdown(extract("content"))
-    styles = extract("styles")
-    
-    return content, styles
+    content: str = clean_markdown(extract("content"))
+    styles: str = extract("styles")
+    kwargs_json = styles.strip()
+    match = re.search(r"\{[\s\S]*\}", kwargs_json)
+    if not match:
+        raise ValueError("No valid JSON object found in LLM output")
+
+    formatting = json.loads(match.group(0))
+
+    return content, formatting
 
     
 
