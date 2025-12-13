@@ -183,14 +183,20 @@ styles: [the final json object here]
 
 # a cleaner function
 def clean_markdown(text: str) -> str:
+
     text = text.strip()
 
+    # check if the entire response is wrapped in ``` ... ```
     if text.startswith("```") and text.endswith("```"):
         lines = text.splitlines()
-        first = lines[0].strip().lower()
-
-        if first in ("```", "```markdown"):
+        
+        # Get the language hint from the first line (e.g., ```markdown -> markdown)
+        first_line = lines[0].strip().lower()
+        
+        # Only strip if it's explicitly 'markdown' or a generic empty fence.
+        # This protects ```mermaid, ```python, etc., if they appear at the very start.
+        if first_line == "```" or first_line.startswith("```markdown"):
+            
             return "\n".join(lines[1:-1]).strip()
-
+    
     return text
-
