@@ -29,9 +29,9 @@ import {
 } from "lucide-react";
 import { useCommandPalette } from "@/hooks/useCommandPalette";
 import useUser from "@/hooks/useUser";
-import { usePdfStore } from "@/app/store/usePdfStore";
 import { useTheme } from "next-themes";
 import { useLogout } from "@/hooks/mutations/useLogout";
+import { usePdf } from "@/hooks/usePdf";
 
 interface CommandPaletteProps {
   open: boolean;
@@ -44,7 +44,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const { user } = useUser();
-  const { pdfs, loading } = usePdfStore();
+  const { pdfs, loading } = usePdf();
   const { mutate: logout } = useLogout();
 
   // Keyboard shortcut (Ctrl/Cmd + K)

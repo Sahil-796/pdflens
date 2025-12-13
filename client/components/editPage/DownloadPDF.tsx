@@ -10,43 +10,75 @@ const DownloadPDF = () => {
   const { fileName, draftHtml } = useEditorStore();
 
   async function handleDownload() {
-    if (!draftHtml) return;
+    if (!draftHtml) {
+      toast.error("Document is empty");
+      return;
+    }
 
     setLoading(true);
     try {
+      // 1. Prepare DOM Parser
       const parser = new DOMParser();
       const doc = parser.parseFromString(draftHtml, "text/html");
-      doc.querySelector(".selected")?.classList.remove("selected");
-      doc
-        .querySelectorAll(".ai-response-container")
-        .forEach((el) => el.remove());
 
-      const cleanContent = doc.documentElement.outerHTML;
+      // 2. Clean unnecessary UI elements
+      const elementsToRemove = [
+        ".ai-response-container",
+        ".ai-action-toolbar",
+        ".preview-mode",
+        ".selected", // remove selection highlights
+      ];
 
-      const wrapper = document.createElement("div");
-      wrapper.style.padding = "20px";
-      wrapper.innerHTML = cleanContent;
+      elementsToRemove.forEach((selector) => {
+        doc.querySelectorAll(selector).forEach((el) => el.remove());
+      });
 
+      // 3. Clean Inline Styles (Optional: Keep this if you want consistent PDF styling via CSS)
+      doc.querySelectorAll("*").forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.style.fontSize = "";
+          el.style.margin = "";
+          el.style.lineHeight = "";
+          el.classList.remove("selected");
+        }
+      });
+
+      const cleanContent = doc.body.innerHTML;
+
+      // 4. API Request
       const res = await fetch("/api/downloadPDF", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: wrapper.outerHTML }),
+        body: JSON.stringify({ html: cleanContent }),
       });
 
-      if (!res.ok) throw new Error("Generation failed");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Server failed to generate PDF");
+      }
 
+      // 5. Convert Response to Blob & Download
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${fileName || "document"}.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      // Ensure valid filename ending in .pdf
+      const safeName = fileName?.trim()
+        ? fileName.replace(/\.pdf$/i, "")
+        : "document";
+      link.download = `${safeName}.pdf`;
 
-      toast.success("PDF Downloaded");
-    } catch (err) {
+      document.body.appendChild(link);
+      link.click();
+
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      toast.success("PDF Downloaded successfully");
+    } catch (err: any) {
       console.error(err);
-      toast.error("Failed to download PDF.");
+      toast.error(err.message || "Failed to download PDF");
     } finally {
       setLoading(false);
     }
@@ -55,17 +87,17 @@ const DownloadPDF = () => {
   return (
     <Button
       variant="secondary"
-      size="lg"
+      size="sm"
       onClick={handleDownload}
       disabled={loading}
-      className="hover:scale-105 transition-transform cursor-pointer"
+      className="gap-2"
     >
       {loading ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Download className="w-4 h-4 mr-2" />
+        <Download className="w-4 h-4" />
       )}
-      As PDF
+      PDF
     </Button>
   );
 };
