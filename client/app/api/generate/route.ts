@@ -9,6 +9,7 @@ const GenerateSchema = z.object({
   userPrompt: z.string().min(1),
   fileName: z.string().optional(),
   isContext: z.boolean().optional(),
+  pdfId: z.string().optional(), // Now optional
 });
 
 export async function POST(req: Request) {
@@ -27,16 +28,19 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid request" }, { status: 400 });
     }
+
     const { userPrompt, fileName, isContext } = parsed.data;
+    // Use existing ID if provided, otherwise mint a new one
+    const pdfId = parsed.data.pdfId || uuidv4();
+    const isNewDocument = !parsed.data.pdfId;
 
-    console.log(`[V2/Generate] Deducting credits for user ${userId}`);
+    // 1. Deduct Credits
     let creditsLeft: number;
-
     try {
       creditsLeft = await deduceCredits(userId, 4);
       creditsDeducted = true;
     } catch (creditErr: any) {
-      if (creditErr.message.includes("Insufficient")) {
+      if (creditErr.message?.includes("Insufficient")) {
         return NextResponse.json(
           { error: "Insufficient credits" },
           { status: 429 },
@@ -45,11 +49,8 @@ export async function POST(req: Request) {
       throw creditErr;
     }
 
-    const pdfId = uuidv4();
-
-    console.log(`[V2/Generate] Calling Python API for PDF ${pdfId}`);
+    // 2. Call AI
     const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
-
     const res = await fetch(`${PYTHON_URL}/ai/generate`, {
       method: "POST",
       headers: {
@@ -59,31 +60,26 @@ export async function POST(req: Request) {
       body: JSON.stringify({
         userId,
         userPrompt,
-        pdfId,
+        pdfId, // Pass ID so AI knows where to find context
         isContext: isContext || false,
       }),
     });
 
     if (!res.ok) {
-      const errorBody = await res.json().catch(() => ({}));
-      throw new Error(
-        errorBody.message || `Python API failed with status ${res.status}`,
-      );
+      throw new Error(`Python API failed with status ${res.status}`);
     }
 
-    const data = await res.json();
-    const htmlContent = data;
-
-    if (
-      !htmlContent ||
-      typeof htmlContent !== "string" ||
-      htmlContent.length === 0
-    ) {
-      throw new Error("Invalid or empty content received from AI");
+    const htmlContent = await res.json();
+    if (!htmlContent || typeof htmlContent !== "string") {
+      throw new Error("Invalid content from AI");
     }
 
-    console.log(`[V2/Generate] Creating PDF ${pdfId}`);
-    await createPdf(pdfId, userId, fileName || "Untitled", htmlContent);
+    // 3. Handle Persistence
+    // If this came from the Dashboard (no existing ID), we MUST save it to create the record.
+    // If this came from the Editor (existing ID), we generally return HTML and let the client save.
+    if (isNewDocument) {
+      await createPdf(pdfId, userId, fileName || "Untitled", htmlContent);
+    }
 
     return NextResponse.json({
       success: true,
@@ -94,22 +90,17 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (err: any) {
-    console.error("[V2/Generate] Error:", err);
-
+    console.error("[Generate] Error:", err);
+    // Refund credits on failure
     if (userId && creditsDeducted) {
       try {
-        console.log(`[V2/Generate] Refunding credits for user ${userId}`);
         await deduceCredits(userId, -4);
       } catch (refundErr) {
-        console.error("CRITICAL: Failed to refund credits:", refundErr);
+        console.error("Failed to refund credits:", refundErr);
       }
     }
-
     return NextResponse.json(
-      {
-        success: false,
-        message: err.message || "Internal Server Error",
-      },
+      { success: false, message: err.message || "Internal Error" },
       { status: 500 },
     );
   }

@@ -101,7 +101,7 @@ const Generate = () => {
   const [limitModalOpen, setLimitModalOpen] = useState(false);
 
   const { user } = useUser();
-  const { fileName, updateFileName, contextFiles, resetEditor } =
+  const { activePdfId, fileName, updateFileName, contextFiles, resetEditor } =
     useEditorStore();
 
   const { mutate: generatePdf, isPending } = useGeneratePdf();
@@ -135,6 +135,7 @@ const Generate = () => {
         userPrompt: input,
         fileName: fileName || "Untitled Document",
         isContext: contextFiles.length > 0,
+        pdfId: activePdfId ?? undefined,
       },
       {
         onError: (error) => {
@@ -165,8 +166,8 @@ const Generate = () => {
             </div>
             <input
               type="text"
-              value={fileName}
-              onChange={(e) => updateFileName(e.target.value)} // Using Store Action
+              value={fileName || ""}
+              onChange={(e) => updateFileName(e.target.value)}
               placeholder="Enter filename"
               className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />

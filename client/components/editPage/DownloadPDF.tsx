@@ -87,7 +87,7 @@ const DownloadPDF = () => {
   return (
     <Button
       variant="secondary"
-      size="sm"
+      size="lg"
       onClick={handleDownload}
       disabled={loading}
       className="gap-2"

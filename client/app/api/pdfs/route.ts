@@ -4,6 +4,10 @@ import { z } from "zod";
 import { v4 as uuidv4 } from "uuid";
 import { auth } from "@/lib/auth";
 
+const CreatePdfSchema = z.object({
+  fileName: z.string().min(1).optional(),
+});
+
 export async function GET(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
@@ -20,30 +24,24 @@ export async function GET(req: Request) {
   }
 }
 
-const CreatePdfSchema = z.object({
-  pdfName: z.string().min(1).optional(),
-  html: z.string().nullable().optional(),
-});
-
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: req.headers });
     if (!session?.user?.id)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const parsed = CreatePdfSchema.safeParse(body);
 
-    if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-    }
-
-    const { pdfName, html } = parsed.data;
+    const fileName = parsed.success
+      ? parsed.data.fileName
+      : "Untitled Document";
     const id = uuidv4();
 
-    await createPdf(id, session.user.id, pdfName ?? "Untitled", html ?? "");
+    // Create a blank PDF entry
+    await createPdf(id, session.user.id, fileName || "Untitled", "");
 
-    return NextResponse.json({ id, status: 200 });
+    return NextResponse.json({ id, fileName, status: 200 });
   } catch (err) {
     return NextResponse.json(
       { error: "Failed to create PDF" },

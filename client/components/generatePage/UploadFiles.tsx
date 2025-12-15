@@ -52,47 +52,41 @@ export default function UploadFiles() {
     setLoading(true);
 
     try {
-      let currentPdfId = activePdfId;
+      let targetId = activePdfId;
 
-      if (!currentPdfId) {
-        const currentName = fileName || "Untitled Document";
-
-        const createRes = await fetch("/api/createPdf", {
+      if (!targetId) {
+        const createRes = await fetch("/api/pdfs", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ html: "", pdfName: currentName }),
+          body: JSON.stringify({ pdfName: fileName || "Untitled" }),
         });
 
         if (!createRes.ok) throw new Error("Failed to create PDF session");
 
-        const createData = await createRes.json();
-        currentPdfId = createData.id;
+        const newPdf = await createRes.json();
+        targetId = newPdf.id;
 
         initializeEditor({
-          id: createData.id,
-          fileName: currentName,
+          id: newPdf.id,
+          fileName: newPdf.fileName,
           html: "",
           isContext: true,
         });
       }
 
-      if (!currentPdfId) throw new Error("PDF ID is missing");
-
-      const apiEndpoint =
-        contextFiles.length === 0 ? "/api/addContext" : "/api/updateContext";
+      if (!targetId) throw new Error("PDF ID is missing");
 
       const formData = new FormData();
-      formData.append("file", newFile, newFile.name);
-      formData.append("pdfId", currentPdfId);
+      formData.append("file", newFile);
 
-      const res = await fetch(apiEndpoint, { method: "POST", body: formData });
+      const res = await fetch(`/api/pdfs/${targetId}/context`, {
+        method: "POST",
+        body: formData,
+      });
 
-      if (!res.ok) {
-        throw new Error("Upload failed");
-      }
+      if (!res.ok) throw new Error("Upload failed");
 
       setContextFiles([...contextFiles, newFile.name]);
-
       toast.success(`${newFile.name} uploaded`);
     } catch (err) {
       console.error("Upload error:", err);
@@ -107,21 +101,18 @@ export default function UploadFiles() {
 
     try {
       setIsRemoving(true);
-
-      const res = await fetch("/api/removeContext", {
-        method: "POST",
+      const res = await fetch(`/api/pdfs/${activePdfId}/context`, {
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pdfId: activePdfId,
-          filename: fileToDelete,
-        }),
+        body: JSON.stringify({ filename: fileToDelete }),
       });
 
-      if (!res.ok) throw new Error("Remove failed");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete");
+      }
 
-      const newFiles = contextFiles.filter((name) => name !== fileToDelete);
-      setContextFiles(newFiles);
-
+      setContextFiles(contextFiles.filter((f) => f !== fileToDelete));
       toast.success(`${fileToDelete} removed`);
     } catch (err) {
       console.error("Remove error:", err);
@@ -191,7 +182,9 @@ export default function UploadFiles() {
               type="file"
               accept="application/pdf"
               className="hidden"
-              onChange={(e) => e.target.files && uploadFile(e.target.files[0])}
+              onChange={(e) =>
+                e.target.files?.[0] && uploadFile(e.target.files[0])
+              }
             />
           </div>
         </div>
