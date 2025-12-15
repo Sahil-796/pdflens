@@ -1,4 +1,5 @@
 # import os
+import json
 import logging
 from dotenv import load_dotenv
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -12,11 +13,11 @@ load_dotenv()
 
 class WhitepaperOutput(BaseModel):
     content: str
-    styles: Dict[str, str]
+    styles: Dict[str, Dict[str, str]]
 
 
 llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
+    model="openai/gpt-oss-120b",
     temperature=0,
 )
 structured_llm = llm.with_structured_output(WhitepaperOutput)
@@ -66,31 +67,50 @@ async def generate_content(content_description: str, formatting_instructions: st
         You must generate a JSON object containing CSS specifically for WeasyPrint.
         
         ### VISUAL STRATEGY
-        To ensure a professional look, you must strictly enforce:
-        1. **Color Palette**: Use ONLY `#000000` (Black) and `#2b2b2b` (Dark Grey). **NEVER use blue** for headings.
-        2. **Font Hierarchy**: 
-           - H1 must be significantly larger (e.g., 24pt+) than H2.
-           - H2 must be distinct (e.g., 18pt) from body text.
-        3. **Spacing**: Use CSS margins to create "breath" between sections.
+        Rules:
+        - Use double quotes for all keys.
+        - Keys must be plain tag names like "body", "h1", "p", "blockquote", "ul", "li",
+          or positional variants like "p-3", "h2-1".
+        - All values must be valid CSS properties (camelCase is invalid).
         
-        ### CSS JSON REQUIREMENTS
-        - Keys: HTML tags (h1, h2, h3, p, ul, li, table, th, td, blockquote).
-        - Values: Valid CSS strings (kebab-case).
+        Base Layout Principles:
+        1. Global defaults (mandatory):
+           "body":
+             "background-color": "white",
+             "color": "black",
+             "font-family": "Helvetica, Arial, sans-serif",
+             "line-height": "1.65",
+             "margin": "1in",
+             "font-size": "12pt"
         
-        ### REQUIRED STYLE SPECS (Incorporate these into your JSON):
-        - **@page**: { "size": "A4", "margin": "2.5cm" } (Note: Put this in the CSS logic if possible, or assume global default).
-        - **body**: font-family: "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; font-size: 11pt;
-        - **h1**: font-size: 26pt; font-weight: 700; color: #111; margin-bottom: 0.8em; border-bottom: 2px solid #000; padding-bottom: 0.3em;
-        - **h2**: font-size: 18pt; font-weight: 600; color: #333; margin-top: 1.5em; margin-bottom: 0.6em;
-        - **h3**: font-size: 14pt; font-weight: 600; color: #444; margin-top: 1.2em; margin-bottom: 0.5em; text-transform: uppercase; letter-spacing: 0.5px;
-        - **p**: margin-bottom: 1em; text-align: justify;
-        - **ul**: margin-bottom: 1em; padding-left: 1.5em;
-        - **li**: margin-bottom: 0.4em;
-        - **table**: width: 100%; border-collapse: collapse; margin: 2em 0; font-size: 10pt;
-        - **th**: background-color: #f0f0f0; border-bottom: 2px solid #333; padding: 10px; text-align: left; font-weight: bold;
-        - **td**: border-bottom: 1px solid #ddd; padding: 8px; vertical-align: top;
-        - **blockquote**: border-left: 4px solid #333; padding-left: 1em; font-style: italic; color: #555; background: #f9f9f9; padding: 1em;
-    
+        2. Heading hierarchy:
+           - h1 largest, h2 smaller, h3 smaller still.
+           - Provide generous spacing above and below headings.
+           - Add subtle boldness and slight color depth (not full black).
+        
+        3. Paragraph rhythm:
+           - Use line-height between 1.6 and 1.7.
+           - Maintain around 1em bottom margin between paragraphs.
+           - Ensure paragraphs never visually stick together.
+           - Avoid reducing text size below 11pt.
+        
+        4. Vertical rhythm:
+           - Headings (h1, h2, h3) must have at least 2em space above and 1em below.
+           - Lists and tables should have 1.2em spacing before and after.
+           - Blockquotes should have 1.2em top/bottom margin and internal padding.
+           - Maintain overall airy layout similar to a 1.5-line spaced A4 PDF.
+        
+        5. Tables and lists:
+           - Tables must have visible borders with cell padding (around 0.4em–0.8em).
+           - Lists should have clear indentation and 0.4em–0.6em between items.
+           - Keep text left-aligned and headers centered.
+        
+        6. General visuals:
+           - Maintain white space balance and generous breathing room.
+           - Avoid cramped text or excessive compactness.
+           - Never shrink text below 11pt.
+           - Only use color if the user explicitly asks.
+        
         ================================================
         FINAL OUTPUT FORMAT
         ================================================
@@ -106,6 +126,13 @@ async def generate_content(content_description: str, formatting_instructions: st
         }
         
         Rules:
+        - Each value in "styles" MUST be a JSON object mapping CSS-property → value.
+        - DO NOT output CSS as a single string.
+        - Example:
+            "h1": {
+            "font-size": "26pt",
+            "margin-bottom": "0.8em"
+            }
         - Output MUST be valid JSON
         - Do NOT escape newlines
         - Do NOT wrap JSON in code fences
@@ -151,7 +178,7 @@ async def generate_content(content_description: str, formatting_instructions: st
     content = clean_markdown(result.content)
     formatting = result.styles
 
-    
+
     return content, formatting
 
 
