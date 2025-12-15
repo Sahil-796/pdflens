@@ -16,7 +16,6 @@ import { usePdfDetail } from "@/hooks/mutations/usePdfDetail";
 
 export default function EditClient({ id }: { id: string }) {
   const router = useRouter();
-
   const { data: serverPdf, isLoading, isError } = usePdfDetail(id);
 
   const {
@@ -29,7 +28,26 @@ export default function EditClient({ id }: { id: string }) {
     resetEditor,
     contextFiles,
     isContext,
+    setContextFiles,
   } = useEditorStore();
+
+  useEffect(() => {
+    const fetchContextFiles = async () => {
+      try {
+        const res = await fetch(`/api/pdfs/${id}/context`);
+        if (res.ok) {
+          const data = await res.json();
+          setContextFiles(data.files || []);
+        }
+      } catch (error) {
+        console.error("Failed to load context files", error);
+      }
+    };
+
+    if (id) {
+      fetchContextFiles();
+    }
+  }, [id, setContextFiles]);
 
   useEffect(() => {
     if (serverPdf && serverPdf.id === id) {
