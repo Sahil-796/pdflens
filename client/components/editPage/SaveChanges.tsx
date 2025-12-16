@@ -43,9 +43,9 @@ const SaveChanges = () => {
       className="hover:scale-105 transition-transform cursor-pointer"
     >
       {isPending ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Save className="w-4 h-4 mr-2" />
+        <Save className="w-4 h-4" />
       )}
       <span>Save</span>
 

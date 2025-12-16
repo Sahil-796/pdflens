@@ -17,23 +17,20 @@ const DownloadPDF = () => {
 
     setLoading(true);
     try {
-      // 1. Prepare DOM Parser
       const parser = new DOMParser();
       const doc = parser.parseFromString(draftHtml, "text/html");
 
-      // 2. Clean unnecessary UI elements
       const elementsToRemove = [
         ".ai-response-container",
         ".ai-action-toolbar",
         ".preview-mode",
-        ".selected", // remove selection highlights
+        ".selected",
       ];
 
       elementsToRemove.forEach((selector) => {
         doc.querySelectorAll(selector).forEach((el) => el.remove());
       });
 
-      // 3. Clean Inline Styles (Optional: Keep this if you want consistent PDF styling via CSS)
       doc.querySelectorAll("*").forEach((el) => {
         if (el instanceof HTMLElement) {
           el.style.fontSize = "";
@@ -45,7 +42,6 @@ const DownloadPDF = () => {
 
       const cleanContent = doc.body.innerHTML;
 
-      // 4. API Request
       const res = await fetch("/api/downloadPDF", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -57,12 +53,10 @@ const DownloadPDF = () => {
         throw new Error(errorData.error || "Server failed to generate PDF");
       }
 
-      // 5. Convert Response to Blob & Download
       const blob = await res.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      // Ensure valid filename ending in .pdf
       const safeName = fileName?.trim()
         ? fileName.replace(/\.pdf$/i, "")
         : "document";
@@ -71,7 +65,6 @@ const DownloadPDF = () => {
       document.body.appendChild(link);
       link.click();
 
-      // Cleanup
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 

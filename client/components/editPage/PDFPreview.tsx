@@ -22,7 +22,6 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
     showAiResponse,
     setAiStatus,
     setAiResponse,
-    originalElementHtml,
   } = useEditorStore();
 
   const previewNodeRef = useRef<HTMLElement | null>(null);
@@ -89,6 +88,18 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
 
     updateDraftHtml(doc.documentElement.outerHTML);
   }, [selectedId, draftHtml, updateDraftHtml, setAiResponse, setAiStatus]);
+
+  useEffect(() => {
+    const previouslySelected = document.querySelectorAll(".selected");
+    previouslySelected.forEach((el) => el.classList.remove("selected"));
+
+    if (selectedId) {
+      const targetEl = document.getElementById(selectedId);
+      if (targetEl) {
+        targetEl.classList.add("selected");
+      }
+    }
+  }, [selectedId, draftHtml]);
 
   useEffect(() => {
     if (!showAiResponse || !selectedId || !aiResponse) {
@@ -191,17 +202,9 @@ const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
       target.id = `gen-${Math.random().toString(36).substr(2, 9)}`;
 
     if (selectedId === target.id) {
-      const el = document.getElementById(target.id);
-      if (el) el.classList.remove("selected");
       clearSelection();
     } else {
-      if (selectedId) {
-        document.getElementById(selectedId)?.classList.remove("selected");
-      }
-
-      target.classList.add("selected");
       selectElement(target.id, target.innerText, target.outerHTML);
-
       if (onTextSelect) onTextSelect();
     }
   };

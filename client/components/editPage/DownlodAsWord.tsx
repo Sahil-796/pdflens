@@ -90,9 +90,9 @@ const DownloadAsWord = () => {
       className="hover:scale-105 transition-transform cursor-pointer bg-blue-600/90 hover:bg-blue-600 text-white"
     >
       {loading ? (
-        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+        <Loader2 className="w-4 h-4 animate-spin" />
       ) : (
-        <Download className="w-4 h-4 mr-2" />
+        <Download className="w-4 h-4" />
       )}
       As Word
     </Button>

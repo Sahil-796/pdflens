@@ -28,6 +28,9 @@ const EditPlaceholder = () => (
     <p className="text-sm font-medium text-muted-foreground">
       Select text to edit
     </p>
+    <p className="text-xs text-muted-foreground/60">
+      Click on any text in the document
+    </p>
   </div>
 );
 
