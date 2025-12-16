@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { FileText, File, Layers, PanelLeftOpen, Scissors } from "lucide-react";
+import { File, PanelLeftOpen, Scissors, Code, Merge } from "lucide-react";
 
 export const tools = [
   {
@@ -35,7 +35,7 @@ export const tools = [
   {
     name: "PDF to MD",
     href: "/tools/pdf-to-md",
-    icon: <FileText className="w-8 h-8 text-green-500 dark:text-green-400" />,
+    icon: <Code className="w-8 h-8 text-green-500 dark:text-green-400" />,
     description:
       "Convert your PDF documents into clean and editable Markdown files.",
     accent: "text-green-600 dark:text-green-400",
@@ -43,7 +43,7 @@ export const tools = [
   {
     name: "Merge PDF",
     href: "/tools/merge-pdf",
-    icon: <Layers className="w-8 h-8 text-purple-500 dark:text-purple-400" />,
+    icon: <Merge className="w-8 h-8 text-purple-500 dark:text-purple-400" />,
     description: "Combine your PDFs into one neat file — quick and simple.",
     accent: "text-purple-600 dark:text-purple-400",
   },

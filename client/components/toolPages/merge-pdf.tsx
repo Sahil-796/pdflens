@@ -174,10 +174,10 @@ const MergePdf = () => {
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-muted/50",
             dragActive
               ? "border-purple-500 bg-purple-500/10"
-              : "border-purple-500 hover:bg-background/30",
+              : "border-purple-500 hover:bg-muted",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -327,7 +327,7 @@ const MergePdf = () => {
             <Button
               onClick={handleMerge}
               disabled={isMerging || files.length < 2}
-              className="gap-2 bg-linear-to-br from-purple-600 to-purple-400 hover:from-purple-700 hover:to-purple-500 text-white shadow-md w-full sm:w-auto cursor-pointer"
+              className="gap-2 bg-purple-500 hover:bg-purple-600 text-white shadow-md w-full sm:w-auto cursor-pointer"
             >
               {isMerging ? (
                 <>

@@ -231,15 +231,15 @@ const SplitPDF = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-5xl mx-auto space-y-6">
+    <div className="flex flex-col items-center w-full max-w-4xl mx-auto space-y-6">
       {/* Upload Area */}
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-muted/50",
             dragActive
               ? "border-orange-400 bg-orange-500/10 scale-102"
-              : "border-orange-300 hover:bg-background/30",
+              : "border-orange-300 hover:bg-muted",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -432,7 +432,7 @@ const SplitPDF = () => {
               <Button
                 onClick={handleConvertAll}
                 disabled={isGlobalConverting}
-                className="gap-2 bg-linear-to-br from-orange-500 to-orange-400 hover:from-orange-600 hover:to-orange-500 text-white shadow-md w-full sm:w-auto cursor-pointer"
+                className="gap-2 bg-orange-300 hover:bg-orange-400  text-white shadow-md w-full sm:w-auto cursor-pointer"
               >
                 {isGlobalConverting
                   ? "Processing..."

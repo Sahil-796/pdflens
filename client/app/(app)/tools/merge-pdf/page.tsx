@@ -20,7 +20,7 @@ export default function Page() {
               Back to Toolbox
             </Button>
           </Link>
-          <h2 className="text-2xl font-semibold text-primary mb-2">
+          <h2 className="text-2xl font-semibold text-purple-500 mb-2">
             Merge PDF
           </h2>
           <p className="text-muted-foreground mb-6">

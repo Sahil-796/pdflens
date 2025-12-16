@@ -176,10 +176,10 @@ const PDF2Word = () => {
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-muted/50",
             dragActive
               ? "border-blue-300 bg-blue-100/10 scale-102"
-              : "border-blue-300 hover:bg-background/30",
+              : "border-blue-300 hover:bg-muted",
           )}
           onDragOver={(e) => {
             e.preventDefault();
