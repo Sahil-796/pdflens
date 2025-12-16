@@ -218,7 +218,7 @@ const MergePdf = () => {
               size="sm"
               onClick={clearAll}
               disabled={isMerging}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
             >
               Clear All
             </Button>
@@ -274,7 +274,7 @@ const MergePdf = () => {
                       onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
                       disabled={index === 0 || isMerging}
                       title="Move Up"
-                      className="text-muted-foreground hover:text-foreground h-8 w-8"
+                      className="text-muted-foreground hover:text-foreground h-8 w-8 cursor-pointer"
                     >
                       <ArrowUp size={16} />
                     </Button>
@@ -287,7 +287,7 @@ const MergePdf = () => {
                       onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
                       disabled={index === files.length - 1 || isMerging}
                       title="Move Down"
-                      className="text-muted-foreground hover:text-foreground h-8 w-8"
+                      className="text-muted-foreground hover:text-foreground h-8 w-8 cursor-pointer"
                     >
                       <ArrowDown size={16} />
                     </Button>
@@ -302,7 +302,7 @@ const MergePdf = () => {
                       onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
                       disabled={isMerging}
                       title="Remove File"
-                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8 cursor-pointer"
                     >
                       <Trash2 size={18} />
                     </Button>
@@ -318,7 +318,7 @@ const MergePdf = () => {
               <Button
                 variant="outline"
                 onClick={handleDownload}
-                className="gap-2 text-purple-600 border-purple-200 hover:bg-purple-50"
+                className="gap-2 text-purple-600 border-purple-200 hover:bg-purple-50 cursor-pointer"
               >
                 <Download size={16} /> Download Merged PDF
               </Button>
@@ -327,7 +327,7 @@ const MergePdf = () => {
             <Button
               onClick={handleMerge}
               disabled={isMerging || files.length < 2}
-              className="gap-2 bg-linear-to-br from-purple-600 to-purple-400 hover:from-purple-700 hover:to-purple-500 text-white shadow-md w-full sm:w-auto"
+              className="gap-2 bg-linear-to-br from-purple-600 to-purple-400 hover:from-purple-700 hover:to-purple-500 text-white shadow-md w-full sm:w-auto cursor-pointer"
             >
               {isMerging ? (
                 <>

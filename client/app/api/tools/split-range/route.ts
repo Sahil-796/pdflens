@@ -7,7 +7,10 @@ export async function POST(req: Request) {
     const ranges = formData.get("ranges") as string;
 
     if (!file || !ranges) {
-      return NextResponse.json({ message: "No file provided" }, { status: 400 });
+      return NextResponse.json(
+        { message: "No file provided" },
+        { status: 400 },
+      );
     }
 
     const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
@@ -18,29 +21,40 @@ export async function POST(req: Request) {
         secret1: (process.env.SECRET1 || process.env.secret) as string,
       },
       body: formData,
-    })
+    });
 
     if (!res.ok) {
       const errorText = await res.text();
+      console.error("Backend Error:", errorText);
       return NextResponse.json(
-        { message: "Python API Failed", error: errorText },
-        { status: res.status }
+        { message: "Conversion Failed", error: errorText },
+        { status: res.status },
       );
     }
 
-    // Convert backend response (PDF Blob)
-    const pdfBuffer = await res.arrayBuffer();
+    const contentType =
+      res.headers.get("Content-Type") || "application/octet-stream";
 
-    return new Response(pdfBuffer, {
+    const isZip = ranges.includes(",");
+    const fallbackExt = isZip ? ".zip" : ".pdf";
+    const fallbackFilename = `split_files${fallbackExt}`;
+
+    const contentDisposition =
+      res.headers.get("Content-Disposition") ||
+      `attachment; filename="${fallbackFilename}"`;
+
+    return new Response(res.body, {
       status: 200,
-      headers: res.headers
+      headers: {
+        "Content-Type": contentType,
+        "Content-Disposition": contentDisposition,
+      },
     });
-
-  } catch (error) {
-    console.error("API Error:", error);
+  } catch (error: any) {
+    console.error("Error in route:", error);
     return NextResponse.json(
       { message: "Internal Server Error", error: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

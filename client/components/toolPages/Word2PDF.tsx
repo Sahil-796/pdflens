@@ -231,7 +231,7 @@ const Word2PDF = () => {
               size="sm"
               onClick={clearAll}
               disabled={isGlobalConverting}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer"
             >
               Clear All
             </Button>
@@ -278,7 +278,7 @@ const Word2PDF = () => {
                           ? "Retry Conversion"
                           : "Convert File"
                       }
-                      className="text-primary hover:text-primary hover:bg-primary/10"
+                      className="text-primary hover:text-primary hover:bg-primary/10 cursor-pointer"
                     >
                       {item.status === "error" ? (
                         <RefreshCw size={18} />
@@ -302,7 +302,7 @@ const Word2PDF = () => {
                       variant="ghost"
                       onClick={() => downloadFile(item)}
                       title="Download"
-                      className="text-green-600 hover:text-green-700 hover:bg-green-100"
+                      className="text-green-600 hover:text-green-700 hover:bg-green-100 cursor-pointer"
                     >
                       <Download size={18} />
                     </Button>
@@ -315,7 +315,7 @@ const Word2PDF = () => {
                     onClick={() => removeFile(item.id)}
                     disabled={item.status === "converting"}
                     title="Remove File"
-                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 cursor-pointer"
                   >
                     <Trash2 size={18} />
                   </Button>
@@ -327,7 +327,11 @@ const Word2PDF = () => {
           {/* Global Controls */}
           <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end border-t border-border pt-4">
             {files.some((f) => f.status === "success") && (
-              <Button variant="outline" onClick={downloadAll} className="gap-2">
+              <Button
+                variant="outline"
+                onClick={downloadAll}
+                className="gap-2 cursor-pointer"
+              >
                 <Download size={16} /> Download All
               </Button>
             )}
@@ -336,7 +340,7 @@ const Word2PDF = () => {
               <Button
                 onClick={handleConvertAll}
                 disabled={isGlobalConverting}
-                className="gap-2 bg-blue-500 hover:bg-blue-600 text-white shadow-md w-full sm:w-auto"
+                className="gap-2 bg-blue-500 hover:bg-blue-600 text-white shadow-md w-full sm:w-auto cursor-pointer"
               >
                 {isGlobalConverting
                   ? "Converting..."
