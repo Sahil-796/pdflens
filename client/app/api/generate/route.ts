@@ -1,5 +1,5 @@
 import { deduceCredits } from "@/db/credits";
-import { createPdf } from "@/db/pdfs";
+import { updatePdf, createPdf } from "@/db/pdfs";
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -30,11 +30,9 @@ export async function POST(req: Request) {
     }
 
     const { userPrompt, fileName, isContext } = parsed.data;
-    // Use existing ID if provided, otherwise mint a new one
     const pdfId = parsed.data.pdfId || uuidv4();
     const isNewDocument = !parsed.data.pdfId;
 
-    // 1. Deduct Credits
     let creditsLeft: number;
     try {
       creditsLeft = await deduceCredits(userId, 4);
@@ -49,7 +47,6 @@ export async function POST(req: Request) {
       throw creditErr;
     }
 
-    // 2. Call AI
     const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
     const res = await fetch(`${PYTHON_URL}/ai/generate`, {
       method: "POST",
@@ -74,11 +71,10 @@ export async function POST(req: Request) {
       throw new Error("Invalid content from AI");
     }
 
-    // 3. Handle Persistence
-    // If this came from the Dashboard (no existing ID), we MUST save it to create the record.
-    // If this came from the Editor (existing ID), we generally return HTML and let the client save.
     if (isNewDocument) {
       await createPdf(pdfId, userId, fileName || "Untitled", htmlContent);
+    } else {
+      await updatePdf(pdfId, userId, fileName || "Untitled", htmlContent);
     }
 
     return NextResponse.json({
@@ -90,8 +86,7 @@ export async function POST(req: Request) {
       status: 200,
     });
   } catch (err: any) {
-    console.error("[Generate] Error:", err);
-    // Refund credits on failure
+    console.error("HTML Generate Error:", err);
     if (userId && creditsDeducted) {
       try {
         await deduceCredits(userId, -4);

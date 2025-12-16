@@ -7,14 +7,14 @@ import { useEditorStore } from "@/store/useEditorStore";
 export function useGeneratePdf() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { initializeEditor, updateDraftHtml } = useEditorStore();
+  const { initializeEditor } = useEditorStore();
 
   return useMutation({
     mutationFn: async (payload: {
       userPrompt: string;
       fileName: string;
       isContext: boolean;
-      pdfId?: string; // <--- ADDED THIS
+      pdfId?: string;
     }) => {
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -29,7 +29,6 @@ export function useGeneratePdf() {
       return res.json();
     },
     onSuccess: (data, variables) => {
-      // 1. Update User Credits
       queryClient.setQueryData(userKeys.profile(), (oldUser: any) => {
         if (!oldUser) return oldUser;
         return {
@@ -40,24 +39,17 @@ export function useGeneratePdf() {
 
       queryClient.invalidateQueries({ queryKey: pdfKeys.lists() });
 
-      // 2. Handle "Editor Mode" vs "Dashboard Mode"
-      if (variables.pdfId) {
-        // We are RE-generating inside the editor.
-        // Just update the HTML, don't force a reload/redirect.
-        updateDraftHtml(data.data);
-        toast.success("Content Regenerated!");
-      } else {
-        // We are creating a NEW document from the dashboard.
-        // Initialize and Redirect.
-        initializeEditor({
-          id: data.pdfId,
-          fileName: data.fileName,
-          html: data.data,
-          isContext: variables.isContext,
-        });
-        toast.success(`"${data.fileName}" Generated Successfully!`);
-        router.push(`/edit/${data.pdfId}`);
-      }
+      const hasContext = !!variables.pdfId;
+
+      initializeEditor({
+        id: data.pdfId,
+        fileName: data.fileName,
+        html: data.data,
+        isContext: hasContext,
+      });
+
+      toast.success(`"${data.fileName}" Generated Successfully!`);
+      router.push(`/edit/${data.pdfId}`);
     },
     onError: (error: Error) => {
       if (error.message !== "DAILY TOKEN LIMIT REACHED") {

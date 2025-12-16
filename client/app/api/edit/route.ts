@@ -32,7 +32,6 @@ export async function POST(req: Request) {
 
     const { userPrompt, html, pdfId, isContext } = parsed.data;
 
-    console.log(`[EditHTML] Deducting 1 credit for user ${userId}`);
     let creditsLeft: number;
 
     try {
@@ -48,7 +47,6 @@ export async function POST(req: Request) {
       throw creditErr;
     }
 
-    console.log(`[EditHTML] Calling Python API for PDF ${pdfId}`);
     const PYTHON_URL = process.env.PYTHON_URL || "http://localhost:8000";
 
     const res = await fetch(`${PYTHON_URL}/ai/edit`, {
@@ -86,7 +84,6 @@ export async function POST(req: Request) {
 
     if (userId && creditsDeducted) {
       try {
-        console.log(`[EditHTML] Refunding 1 credit for user ${userId}`);
         await deduceCredits(userId, -1);
       } catch (refundErr) {
         console.error("CRITICAL: Failed to refund edit credit:", refundErr);

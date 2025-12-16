@@ -1,5 +1,5 @@
 import { db } from "./client";
-import { pdf, context } from "./schema";
+import { pdf } from "./schema";
 import { eq, and, desc } from "drizzle-orm";
 
 export const createPdf = async (
