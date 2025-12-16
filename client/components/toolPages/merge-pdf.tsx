@@ -1,393 +1,349 @@
-'use client'
+"use client";
 
-import React, { useState, useRef } from 'react'
-import { Upload, X, Download, CheckCircle2, FileText, ArrowLeftCircle, ChevronUp, ChevronDown, GripVertical } from 'lucide-react'
-import { Reorder } from 'framer-motion'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import React, { useState, useRef } from "react";
 import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Spinner } from "@/components/ui/spinner"
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+  Upload,
+  FileText,
+  Files,
+  Download,
+  Trash2,
+  Loader2,
+  Merge,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import useUser from "@/hooks/useUser";
+import { Reorder } from "framer-motion";
 
-const MAX_FREE_FILES = 5
+interface FileItem {
+  id: string;
+  file: File;
+}
 
 const MergePdf = () => {
-  const [files, setFiles] = useState<File[]>([])
-  const [dragActive, setDragActive] = useState(false)
-  const [isMerging, setIsMerging] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [mergedBlob, setMergedBlob] = useState<Blob | null>(null)
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [files, setFiles] = useState<FileItem[]>([]);
+  const [dragActive, setDragActive] = useState(false);
+  const [isMerging, setIsMerging] = useState(false);
+  const [mergedBlob, setMergedBlob] = useState<Blob | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useUser();
 
-  const router = useRouter()
+  // Logic: 20 files for Pro, 5 for Free
+  const MAX_FILES = user?.isPro ? 20 : 5;
+  const MAX_SIZE_MB = 10;
 
-  const handleInvalidFileType = () => toast.info("Invalid File Type. Please upload PDF files only.")
+  const handleFileValidation = (newFiles: File[]) => {
+    const validFiles: FileItem[] = [];
+    const remainingSlots = MAX_FILES - files.length;
 
-  const addFiles = (newFiles: File[]) => {
-    const validFiles = newFiles.filter(file => {
-      if (!file.name.toLowerCase().endsWith('.pdf')) {
-        handleInvalidFileType()
-        return false
-      }
-      if (file.size > 10 * 1024 * 1024) {
-        toast.info(`${file.name} is too large. Max size: 10MB`)
-        return false
-      }
-      return true
-    })
-
-    const currentCount = files.length
-    const newCount = currentCount + validFiles.length
-
-    if (newCount > MAX_FREE_FILES) {
-      setShowUpgradeModal(true)
-      const allowedFiles = validFiles.slice(0, MAX_FREE_FILES - currentCount)
-      if (allowedFiles.length > 0) {
-        setFiles(prev => [...prev, ...allowedFiles])
-      }
-      return
+    if (newFiles.length > remainingSlots) {
+      toast.error(
+        `Limit exceeded. You can only add ${remainingSlots} more file(s).`,
+      );
+      return;
     }
 
-    setFiles(prev => [...prev, ...validFiles])
-  }
+    newFiles.forEach((file) => {
+      if (!file.name.toLowerCase().endsWith(".pdf")) {
+        toast.info(`Skipped "${file.name}": Not a PDF`);
+        return;
+      }
+      if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+        toast.info(`Skipped "${file.name}": Too large (>10MB)`);
+        return;
+      }
+      validFiles.push({
+        id: crypto.randomUUID(),
+        file,
+      });
+    });
+
+    if (validFiles.length > 0) {
+      setFiles((prev) => [...prev, ...validFiles]);
+      setMergedBlob(null);
+      toast.success(`Added ${validFiles.length} file(s)`);
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = Array.from(e.target.files || [])
-    if (selected.length > 0) {
-      addFiles(selected)
-      e.target.value = ''
-    }
-  }
+    if (e.target.files?.length)
+      handleFileValidation(Array.from(e.target.files));
+    e.target.value = "";
+  };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault()
-    setDragActive(false)
-    const droppedFiles = Array.from(e.dataTransfer.files || [])
-    if (droppedFiles.length > 0) {
-      addFiles(droppedFiles)
-    }
-  }
+    e.preventDefault();
+    setDragActive(false);
+    if (e.dataTransfer.files?.length)
+      handleFileValidation(Array.from(e.dataTransfer.files));
+  };
 
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index))
-  }
+  const removeFile = (id: string) => {
+    setFiles((prev) => prev.filter((f) => f.id !== id));
+    setMergedBlob(null);
+  };
 
-  const moveFile = (index: number, direction: 'up' | 'down') => {
-    const newFiles = [...files]
-    const targetIndex = direction === 'up' ? index - 1 : index + 1
+  // Manual move function for Arrow Buttons
+  const moveFile = (index: number, direction: "up" | "down") => {
+    const newFiles = [...files];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
 
-    if (targetIndex < 0 || targetIndex >= files.length) return
+    if (targetIndex < 0 || targetIndex >= files.length) return;
 
-    [newFiles[index], newFiles[targetIndex]] = [newFiles[targetIndex], newFiles[index]]
-    setFiles(newFiles)
-  }
+    // Swap
+    [newFiles[index], newFiles[targetIndex]] = [
+      newFiles[targetIndex],
+      newFiles[index],
+    ];
+
+    setFiles(newFiles);
+    setMergedBlob(null);
+  };
 
   const handleMerge = async () => {
     if (files.length < 2) {
-      toast.info("Please upload at least 2 PDF files to merge")
-      return
+      toast.info("Please upload at least 2 PDF files to merge");
+      return;
     }
 
-    setIsMerging(true)
+    setIsMerging(true);
+    setMergedBlob(null);
+
     try {
-      const formData = new FormData()
-      files.forEach((file) => {
-        formData.append('files', file)
-      })
+      const formData = new FormData();
+      files.forEach((item) => {
+        formData.append("files", item.file);
+      });
 
       const res = await fetch(`/api/tools/merge-pdf`, {
-        method: 'POST',
+        method: "POST",
         body: formData,
-      })
+      });
 
       if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}))
-        throw new Error(errorData.message || "Failed to merge PDFs")
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to merge PDFs");
       }
 
-      const blob = await res.blob()
-      setMergedBlob(blob)
-      setSuccess(true)
+      const blob = await res.blob();
+      setMergedBlob(blob);
+      toast.success("PDFs merged successfully!");
 
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'merged.pdf'
-      a.click()
-      window.URL.revokeObjectURL(url)
-    } catch (err) {
-      console.error(err)
-      toast.error(err instanceof Error ? err.message : 'Merge Failed')
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `merged_${new Date().getTime()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Merge Failed");
     } finally {
-      setIsMerging(false)
+      setIsMerging(false);
     }
-  }
+  };
 
   const handleDownload = () => {
-    if (!mergedBlob) return
-    const url = window.URL.createObjectURL(mergedBlob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'merged.pdf'
-    a.click()
-    window.URL.revokeObjectURL(url)
-  }
+    if (!mergedBlob) return;
+    const url = window.URL.createObjectURL(mergedBlob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `merged_${new Date().getTime()}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click()
-  }
+  const clearAll = () => {
+    setFiles([]);
+    setMergedBlob(null);
+    setIsMerging(false);
+  };
 
   return (
-    <>
-      <div className="flex flex-1 items-center justify-center h-full px-4 py-6">
-        {success ? (
-          <Card className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl border-border bg-background p-6 sm:p-8 flex flex-col items-center justify-center rounded-2xl shadow-md space-y-6">
-            <div className="flex flex-col sm:flex-row items-center gap-2 text-purple-600 font-medium text-center sm:text-left text-lg sm:text-xl">
-              <CheckCircle2 className="size-5 sm:size-6" />
-              <span>Your PDFs have been merged successfully!</span>
-            </div>
+    <div className="flex flex-col items-center w-full max-w-4xl mx-auto space-y-6">
+      {/* Upload Area */}
+      {files.length < MAX_FILES && (
+        <div
+          className={cn(
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
+            dragActive
+              ? "border-purple-500 bg-purple-500/10"
+              : "border-purple-500 hover:bg-background/30",
+          )}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragActive(true);
+          }}
+          onDragLeave={() => setDragActive(false)}
+          onDrop={handleDrop}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="text-purple-500 mb-4" size={40} />
+          <p className="text-lg font-medium text-purple-500">
+            Drop PDFs here or click to upload
+          </p>
+          <p className="text-muted-foreground text-sm mt-1">
+            {files.length}/{MAX_FILES} files selected • Max 10MB each
+          </p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            multiple
+            className="hidden"
+            onChange={handleFileChange}
+          />
+        </div>
+      )}
 
-            <div className="flex flex-col items-center space-y-2">
-              <FileText size={48} className="text-purple-600" />
-              <div>
-                <p className="font-semibold text-lg sm:text-xl text-foreground">
-                  merged.pdf
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {files.length} files merged
-                </p>
-              </div>
-            </div>
+      {/* File List */}
+      {files.length > 0 && (
+        <Card className="w-full border border-border bg-card p-4 sm:p-6 rounded-xl shadow-sm animate-in fade-in slide-in-from-bottom-4">
+          <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <Files className="w-5 h-5 text-purple-600" />
+              Files Queue ({files.length}/{MAX_FILES})
+            </h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={clearAll}
+              disabled={isMerging}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            >
+              Clear All
+            </Button>
+          </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mt-4">
-              <Button
-                onClick={() => {
-                  setFiles([])
-                  setSuccess(false)
-                  setMergedBlob(null)
-                }}
-                variant="outline"
-                size="lg"
-                className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center cursor-pointer"
-              >
-                <ArrowLeftCircle className="size-5" /> Merge More
-              </Button>
+          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+            <Reorder.Group
+              axis="y"
+              values={files}
+              onReorder={setFiles}
+              className="space-y-3"
+            >
+              {files.map((item, index) => (
+                <Reorder.Item
+                  key={item.id}
+                  value={item}
+                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/50 group select-none cursor-grab active:cursor-grabbing hover:border-purple-500/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3 overflow-hidden">
+                    {/* Drag Handle */}
+                    <div className="text-muted-foreground cursor-grab active:cursor-grabbing p-1 hover:text-foreground">
+                      <GripVertical size={20} />
+                    </div>
 
-              <Button
-                onClick={handleDownload}
-                variant="default"
-                size="lg"
-                className="flex items-center gap-2 px-6 text-base sm:text-lg w-full sm:w-auto justify-center bg-gradient-to-br from-purple-500 to-purple-400 cursor-pointer"
-              >
-                <Download className="size-5" /> Download
-              </Button>
-            </div>
-          </Card>
-        ) : (
-          <Card className="w-full max-w-xl sm:max-w-2xl md:max-w-3xl border-border bg-background p-6 sm:p-8 flex flex-col items-center justify-center rounded-2xl shadow-sm">
-            {files.length === 0 ? (
-              <div
-                className={`border-2 border-dashed rounded-xl w-full py-16 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer ${dragActive
-                  ? 'scale-[1.02]'
-                  : 'border-border hover:bg-muted/30'
-                  }`}
-                onDragOver={(e) => {
-                  e.preventDefault()
-                  setDragActive(true)
-                }}
-                onDragLeave={() => setDragActive(false)}
-                onDrop={handleDrop}
-                onClick={triggerFileInput}
-              >
-                <Upload className="text-purple-600 mb-3" size={40} />
-                <p className="text-sm sm:text-base text-purple-600 text-center">
-                  Drop your PDFs here or click to upload
-                </p>
-                <p className='text-muted-foreground text-sm'>
-                  (Max {MAX_FREE_FILES} files, 5MB each)
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center text-center space-y-5 w-full h-full">
-                <div className='w-full flex items-center gap-4 justify-center'>
-                  <FileText className={`text-purple-600 h-7 w-7 ${isMerging && "animate-caret-blink"}`} />
+                    {/* Number Badge */}
+                    <div className="flex items-center justify-center bg-purple-100 text-purple-700 min-w-7 h-7 rounded-md text-sm font-bold border border-purple-200">
+                      {index + 1}
+                    </div>
 
-                  <span className="text-lg sm:text-xl font-medium text-foreground">
-                    {isMerging ?
-                      ` ${files.length} PDF${files.length > 1 ? 's' : ''} Merging...`
-                      :
-                      `${files.length} PDF${files.length > 1 ? 's' : ''} Ready to Merge`
-                    }
-                  </span>
-                </div>
+                    {/* File Icon */}
+                    <div className="p-2 rounded-md bg-purple-500/10 text-purple-600">
+                      <FileText size={20} />
+                    </div>
 
-                {!isMerging &&
-                  <Reorder.Group axis="y" values={files} onReorder={setFiles} className="w-full space-y-2 h-90 overflow-y-auto">
-                    {files.map((file, index) => (
-                      <Reorder.Item
-                        key={file.name + file.size}
-                        value={file}
-                        className="flex items-center gap-2 bg-muted/50 rounded-lg p-3 text-left cursor-grab active:cursor-grabbing"
-                      >
-                        <div className="flex items-center gap-2 text-purple-600">
-                          <GripVertical size={20} className="flex-shrink-0" />
-                        </div>
+                    {/* File Info */}
+                    <div className="flex flex-col min-w-0">
+                      <span className="truncate font-medium text-sm">
+                        {item.file.name}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {(item.file.size / (1024 * 1024)).toFixed(2)} MB
+                      </span>
+                    </div>
+                  </div>
 
-                        <div className="flex flex-col gap-1">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => moveFile(index, 'up')}
-                            disabled={index === 0}
-                            className="h-6 w-6 p-0"
-                          >
-                            <ChevronUp size={16} />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => moveFile(index, 'down')}
-                            disabled={index === files.length - 1}
-                            className="h-6 w-6 p-0"
-                          >
-                            <ChevronDown size={16} />
-                          </Button>
-                        </div>
-
-                        <div className="flex items-center justify-center bg-purple-100 rounded px-2 py-1 min-w-[2rem]">
-                          <span className="text-sm font-semibold text-purple-600">
-                            {index + 1}
-                          </span>
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">{file.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {(file.size / (1024 * 1024)).toFixed(2)} MB
-                          </p>
-                        </div>
-
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFile(index)}
-                          className="flex-shrink-0"
-                        >
-                          <X size={16} />
-                        </Button>
-                      </Reorder.Item>
-                    ))}
-                  </Reorder.Group>
-                }
-
-                {isMerging ? (
-                  <Empty className="w-full">
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon" className="text-purple-600">
-                        <Spinner />
-                      </EmptyMedia>
-                      <EmptyTitle className="text-purple-600 text-lg sm:text-xl">Merging PDFs</EmptyTitle>
-                      <EmptyDescription className="text-sm sm:text-base">
-                        Please wait while your PDFs are being merged. Do not refresh the page.
-                      </EmptyDescription>
-                    </EmptyHeader>
-                  </Empty>
-                ) : (
-                  <div className="flex flex-col-reverse sm:flex-row gap-3 w-full items-center justify-center">
+                  {/* Actions: Arrows + Remove */}
+                  <div className="flex items-center gap-1">
+                    {/* Up Arrow */}
                     <Button
-                      variant="outline"
-                      size="default"
-                      onClick={triggerFileInput}
-                      disabled={files.length >= MAX_FREE_FILES}
-                      className="flex items-center gap-2 w-full sm:w-auto justify-center cursor-pointer"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => moveFile(index, "up")}
+                      onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
+                      disabled={index === 0 || isMerging}
+                      title="Move Up"
+                      className="text-muted-foreground hover:text-foreground h-8 w-8"
                     >
-                      <Upload size={16} /> Add More Files
+                      <ArrowUp size={16} />
                     </Button>
+
+                    {/* Down Arrow */}
                     <Button
-                      onClick={handleMerge}
-                      disabled={isMerging || files.length < 2}
-                      className="flex items-center gap-2 w-full sm:w-auto justify-center bg-gradient-to-br from-purple-500 to-purple-400 cursor-pointer"
-                      size="lg"
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => moveFile(index, "down")}
+                      onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
+                      disabled={index === files.length - 1 || isMerging}
+                      title="Move Down"
+                      className="text-muted-foreground hover:text-foreground h-8 w-8"
                     >
-                      <FileText size={16} /> Merge PDFs
+                      <ArrowDown size={16} />
+                    </Button>
+
+                    <div className="w-px h-4 bg-border mx-1" />
+
+                    {/* Remove */}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => removeFile(item.id)}
+                      onPointerDown={(e) => e.stopPropagation()} // Prevent drag start
+                      disabled={isMerging}
+                      title="Remove File"
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                    >
+                      <Trash2 size={18} />
                     </Button>
                   </div>
-                )}
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          </div>
 
-                {files.length >= MAX_FREE_FILES && (
-                  <p className="text-xs text-muted-foreground">
-                    Free tier limit reached. Upgrade to merge more files.
-                  </p>
-                )}
-              </div>
+          {/* Global Controls */}
+          <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end border-t border-border pt-4">
+            {mergedBlob && (
+              <Button
+                variant="outline"
+                onClick={handleDownload}
+                className="gap-2 text-purple-600 border-purple-200 hover:bg-purple-50"
+              >
+                <Download size={16} /> Download Merged PDF
+              </Button>
             )}
-          </Card>
-        )}
-      </div>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept=".pdf"
-        multiple
-        onChange={handleFileChange}
-        className="hidden"
-      />
-
-      <Dialog open={showUpgradeModal} onOpenChange={setShowUpgradeModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">Upgrade to Pro</DialogTitle>
-            <DialogDescription>
-              {`You've reached the free tier limit of ${MAX_FREE_FILES} files per merge.`}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="font-medium text-foreground">
-            Upgrade to Pro to unlock:
-          </div>
-          <ul className="list-disc list-inside space-y-2 text-sm">
-            <li>Merge unlimited PDF files</li>
-            <li>Larger file size limits</li>
-            <li>Priority processing</li>
-            <li>Advanced PDF tools</li>
-          </ul>
-          <div className="flex gap-3">
             <Button
-              variant="outline"
-              onClick={() => setShowUpgradeModal(false)}
-              className="flex-1 cursor-pointer"
+              onClick={handleMerge}
+              disabled={isMerging || files.length < 2}
+              className="gap-2 bg-linear-to-br from-purple-600 to-purple-400 hover:from-purple-700 hover:to-purple-500 text-white shadow-md w-full sm:w-auto"
             >
-              Maybe Later
-            </Button>
-            <Button
-              className="flex-1 bg-gradient-to-br from-purple-500 to-purple-400 cursor-pointer"
-              onClick={() => {
-                setShowUpgradeModal(false)
-                router.push('/pricing')
-              }}
-            >
-              Upgrade Now
+              {isMerging ? (
+                <>
+                  <Loader2 className="animate-spin w-4 h-4" /> Merging...
+                </>
+              ) : (
+                <>
+                  <Merge size={16} /> Merge {files.length} PDFs
+                </>
+              )}
             </Button>
           </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  )
-}
+        </Card>
+      )}
+    </div>
+  );
+};
 
-export default MergePdf
+export default MergePdf;
