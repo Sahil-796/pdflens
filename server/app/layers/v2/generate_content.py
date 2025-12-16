@@ -31,34 +31,67 @@ async def generate_content(content_description: str, formatting_instructions: st
         
         You must produce TWO outputs in a specific format.
         
-        ================================================================
+        ===========================================
         SECTION 1 — CONTENT GENERATION (The Writer)
-        ================================================================
+        ===========================================
         
-        ### 1. ADAPTIVE STRUCTURE (Do not blindly copy; ADAPT)
-        Do not force every topic into a generic template. Use your intelligence to structure the narrative.
-        However, a professional whitepaper typically flows like this (use these *types* of sections where they fit):
-        - **Executive Summary/Abstract**: High-level value prop.
-        - **Context & Problem Statement**: Why does this matter?
-        - **Technical Deep Dive**: The core architecture/solution.
-        - **Comparative Analysis**: Tables comparing X vs Y.
-        - **Implementation/Workflow**: How it works (Mermaid diagrams welcome).
-        - **Strategic Implications**: Benefits, challenges, ROI.
-        Note: this are not to be enforced but to be considered as they look professional
+        ### 1. NARRATIVE & STRUCTURAL JUDGMENT (Primary Rule)
+                
+        Before writing, determine:
+        
+        * What the reader must understand first
+        * Which concepts logically depend on others
+        * Whether the topic genuinely benefits from formal whitepaper-style sections
+        
+        Structure the document in the most natural and intellectually honest way.
+        Introduce sections only when they improve clarity or reasoning.
+        Omit any section that does not add real explanatory value.
+        
+        Your goal is narrative coherence and insight — not section completeness.
+        
+        If appropriate, the document may *resemble* a professional whitepaper in flow
+        (e.g., high-level framing → depth → implications),
+        but this should emerge naturally from the topic, not be forced.
+        
+        ---
         
         ### 2. DEPTH & QUALITY STANDARDS
-        - **No Surface-Level Content**: Do not just list features. Explain the *implication* of the feature.
-        - **Length & Density**: Write substantial paragraphs. Avoid single-sentence paragraphs. A "detailed document" implies comprehensive coverage.
-        - **Tone**: Analytical, measured, engineering-focused. Avoid marketing fluff (e.g., "game-changing," "revolutionary").
         
-        ### 3. MARKDOWN FORMATTING RULES
-        - Use `SECTION_BREAK` on its own line to signal a forced page break.
-        - Use Markdown tables for any data comparison (these render beautifully in the PDF).
-        - If a process is complex, use a Mermaid diagram:
-          ```mermaid
-          graph TD; A-->B;
-          ```
-        - Start directly with `# {Main Title}`.
+        * **No Surface-Level Content**
+        Do not list features or concepts without explaining:
+        
+        * Why they exist
+        * What problem they solve
+        * What trade-offs they introduce
+        
+        * **Length & Density**
+        Write substantial, information-dense paragraphs.
+        Avoid single-sentence paragraphs unless absolutely necessary for emphasis.
+        A “detailed document” implies complete conceptual coverage, not verbosity.
+        
+        * **Tone**
+        Analytical, precise, and engineering-focused.
+        Avoid marketing language, hype, or vague claims.
+        Prefer concrete mechanisms, constraints, and reasoning.
+        
+        ---
+        
+        ### 3. MARKDOWN & STRUCTURAL FORMATTING RULES
+        
+        * Start directly with `# {Main Title}` — no preamble.
+        * Use `SECTION_BREAK` on its own line only when a forced page break is required.
+        * Use Markdown tables for comparisons when they meaningfully aid understanding.
+        * Use Mermaid diagrams *only* when a process or architecture benefits from visualization:
+        
+        ```mermaid
+        graph TD;
+        A --> B;
+        ```
+        
+        * Formatting exists to support comprehension, not aesthetics.
+        
+        Only include structural or visual elements when they improve clarity.
+
         
         ================================================================
         SECTION 2 — VISUAL HIERARCHY & CSS (The Typographer)
