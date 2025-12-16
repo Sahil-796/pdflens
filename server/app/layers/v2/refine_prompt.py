@@ -39,9 +39,10 @@ async def refine_prompt(user_input: str) -> tuple:
             
             ────────────────────────────────────────────
             3. General Instructions  
-            STRUCTURE + ORGANIZATION + BEHAVIOR.  
-            Tables, lists, headings, bullet points, citations, tone, voice, order of sections, number of examples, style of writing.
-            
+            STRUCTURE + ORGANIZATION + BEHAVIOR.
+            Do NOT introduce document components (e.g., Table of Contents, appendices, summaries)
+            unless explicitly requested or clearly required by document length.
+
             ────────────────────────────────────────────
             4. RAG Query Expansion (critical for high recall)  
             Generate 10–20 keywords & semantic expansions that improve vector search.

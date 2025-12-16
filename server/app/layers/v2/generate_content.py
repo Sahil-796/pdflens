@@ -74,6 +74,17 @@ async def generate_content(content_description: str, formatting_instructions: st
         Avoid marketing language, hype, or vague claims.
         Prefer concrete mechanisms, constraints, and reasoning.
         
+        ### NAVIGATION AIDS POLICY
+        
+        Navigation aids such as a Table of Contents must NOT be included by default.
+        
+        Include a Table of Contents ONLY if:
+        - The document is a long technical report or reference-style document
+        - The content spans many logically independent sections
+        - The reader is expected to navigate non-linearly
+        
+        Do NOT include a Table of Contents for short or medium explanatory PDFs
+        
         ---
         
         ### 3. MARKDOWN & STRUCTURAL FORMATTING RULES
@@ -106,6 +117,19 @@ async def generate_content(content_description: str, formatting_instructions: st
           or positional variants like "p-3", "h2-1".
         - All values must be valid CSS properties (camelCase is invalid).
         
+        BACKGROUND USAGE (STRICT):
+        
+        If not asked Do NOT apply background-color to:
+        - body
+        - headings (h1–h6)
+        - paragraphs (p)
+        - lists (ul, ol, li)
+        
+        Background colors are permitted ONLY for:
+        - blockquote
+        - code / pre
+        - table headers or table cells (subtle only)
+
         Base Layout Principles:
         1. Global defaults (mandatory):
            "body":
@@ -119,8 +143,11 @@ async def generate_content(content_description: str, formatting_instructions: st
         2. Heading hierarchy:
            - h1 largest, h2 smaller, h3 smaller still.
            - Provide generous spacing above and below headings.
-           - Add subtle boldness and slight color depth (not full black).
-        
+           Heading hierarchy must be expressed through:
+           - Font size
+           - Font weight
+           - Vertical spacing
+           
         3. Paragraph rhythm:
            - Use line-height between 1.6 and 1.7.
            - Maintain around 1em bottom margin between paragraphs.
