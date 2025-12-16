@@ -14,7 +14,7 @@ export async function POST(req) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid request", issues: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,7 +50,6 @@ export async function POST(req) {
       </html>
     `;
 
-    // 👇 Puppeteer version
     const browser = await playwright.launch({
       args: chromium.args,
       executablePath: await chromium.executablePath(),
@@ -79,7 +78,7 @@ export async function POST(req) {
     console.error("PDF generation error:", err);
     return NextResponse.json(
       { error: "Failed to generate PDF" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
