@@ -95,15 +95,17 @@ export default function Navbar() {
 
   const monogram = loading ? (
     <Loader2 className="h-4 w-4 animate-spin" />
-  ) : user.avatar ? (
-    <img
-      src={user.avatar}
-      alt={user.name || "User"}
-      className="w-full h-full rounded-full object-cover"
-    />
-  ) : (
-    user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
-  );
+  ) : user ? (
+    user.avatar ? (
+      <img
+        src={user.avatar}
+        alt={user.name || "User"}
+        className="w-full h-full rounded-full object-cover"
+      />
+    ) : (
+      user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
+    )
+  ) : null;
 
   return (
     <>

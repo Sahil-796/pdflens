@@ -17,7 +17,7 @@ const Page = () => {
           <div className="flex-1 overflow-y-scroll p-2">
             <PdfList
               limit={12}
-              showDelete={false}
+              showDelete={true}
               showViewMore={true}
               emptyTitle="No PDFs to Edit"
               emptyDescription="Create a new PDF to get started with editing."
@@ -32,4 +32,3 @@ const Page = () => {
 };
 
 export default Page;
-
