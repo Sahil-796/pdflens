@@ -7,7 +7,7 @@ const HtmlSchema = z.object({
   html: z.string().min(1, "HTML is required"),
 });
 
-export async function POST(req) {
+export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const parsed = HtmlSchema.safeParse(body);
@@ -28,9 +28,7 @@ export async function POST(req) {
               size: A4; 
               margin: 0.8in; 
             }
-
             body { font-family: sans-serif; }
-
             .pg-break { 
               display: block; 
               page-break-before: always; 
@@ -39,7 +37,6 @@ export async function POST(req) {
               margin: 0; 
               padding: 0; 
             }
-
             @media print {
               h1, h2, h3, h4, h5, h6 { page-break-after: avoid; }
               h2, h3, h4, h5, h6 { page-break-before: avoid; }
@@ -50,10 +47,25 @@ export async function POST(req) {
       </html>
     `;
 
-    const browser = await playwright.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-    });
+    const isProduction = process.env.NODE_ENV === "production";
+
+    const localExecutablePath =
+      "/Applications/Helium.app/Contents/MacOS/Helium";
+
+    // If running locally, we skip the special serverless args
+    const launchOptions = isProduction
+      ? {
+          args: chromium.args,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+        }
+      : {
+          args: [],
+          executablePath: localExecutablePath,
+          headless: true,
+        };
+
+    const browser = await playwright.launch(launchOptions);
     const context = await browser.newContext();
     const page = await context.newPage();
 
