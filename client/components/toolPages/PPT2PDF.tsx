@@ -179,10 +179,10 @@ const PPT2PDF = () => {
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-card/50",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
             dragActive
-              ? "border-orange-500 bg-orange-500/10"
-              : "border-border hover:bg-muted/30",
+              ? "border-orange-600 bg-orange-100/10 scale-102"
+              : "border-orange-500 hover:bg-background/30",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -192,8 +192,8 @@ const PPT2PDF = () => {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
         >
-          <Upload className="text-muted-foreground mb-4" size={40} />
-          <p className="text-lg font-medium">
+          <Upload className="text-orange-500 mb-4" size={40} />
+          <p className="text-lg font-medium text-orange-500">
             Drop PowerPoint files here or click to upload
           </p>
           <p className="text-muted-foreground text-sm mt-1">

@@ -176,10 +176,10 @@ const PDF2MD = () => {
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-card/50",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
             dragActive
-              ? "border-green-500 bg-green-500/10"
-              : "border-border hover:bg-muted/30",
+              ? "border-green-600 bg-green-100/10 scale-102"
+              : "border-green-500 hover:bg-background/30",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -189,8 +189,8 @@ const PDF2MD = () => {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
         >
-          <Upload className="text-muted-foreground mb-4" size={40} />
-          <p className="text-lg font-medium">
+          <Upload className="text-green-600 mb-4" size={40} />
+          <p className="text-lg font-medium text-green-500">
             Drop PDFs here or click to upload
           </p>
           <p className="text-muted-foreground text-sm mt-1">

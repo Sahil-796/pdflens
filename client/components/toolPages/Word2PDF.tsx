@@ -187,10 +187,10 @@ const Word2PDF = () => {
       {files.length < MAX_FILES && (
         <div
           className={cn(
-            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-card/50",
+            "w-full border-2 border-dashed rounded-xl py-12 flex flex-col items-center justify-center transition-all duration-200 cursor-pointer bg-background",
             dragActive
-              ? "border-primary bg-primary/10"
-              : "border-border hover:bg-muted/30",
+              ? "border-blue-600 bg-blue-100/10 scale-102"
+              : "border-blue-500 hover:bg-background/30",
           )}
           onDragOver={(e) => {
             e.preventDefault();
@@ -200,8 +200,8 @@ const Word2PDF = () => {
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
         >
-          <Upload className="text-muted-foreground mb-4" size={40} />
-          <p className="text-lg font-medium">
+          <Upload className="text-blue-500 mb-4" size={40} />
+          <p className="text-lg font-medium text-blue-500">
             Drop Word files here or click to upload
           </p>
           <p className="text-muted-foreground text-sm mt-1">
