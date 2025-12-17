@@ -1,6 +1,16 @@
 "use client";
 
-import { Loader2, LogOut, User, Coins, Search, Home, Menu } from "lucide-react";
+import {
+  Loader2,
+  LogOut,
+  User,
+  Coins,
+  Search,
+  Home,
+  Menu,
+  Sparkles,
+  Plus,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,25 +29,18 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import ThemeToggle from "../theme/ThemeToggle";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/app/store/useUserStore";
-import { authClient } from "@/lib/auth-client";
 import useUser from "@/hooks/useUser";
 import { Logo } from "../Logo";
-import { usePdfStore } from "@/app/store/usePdfStore";
 import { useCommandPalette } from "@/hooks/useCommandPalette";
 import MobileMenubar from "./mobile-menubar";
 import { Badge } from "../ui/badge";
+import { useLogout } from "@/hooks/mutations/useLogout";
 
 const navigationLinks = [
   {
     href: "/",
     label: "Home",
   },
-  // {
-  //   label: "About",
-  //   href: '/about'
-  // },
   {
     label: "Pricing",
     href: "/pricing",
@@ -94,43 +97,25 @@ const navigationLinks = [
 ];
 
 export default function Navbar() {
-  const [isLoading, setIsLoading] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-  const router = useRouter();
   const { user, loading } = useUser();
-  const { clearUser, creditsLeft } = useUserStore();
-  const { clearPdf } = usePdfStore();
   const { setOpen } = useCommandPalette();
 
-  const handleLogout = async () => {
-    try {
-      setIsLoading(true);
-      await authClient.signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            router.push("/");
-          },
-        },
-      });
-      clearUser();
-      clearPdf();
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { mutate: logout, isPending } = useLogout();
 
-  // Monogram (first letter of name or email fallback)
   const monogram = loading ? (
     <Loader2 className="h-4 w-4 animate-spin" />
-  ) : user.avatar ? (
-    <img
-      src={user.avatar}
-      alt={user.name || "User"}
-      className="w-full h-full rounded-full object-cover"
-    />
-  ) : (
-    user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
-  );
+  ) : user ? (
+    user.avatar ? (
+      <img
+        src={user.avatar}
+        alt={user.name || "User"}
+        className="w-full h-full rounded-full object-cover"
+      />
+    ) : (
+      user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"
+    )
+  ) : null;
 
   return (
     <>
@@ -160,8 +145,8 @@ export default function Navbar() {
               size="sm"
               className="h-8 rounded-md text-primary"
             >
-              <Link href="/dashboard">
-                <Home className="h-4 w-4" />
+              <Link href="/generate">
+                <Plus className="h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -197,7 +182,7 @@ export default function Navbar() {
                                 href={item.href}
                                 className={cn(
                                   "block rounded-md px-3 py-2 hover:bg-muted",
-                                  "data-[active]:focus:bg-accent data-[active]:hover:bg-accent data-[active]:bg-accent data-[active]:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+                                  "data-active:focus:bg-accent data-active:hover:bg-accent data-active:bg-accent data-active:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
                                 )}
                               >
                                 <div className="font-medium text-sm">
@@ -217,7 +202,7 @@ export default function Navbar() {
                       href={link.href}
                       className={cn(
                         "text-sm text-foreground hover:text-primary px-3 py-1.5 font-medium",
-                        "data-[active]:focus:bg-accent data-[active]:hover:bg-accent data-[active]:bg-accent data-[active]:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
+                        "data-active:focus:bg-accent data-active:hover:bg-accent data-active:bg-accent data-active:text-accent-foreground hover:bg-accent focus:bg-accent focus:text-accent-foreground focus-visible:ring-ring/50 [&_svg:not([class*='text-'])]:text-muted-foreground flex flex-col gap-1 rounded-sm p-2 text-sm transition-all outline-none focus-visible:ring-[3px] focus-visible:outline-1 [&_svg:not([class*='size-'])]:size-4",
                       )}
                     >
                       {link.label}
@@ -230,9 +215,9 @@ export default function Navbar() {
 
           {/* Right: Auth/User */}
           <div
-            className={`hidden sm:flex items-center gap-2 flex-shrink-0 ${loading ? "scale-0" : "scale-100"}`}
+            className={`hidden sm:flex items-center gap-2 shrink-0 ${loading ? "scale-0" : "scale-100"}`}
           >
-            {!user.id ? (
+            {!user ? (
               <>
                 <Button
                   asChild
@@ -261,14 +246,16 @@ export default function Navbar() {
                 </Button>
                 <Button
                   asChild
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
-                  className="h-8 rounded-md text-primary"
+                  className="h-8 rounded-md b mr-1"
                 >
-                  <Link href="/dashboard">
-                    <Home className="h-4 w-4" />
+                  <Link href="/generate" className="flex items-center gap-2">
+                    <Plus className="w-3.5 h-3.5" />
+                    <span className="text-xs font-semibold">New PDF</span>
                   </Link>
                 </Button>
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -308,7 +295,9 @@ export default function Navbar() {
                       <div className="mt-3 flex items-center justify-between">
                         <Badge variant="secondary">
                           <Coins className="h-3.5 w-3.5 text-primary" />
-                          <span className="">{creditsLeft} credits left</span>
+                          <span className="">
+                            {user.creditsLeft} credits left
+                          </span>
                         </Badge>
 
                         {/* Upgrade Button for non-pro users */}
@@ -352,16 +341,16 @@ export default function Navbar() {
                     <div className="p-2">
                       <Button
                         variant="ghost"
-                        onClick={handleLogout}
-                        disabled={isLoading}
+                        onClick={() => logout()}
+                        disabled={isPending}
                         className="w-full justify-start gap-2 h-9 text-sm font-normal text-destructive hover:text-destructive hover:bg-destructive/10"
                       >
-                        {isLoading ? (
+                        {isPending ? (
                           <Loader2 className="h-4 w-4 animate-spin" />
                         ) : (
                           <LogOut className="h-4 w-4" />
                         )}
-                        <span>{isLoading ? "Logging out..." : "Log out"}</span>
+                        <span>{isPending ? "Logging out..." : "Log out"}</span>
                       </Button>
                     </div>
                   </PopoverContent>
@@ -377,9 +366,9 @@ export default function Navbar() {
           setMobileOpen={setMobileOpen}
           navigationLinks={navigationLinks}
           user={user}
-          handleLogout={handleLogout}
-          isLoading={isLoading}
-          creditsLeft={creditsLeft}
+          handleLogout={() => logout()}
+          isLoading={isPending}
+          creditsLeft={user.creditsLeft}
         />
       )}
     </>

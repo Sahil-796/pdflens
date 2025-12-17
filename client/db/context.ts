@@ -5,11 +5,14 @@ import { sql, eq } from "drizzle-orm";
 
 export const createContextFile = async (pdfId: string, filename: string) => {
   try {
-    const newContext = await db.insert(context).values({
-      id: uuid(),
-      pdfId: pdfId,
-      files: [filename],   
-    }).returning();
+    const newContext = await db
+      .insert(context)
+      .values({
+        id: uuid(),
+        pdfId: pdfId,
+        files: [filename],
+      })
+      .returning();
 
     return newContext;
   } catch (err) {
@@ -18,8 +21,7 @@ export const createContextFile = async (pdfId: string, filename: string) => {
   }
 };
 
-
-export const addContextFile = async (pdfId: string, filename: string) => {
+export const updateContextFile = async (pdfId: string, filename: string) => {
   try {
     const updated = await db.execute(sql`
       UPDATE context
@@ -28,13 +30,12 @@ export const addContextFile = async (pdfId: string, filename: string) => {
       RETURNING *;
     `);
 
-    return updated;
+    return updated.length > 0;
   } catch (err) {
     console.error("Error adding context file:", err);
     throw err;
   }
 };
-
 
 export const removeContextFile = async (pdfId: string, filename: string) => {
   try {
@@ -52,10 +53,12 @@ export const removeContextFile = async (pdfId: string, filename: string) => {
   }
 };
 
-
 export const getContextFiles = async (pdfId: string) => {
   try {
-    const rows = await db.select().from(context).where(eq(context.pdfId, pdfId));
+    const rows = await db
+      .select()
+      .from(context)
+      .where(eq(context.pdfId, pdfId));
 
     return rows[0]?.files ?? [];
   } catch (err) {
