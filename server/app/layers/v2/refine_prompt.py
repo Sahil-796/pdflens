@@ -54,6 +54,7 @@ async def refine_prompt(user_input: str) -> tuple:
             2. Formatting Instructions  
             Only VISUAL details.  
             Colors, fonts, alignments, spacing, theme, styles, margins.
+            Explicitly dont mention colors for headings or parahraphs but if told by user then mention it clearly
             Do NOT include structural instructions like lists, tables, sections, order, or hierarchy.
             
             ────────────────────────────────────────────

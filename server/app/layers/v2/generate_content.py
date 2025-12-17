@@ -126,6 +126,7 @@ async def generate_content(content_description: str, formatting_instructions: st
         - Keys must be plain tag names like "body", "h1", "p", "blockquote", "ul", "li",
           or positional variants like "p-3", "h2-1".
         - All values must be valid CSS properties (camelCase is invalid).
+        - Don't use images
         
         BACKGROUND USAGE (STRICT):
         
@@ -152,12 +153,22 @@ async def generate_content(content_description: str, formatting_instructions: st
         
         2. Heading hierarchy:
            - h1 largest, h2 smaller, h3 smaller still.
+           - Don't use colors until requested or told so.
            - Provide generous spacing above and below headings.
            Heading hierarchy must be expressed through:
            - Font size
            - Font weight
            - Vertical spacing
            
+           body {
+             font-size: 12pt;
+             line-height: 1.65;
+           }
+           
+           h1 { font-size: 22pt; }
+           h2 { font-size: 16pt; }
+           h3 { font-size: 13.5pt; }
+
         3. Paragraph rhythm:
            - Use line-height between 1.6 and 1.7.
            - Maintain around 1em bottom margin between paragraphs.
