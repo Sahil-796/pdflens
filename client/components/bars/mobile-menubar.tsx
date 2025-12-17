@@ -1,36 +1,36 @@
-import { cn } from "@/lib/utils"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import ThemeToggle from "../theme/ThemeToggle"
-import { Coins, User, LogOut, Loader2, ArrowRight } from "lucide-react"
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import ThemeToggle from "../theme/ThemeToggle";
+import { Coins, User, LogOut, Loader2, ArrowRight } from "lucide-react";
 
 interface Items {
-  label: string
-  description?: string
-  href: string
+  label: string;
+  description?: string;
+  href: string;
 }
 
 interface NavigationLinks {
-  label: string
-  href?: string
-  submenu?: boolean
-  items?: Items[]
+  label: string;
+  href?: string;
+  submenu?: boolean;
+  items?: Items[];
 }
 
 interface MobileMenubarProps {
-  mobileOpen: boolean
-  setMobileOpen: (open: boolean) => void
-  navigationLinks: NavigationLinks[]
+  mobileOpen: boolean;
+  setMobileOpen: (open: boolean) => void;
+  navigationLinks: NavigationLinks[];
   user?: {
-    id?: string
-    name?: string
-    email?: string
-    avatar?: string
-    isPro?: boolean
-  }
-  handleLogout?: () => void
-  isLoading?: boolean
-  creditsLeft?: number
+    id: string;
+    name: string;
+    email: string;
+    avatar?: string;
+    isPro: boolean;
+    creditsLeft: number;
+  };
+  handleLogout?: () => void;
+  isLoading?: boolean;
 }
 
 const MobileMenubar: React.FC<MobileMenubarProps> = ({
@@ -40,7 +40,6 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
   user,
   handleLogout,
   isLoading,
-  creditsLeft,
 }) => {
   return (
     <>
@@ -54,7 +53,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
       <div
         className={cn(
           "fixed top-0 right-0 z-50 h-full w-[80%] max-w-xs bg-background border-l border-border shadow-xl p-6 flex flex-col sm:hidden transform transition-transform duration-300 ease-in-out",
-          mobileOpen ? "translate-x-0" : "translate-x-full"
+          mobileOpen ? "translate-x-0" : "translate-x-full",
         )}
       >
         {/* Header with close button */}
@@ -64,7 +63,9 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
             onClick={() => setMobileOpen(false)}
             className="p-2 px-3 rounded-full bg-muted transition-colors"
           >
-            <span className="text-xl font-bold leading-none text-foreground/80">✕</span>
+            <span className="text-xl font-bold leading-none text-foreground/80">
+              ✕
+            </span>
           </button>
         </div>
 
@@ -97,26 +98,30 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                   </Link>
                 ))}
               </div>
-            )
+            ),
           )}
         </div>
 
         <div className="border-t border-border pt-4 flex flex-col space-y-3">
           {/* User logged in */}
-          {user?.id ?
+          {user?.id ? (
             <>
               {/* User info */}
               <div className="flex items-center justify-between">
                 <div className="flex flex-col gap-0.5 mb-2">
                   <div className="flex items-center gap-2">
-                    <p className="font-semibold text-sm truncate">{user.name}</p>
+                    <p className="font-semibold text-sm truncate">
+                      {user.name}
+                    </p>
                     {user.isPro && (
                       <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                         PRO
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user.email}
+                  </p>
                 </div>
 
                 {/* Dashboard & Account */}
@@ -139,10 +144,15 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
               <div className="flex items-center justify-between py-1">
                 <div className="flex items-center gap-1 text-sm font-medium bg-muted px-2 py-1.5 rounded-md">
                   <Coins className="h-4 w-4 text-primary" />
-                  <span className="text-foreground/90">{creditsLeft} credits</span>
+                  <span className="text-foreground/90">
+                    {user?.creditsLeft} credits
+                  </span>
                 </div>
                 {!user.isPro && (
-                  <Link href='/pricing' className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline">
+                  <Link
+                    href="/pricing"
+                    className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline"
+                  >
                     Get More Credits →
                   </Link>
                 )}
@@ -163,25 +173,20 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                 <span>{isLoading ? "Logging out..." : "Log out"}</span>
               </Button>
             </>
-            :
-            (
-              <>
-                <Button variant="outline" >
-                  <Link href={'/signup'}>
-                    Get Started
-                  </Link>
-                </Button>
-                <Button>
-                  <Link href="/login">
-                    Login
-                  </Link>
-                </Button>
-              </>
-            )}
+          ) : (
+            <>
+              <Button variant="outline">
+                <Link href={"/signup"}>Get Started</Link>
+              </Button>
+              <Button>
+                <Link href="/login">Login</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default MobileMenubar
+export default MobileMenubar;

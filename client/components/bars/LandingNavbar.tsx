@@ -368,7 +368,6 @@ export default function Navbar() {
           user={user}
           handleLogout={() => logout()}
           isLoading={isPending}
-          creditsLeft={user.creditsLeft}
         />
       )}
     </>
