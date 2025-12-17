@@ -26,7 +26,7 @@ interface MobileMenubarProps {
     name: string;
     email: string;
     avatar?: string;
-    isPro: boolean;
+    isCreator: boolean;
     creditsLeft: number;
   };
   handleLogout?: () => void;
@@ -113,7 +113,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                     <p className="font-semibold text-sm truncate">
                       {user.name}
                     </p>
-                    {user.isPro && (
+                    {user.isCreator && (
                       <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                         PRO
                       </span>
@@ -148,7 +148,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                     {user?.creditsLeft} credits
                   </span>
                 </div>
-                {!user.isPro && (
+                {!user.isCreator && (
                   <Link
                     href="/pricing"
                     className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline"

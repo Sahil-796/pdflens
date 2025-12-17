@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ChevronsUpDown,
-  User,
-  Coins,
-  ArrowRightFromLine,
-  ArrowRight,
-} from "lucide-react";
+import { ChevronsUpDown, User, Coins, ArrowRight } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -35,7 +29,7 @@ export function NavUser({
     name: string;
     email: string;
     avatar: string;
-    isPro: boolean;
+    isCreator: boolean;
     creditsLeft: number;
   };
 }) {
@@ -56,7 +50,7 @@ export function NavUser({
             </span>
           </div>
 
-          {!user.isPro && (
+          {!user.isCreator && (
             <Button
               variant="secondary"
               size="sm"
@@ -95,7 +89,7 @@ export function NavUser({
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
-            className="min-w-56 rounded-xl border border-border/60 bg-gradient-to-br from-background to-card shadow-lg"
+            className="min-w-56 rounded-xl border border-border/60 bg-linear-to-br from-background to-card shadow-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={6}
@@ -106,7 +100,7 @@ export function NavUser({
                 <p className="text-sm font-medium text-foreground">
                   {user.name}
                 </p>
-                {user.isPro && (
+                {user.isCreator && (
                   <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                     PRO
                   </span>

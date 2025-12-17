@@ -1,25 +1,32 @@
 import { sql } from "drizzle-orm";
-import { pgTable, pgEnum, text, timestamp, boolean, integer, date } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  pgEnum,
+  text,
+  timestamp,
+  boolean,
+  integer,
+  date,
+} from "drizzle-orm/pg-core";
 
-export const planEnum = pgEnum("plan", ["free", "premium"]);
+export const planEnum = pgEnum("plan", ["free", "creator"]);
 
-// USER TABLE 
 export const user = pgTable("user", {
-    id: text("id").primaryKey(),
-    name: text("name").notNull(),
-    email: text("email").notNull().unique(),
-    plan: planEnum("plan").default("free").notNull(),
-    emailVerified: boolean("email_verified").default(false).notNull(),
-    image: text("image"),
-    creditsLeft: integer("credits_left").default(20).notNull(),
-    creditsResetAt: date("credits_reset_at")
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  plan: planEnum("plan").default("free").notNull(),
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  image: text("image"),
+  creditsLeft: integer("credits_left").default(20).notNull(),
+  creditsResetAt: date("credits_reset_at")
     .notNull()
     .default(sql`(now() at time zone 'utc')::date`),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .defaultNow()
-      .$onUpdate(() => /* @__PURE__ */ new Date())
-      .notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 });
 
 export const session = pgTable("session", {
@@ -69,29 +76,41 @@ export const verification = pgTable("verification", {
     .notNull(),
 });
 
-// PDFS TABLE
 export const pdf = pgTable("pdf", {
-  id: text("id").primaryKey().notNull(),        // Unique PDF ID
-  userId: text("user_id").notNull()
-    .references(() => user.id, { onDelete: "cascade" }),               // FK to user
-  fileName: text("file_name").notNull().default("Untitled"),       // Name of the PDF file
+  id: text("id").primaryKey().notNull(), // Unique PDF ID
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }), // FK to user
+  fileName: text("file_name").notNull().default("Untitled"), // Name of the PDF file
   htmlContent: text("html_content").notNull(), // HTML content string
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
 });
 
 export const context = pgTable("context", {
   id: text("id").primaryKey().notNull(),
-  pdfId: text("pdf_id").notNull().references(() => pdf.id, { onDelete: "cascade" }),
-  files: text('files').array(),
-})
+  pdfId: text("pdf_id")
+    .notNull()
+    .references(() => pdf.id, { onDelete: "cascade" }),
+  files: text("files").array(),
+});
 
 export const credit_history = pgTable("credit_history", {
   id: text("id").primaryKey().notNull(),
-  userId: text("user_id").notNull()
-    .references(() => user.id, { onDelete: "cascade" }), 
-  amount: integer('amount').notNull(),
-  reason: text('reason').notNull().default("Unknown"),
-  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow()
-})
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(),
+  reason: text("reason").notNull().default("Unknown"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
+});
 
-export const schema = { user, pdf, verification, account, session, context, credit_history }
+export const schema = {
+  user,
+  pdf,
+  verification,
+  account,
+  session,
+  context,
+  credit_history,
+};
+

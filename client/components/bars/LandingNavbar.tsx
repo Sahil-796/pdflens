@@ -1,16 +1,6 @@
 "use client";
 
-import {
-  Loader2,
-  LogOut,
-  User,
-  Coins,
-  Search,
-  Home,
-  Menu,
-  Sparkles,
-  Plus,
-} from "lucide-react";
+import { Loader2, LogOut, User, Coins, Search, Menu, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -279,7 +269,7 @@ export default function Navbar() {
                             <p className="font-semibold text-sm truncate">
                               {user.name}
                             </p>
-                            {user.isPro && (
+                            {user.isCreator && (
                               <span className="text-[11px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-md">
                                 PRO
                               </span>
@@ -301,7 +291,7 @@ export default function Navbar() {
                         </Badge>
 
                         {/* Upgrade Button for non-pro users */}
-                        {!user.isPro && (
+                        {!user.isCreator && (
                           <Link
                             href="/pricing"
                             className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline"

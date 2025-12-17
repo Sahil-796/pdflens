@@ -35,14 +35,14 @@ const BillingTab = () => {
             </p>
           </div>
         </div>
-        {!user?.isPro && (
+        {!user?.isCreator && (
           <Badge variant="outline" className="text-xs">
             Free Plan
           </Badge>
         )}
       </div>
 
-      {!user?.isPro && (
+      {!user?.isCreator && (
         <div className="p-6 border border-primary/20 rounded-lg bg-primary/5">
           <h3 className="text-lg font-semibold mb-2">Upgrade to Premium</h3>
           <p className="text-sm text-muted-foreground mb-4">

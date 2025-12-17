@@ -21,20 +21,21 @@ export default function Pricing() {
     }
 
     if (planName === "Pro") {
-      if (user?.isPro) {
+      if (user?.isCreator) {
         toast.info("You are already Pro.");
         router.push("/account");
         return;
       }
-      router.push("/account/billing");
+      router.push(
+        "https://buy.polar.sh/polar_cl_RhPGRHIKwdN2Pj7SgelmbK6AR7RJtbl0bdCOy0JDpq9",
+      );
       return;
     }
 
-    // If user is already authenticated and selecting free plan
     router.push("/dashboard");
   };
 
-  const currentPlan = user?.isPro;
+  const currentPlan = user?.isCreator;
 
   const tiers: PricingTier[] = [
     {
@@ -106,8 +107,8 @@ export default function Pricing() {
               tier={{
                 ...tier,
                 price:
-                  tier.name === "Pro"
-                    ? { monthly: 19, yearly: 15 } // display-friendly yearly per-month price
+                  tier.name === "creator"
+                    ? { monthly: 3.99, yearly: 2.99 }
                     : tier.price,
               }}
               paymentFrequency={selectedFrequency}
