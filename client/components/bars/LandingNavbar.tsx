@@ -1,6 +1,16 @@
 "use client";
 
-import { Loader2, LogOut, User, Coins, Search, Home, Menu } from "lucide-react";
+import {
+  Loader2,
+  LogOut,
+  User,
+  Coins,
+  Search,
+  Home,
+  Menu,
+  Sparkles,
+  Plus,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,8 +145,8 @@ export default function Navbar() {
               size="sm"
               className="h-8 rounded-md text-primary"
             >
-              <Link href="/dashboard">
-                <Home className="h-4 w-4" />
+              <Link href="/generate">
+                <Plus className="h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -236,14 +246,16 @@ export default function Navbar() {
                 </Button>
                 <Button
                   asChild
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
-                  className="h-8 rounded-md text-primary"
+                  className="h-8 rounded-md b mr-1"
                 >
-                  <Link href="/dashboard">
-                    <Home className="h-4 w-4" />
+                  <Link href="/generate" className="flex items-center gap-2">
+                    <Plus className="w-3.5 h-3.5" />
+                    <span className="text-xs font-semibold">New PDF</span>
                   </Link>
                 </Button>
+
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
