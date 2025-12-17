@@ -3,7 +3,14 @@
 import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Loader2, AlertCircle } from "lucide-react";
+import {
+  Check,
+  Sparkles,
+  FileText,
+  Loader2,
+  AlertCircle,
+  ArrowRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,28 +22,25 @@ const SuccessContent = () => {
   const searchParams = useSearchParams();
   const { user } = useUser();
 
-  const isPaymentParamPresent = searchParams.get("payment") === "success";
+  const polarSessionToken = searchParams.get("customer_session_token");
+  const isPaymentVerified = !!polarSessionToken;
 
-  // State to track if we gave up waiting for the webhook
   const [isTimeout, setIsTimeout] = useState(false);
 
-  // 1. Redirect if no param
   useEffect(() => {
-    if (!isPaymentParamPresent) {
+    if (!isPaymentVerified) {
       router.replace("/account");
     }
-  }, [isPaymentParamPresent, router]);
+  }, [isPaymentVerified, router]);
 
-  // 2. Poll for Session Updates if User is still "Free"
   useEffect(() => {
-    if (isPaymentParamPresent && user?.plan === "free" && !isTimeout) {
+    if (isPaymentVerified && user?.plan === "free" && !isTimeout) {
       const interval = setInterval(() => {
         authClient.getSession({
           forceRefresh: true,
         });
-      }, 2000); // Check every 2 seconds
+      }, 2000);
 
-      // Stop checking after 15 seconds to avoid infinite loops
       const timeout = setTimeout(() => {
         setIsTimeout(true);
         clearInterval(interval);
@@ -47,24 +51,23 @@ const SuccessContent = () => {
         clearTimeout(timeout);
       };
     }
-  }, [isPaymentParamPresent, user?.plan, isTimeout]);
+  }, [isPaymentVerified, user?.plan, isTimeout]);
 
-  // 3. Auto-forward to generate page after success (optional)
+  // 4. Auto-redirect to generator once success is confirmed
   useEffect(() => {
     if (user?.plan === "creator") {
       const timer = setTimeout(() => {
         router.push("/generate");
-      }, 10000);
+      }, 10000); // Give them 10s to see the confetti
       return () => clearTimeout(timer);
     }
   }, [user?.plan, router]);
 
   // --- RENDER STATES ---
 
-  // State A: Invalid Access
-  if (!isPaymentParamPresent) return null;
+  if (!isPaymentVerified) return null;
 
-  // State B: Verifying (URL says success, but DB hasn't updated yet)
+  // STATE: Verifying (Webhook hasn't hit DB yet)
   if (user?.plan === "free" && !isTimeout) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -73,9 +76,10 @@ const SuccessContent = () => {
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">Verifying Payment...</h2>
+            <h2 className="text-xl font-semibold">Confirming Upgrade...</h2>
             <p className="text-muted-foreground text-sm mt-2">
-              Please wait while we confirm your transaction securely.
+              We are finalizing your subscription. This usually takes a few
+              seconds.
             </p>
           </div>
         </Card>
@@ -83,7 +87,7 @@ const SuccessContent = () => {
     );
   }
 
-  // State C: Timeout (Webhook took too long or user faked the URL)
+  // STATE: Timeout (Webhook failed or took too long)
   if (user?.plan === "free" && isTimeout) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
@@ -93,21 +97,26 @@ const SuccessContent = () => {
           </div>
           <div>
             <h2 className="text-xl font-semibold text-red-600">
-              Verification Failed
+              Verification Delayed
             </h2>
             <p className="text-muted-foreground text-sm mt-2">
-              We couldn't verify your upgrade yet. It might still be processing.
+              Your payment was successful, but your account update is delayed.
             </p>
           </div>
-          <Button onClick={() => window.location.reload()} variant="outline">
-            Check Again
-          </Button>
+          <div className="flex gap-2 justify-center mt-4">
+            <Button onClick={() => window.location.reload()} variant="outline">
+              Retry
+            </Button>
+            <Button asChild>
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          </div>
         </Card>
       </div>
     );
   }
 
-  // State D: SUCCESS (User is actually Creator)
+  // STATE: SUCCESS (User is now 'creator')
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <motion.div
@@ -125,7 +134,7 @@ const SuccessContent = () => {
               className="absolute inset-0 bg-green-500/10 rounded-full flex items-center justify-center"
             >
               <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30">
-                <Check className="w-8 h-8 text-white stroke-3" />
+                <Check className="w-8 h-8 text-white stroke-[3]" />
               </div>
             </motion.div>
           </div>
@@ -139,7 +148,6 @@ const SuccessContent = () => {
             </p>
           </div>
 
-          {/* ... (Rest of your Value Recap & Buttons) ... */}
           <div className="bg-secondary/30 rounded-xl p-4 border border-border/50">
             <ul className="space-y-3 text-sm text-left">
               <li className="flex items-center gap-3">
@@ -147,16 +155,26 @@ const SuccessContent = () => {
                   <Sparkles className="w-4 h-4 text-yellow-500" />
                 </div>
                 <span>
-                  <strong>100 Credits</strong> added
+                  <strong>100 Credits</strong> added to balance
                 </span>
               </li>
-              {/* ... */}
+              <li className="flex items-center gap-3">
+                <div className="p-1 bg-blue-500/10 rounded">
+                  <FileText className="w-4 h-4 text-blue-500" />
+                </div>
+                <span>Large file uploads unlocked</span>
+              </li>
             </ul>
           </div>
 
           <div className="space-y-3 pt-2">
             <Button asChild size="lg" className="w-full">
-              <Link href="/generate">Start Creating</Link>
+              <Link href="/generate">
+                Start Creating <ArrowRight className="ml-2 w-4 h-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="ghost" className="w-full">
+              <Link href="/dashboard">Dashboard</Link>
             </Button>
           </div>
         </Card>
@@ -165,6 +183,7 @@ const SuccessContent = () => {
   );
 };
 
+// Wrap in Suspense for Next.js build safety
 const SuccessPage = () => {
   return (
     <Suspense fallback={<div className="min-h-screen bg-background" />}>

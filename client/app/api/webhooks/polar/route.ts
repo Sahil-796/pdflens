@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     return new Response("Missing signature", { status: 400 });
   }
 
-  // 1. Verify the webhook signature (Security)
+  // 1. Verify the Webhook Signature (Security)
   const wh = new Webhook(POLAR_WEBHOOK_SECRET);
   let event;
   try {
@@ -25,35 +25,38 @@ export async function POST(req: Request) {
       "webhook-id": webhookId,
       "webhook-signature": signature,
       "webhook-timestamp": timestamp,
-    }) as any; // Cast to any because Polar SDK types might be complex here
+    }) as any; // Cast to 'any' since Polar types vary slightly
   } catch (err) {
+    console.error("Webhook verification failed:", err);
     return new Response("Invalid signature", { status: 400 });
   }
 
-  // 2. Handle the Event
+  // 2. Handle 'subscription.created' Event
   if (event.type === "subscription.created") {
     const subscription = event.data;
-    const customerEmail = subscription.customer.email; // or subscription.user.email depending on Polar version
+
+    // Polar payload usually puts email in 'customer' object or 'user' object
+    const customerEmail =
+      subscription.customer?.email || subscription.user?.email;
 
     if (customerEmail) {
-      console.log(`Upgrading user ${customerEmail} to Creator plan...`);
+      console.log(
+        `[Polar Webhook] Upgrading user ${customerEmail} to Creator plan.`,
+      );
 
-      // 3. Update the User in DB
+      // Update the user in your database
       await db
         .update(user)
         .set({
           plan: "creator",
-          creditsLeft: 100, // Immediate 100 credits
+          creditsLeft: 100, // Instant upgrade
           polarSubscriptionId: subscription.id,
           polarCustomerId: subscription.customer_id,
         })
         .where(eq(user.email, customerEmail));
+    } else {
+      console.warn("[Polar Webhook] No email found in payload");
     }
-  }
-
-  // Handle renewals if you want to reset credits every month
-  if (event.type === "subscription.updated") {
-    // Logic to check if this is a renewal and reset credits
   }
 
   return new Response("OK", { status: 200 });
