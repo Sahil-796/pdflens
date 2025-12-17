@@ -27,7 +27,7 @@ export default function Pricing() {
         return;
       }
       router.push(
-        "https://buy.polar.sh/polar_cl_RhPGRHIKwdN2Pj7SgelmbK6AR7RJtbl0bdCOy0JDpq9",
+        `https://buy.polar.sh/polar_cl_RhPGRHIKwdN2Pj7SgelmbK6AR7RJtbl0bdCOy0JDpq9?customer_email=${encodeURIComponent(user.email)}`,
       );
       return;
     }
@@ -65,7 +65,7 @@ export default function Pricing() {
         "Advanced formatting & styling",
         "Email support",
       ],
-      cta: user?.plan === "premium" ? "You are already Pro" : "Upgrade to Pro",
+      cta: user?.plan === "creator" ? "You are already Pro" : "Upgrade to Pro",
       highlighted: true,
       currentPlan: currentPlan,
       onSelect: () => handlePlanSelect("Pro"),

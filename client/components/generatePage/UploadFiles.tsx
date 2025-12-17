@@ -231,7 +231,7 @@ export default function UploadFiles() {
               File Upload Limit Reached
             </AlertDialogTitle>
             <AlertDialogDescription className="text-center">
-              You can upload 5 files per document. Upgrade to Premium for more.
+              You can upload 5 files per document. Upgrade to Creator for more.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex flex-col sm:flex-row gap-2 mt-4">

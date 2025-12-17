@@ -1,26 +1,113 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Check, Sparkles, ArrowRight, FileText } from "lucide-react";
+import { Check, Sparkles, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 import useUser from "@/hooks/useUser";
 
-const SuccessPage = () => {
+const SuccessContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useUser();
 
-  const isCreator = user.isCreator;
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push("/generate");
-    }, 10000);
-    return () => clearTimeout(timer);
-  }, [router]);
+  const isPaymentParamPresent = searchParams.get("payment") === "success";
 
+  // State to track if we gave up waiting for the webhook
+  const [isTimeout, setIsTimeout] = useState(false);
+
+  // 1. Redirect if no param
+  useEffect(() => {
+    if (!isPaymentParamPresent) {
+      router.replace("/account");
+    }
+  }, [isPaymentParamPresent, router]);
+
+  // 2. Poll for Session Updates if User is still "Free"
+  useEffect(() => {
+    if (isPaymentParamPresent && user?.plan === "free" && !isTimeout) {
+      const interval = setInterval(() => {
+        authClient.getSession({
+          forceRefresh: true,
+        });
+      }, 2000); // Check every 2 seconds
+
+      // Stop checking after 15 seconds to avoid infinite loops
+      const timeout = setTimeout(() => {
+        setIsTimeout(true);
+        clearInterval(interval);
+      }, 15000);
+
+      return () => {
+        clearInterval(interval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [isPaymentParamPresent, user?.plan, isTimeout]);
+
+  // 3. Auto-forward to generate page after success (optional)
+  useEffect(() => {
+    if (user?.plan === "creator") {
+      const timer = setTimeout(() => {
+        router.push("/generate");
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [user?.plan, router]);
+
+  // --- RENDER STATES ---
+
+  // State A: Invalid Access
+  if (!isPaymentParamPresent) return null;
+
+  // State B: Verifying (URL says success, but DB hasn't updated yet)
+  if (user?.plan === "free" && !isTimeout) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <Card className="p-8 text-center space-y-4 max-w-sm w-full border-border/50">
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center animate-pulse">
+            <Loader2 className="w-8 h-8 text-primary animate-spin" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold">Verifying Payment...</h2>
+            <p className="text-muted-foreground text-sm mt-2">
+              Please wait while we confirm your transaction securely.
+            </p>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // State C: Timeout (Webhook took too long or user faked the URL)
+  if (user?.plan === "free" && isTimeout) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <Card className="p-8 text-center space-y-4 max-w-sm w-full border-red-500/20 bg-red-500/5">
+          <div className="mx-auto w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center">
+            <AlertCircle className="w-8 h-8 text-red-500" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-red-600">
+              Verification Failed
+            </h2>
+            <p className="text-muted-foreground text-sm mt-2">
+              We couldn't verify your upgrade yet. It might still be processing.
+            </p>
+          </div>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Check Again
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  // State D: SUCCESS (User is actually Creator)
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <motion.div
@@ -30,7 +117,6 @@ const SuccessPage = () => {
         className="z-10 w-full max-w-md"
       >
         <Card className="border-border/50 shadow-2xl bg-card/50 backdrop-blur-xl p-8 text-center space-y-6">
-          {/* Animated Success Icon */}
           <div className="relative mx-auto w-24 h-24">
             <motion.div
               initial={{ scale: 0 }}
@@ -49,12 +135,11 @@ const SuccessPage = () => {
               Payment Successful!
             </h1>
             <p className="text-muted-foreground">
-              Welcome to the Creator Plan. Your account has been upgraded and
-              your credits have been replenished.
+              Welcome to the Creator Plan. Your account has been upgraded.
             </p>
           </div>
 
-          {/* Value Recap */}
+          {/* ... (Rest of your Value Recap & Buttons) ... */}
           <div className="bg-secondary/30 rounded-xl p-4 border border-border/50">
             <ul className="space-y-3 text-sm text-left">
               <li className="flex items-center gap-3">
@@ -62,41 +147,29 @@ const SuccessPage = () => {
                   <Sparkles className="w-4 h-4 text-yellow-500" />
                 </div>
                 <span>
-                  <strong>100 Credits</strong> added to your balance
+                  <strong>100 Credits</strong> added
                 </span>
               </li>
-              <li className="flex items-center gap-3">
-                <div className="p-1 bg-blue-500/10 rounded">
-                  <FileText className="w-4 h-4 text-blue-500" />
-                </div>
-                <span>Large file uploads unlocked</span>
-              </li>
+              {/* ... */}
             </ul>
           </div>
 
-          {/* Action Buttons */}
           <div className="space-y-3 pt-2">
-            <Button
-              asChild
-              size="lg"
-              className="w-full h-12 text-base font-medium shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"
-            >
-              <Link href="/generate">
-                Start Creating <ArrowRight className="ml-2 w-4 h-4" />
-              </Link>
-            </Button>
-
-            <Button
-              asChild
-              variant="ghost"
-              className="w-full text-muted-foreground hover:text-foreground"
-            >
-              <Link href="/dashboard">Go to Dashboard</Link>
+            <Button asChild size="lg" className="w-full">
+              <Link href="/generate">Start Creating</Link>
             </Button>
           </div>
         </Card>
       </motion.div>
     </div>
+  );
+};
+
+const SuccessPage = () => {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <SuccessContent />
+    </Suspense>
   );
 };
 

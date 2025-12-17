@@ -27,6 +27,8 @@ export const user = pgTable("user", {
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
+  polarCustomerId: text("polar_customer_id"),
+  polarSubscriptionId: text("polar_subscription_id"),
 });
 
 export const session = pgTable("session", {
@@ -113,4 +115,3 @@ export const schema = {
   context,
   credit_history,
 };
-
