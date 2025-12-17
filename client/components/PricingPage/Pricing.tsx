@@ -1,18 +1,26 @@
 "use client";
 
-import * as React from "react";
-import useUser from "@/hooks/useUser";
+import React from "react";
 import { useRouter } from "next/navigation";
-import { PricingCard, type PricingTier } from "./pricing-card";
-import { Tab } from "./pricing-tab";
+import { motion } from "framer-motion";
+import { Check, Sparkles, Zap, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import useUser from "@/hooks/useUser";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 export default function Pricing() {
   const router = useRouter();
   const { user } = useUser();
-  const frequencies = ["monthly", "yearly"] as const;
-  const [selectedFrequency, setSelectedFrequency] =
-    React.useState<(typeof frequencies)[number]>("monthly");
 
   const handlePlanSelect = (planName: string) => {
     if (!user) {
@@ -20,100 +28,184 @@ export default function Pricing() {
       return;
     }
 
-    if (planName === "Pro") {
-      if (user?.isCreator) {
-        toast.info("You are already Pro.");
+    if (planName === "Creator") {
+      if (user?.plan === "creator") {
+        toast.info("You are already on the Creator plan!");
         router.push("/account");
         return;
       }
-      router.push(
-        `https://buy.polar.sh/polar_cl_RhPGRHIKwdN2Pj7SgelmbK6AR7RJtbl0bdCOy0JDpq9?customer_email=${encodeURIComponent(user.email)}`,
-      );
+      const checkoutUrl = `https://buy.polar.sh/polar_cl_RhPGRHIKwdN2Pj7SgelmbK6AR7RJtbl0bdCOy0JDpq9?customer_email=${encodeURIComponent(
+        user.email,
+      )}`;
+      window.location.href = checkoutUrl;
       return;
     }
 
+    // 3. Handle Free Plan Selection
     router.push("/dashboard");
   };
 
-  const currentPlan = user?.isCreator;
-
-  const tiers: PricingTier[] = [
+  const tiers = [
     {
       name: "Free",
-      price: { monthly: 0, yearly: 0 },
-      description: "For getting started with AI PDF generation",
+      id: "free",
+      price: "$0",
+      description: "Perfect for testing the waters and simple tasks.",
       features: [
-        "20 credits per day",
-        "AI PDF generation",
-        "Edit and download PDFs",
+        "20 AI credits per day",
+        "Basic PDF generation",
+        "Standard processing speed",
         "Community support",
       ],
-      cta: user ? "Access Dashboard" : "Get Started",
-      highlighted: false,
-      currentPlan: !currentPlan,
-      onSelect: () => handlePlanSelect("Free"),
+      cta: user ? "Go to Dashboard" : "Get Started Free",
+      popular: false,
     },
     {
-      name: "Pro",
-      price: { monthly: 19, yearly: 180 },
-      description: "For power users who need more",
+      name: "Creator",
+      id: "creator",
+      price: "$3.99",
+      description: "For power users who need professional results.",
       features: [
-        "100 credits per day",
-        "Faster AI generation",
-        "Priority processing",
-        "Upload context for better results",
-        "Advanced formatting & styling",
-        "Email support",
+        "100 AI credits per day",
+        "Priority processing (Skip the queue)",
+        "Large file context uploads (10MB+)",
+        "Advanced formatting options",
+        // "No watermarks",
+        "Direct email support",
       ],
-      cta: user?.plan === "creator" ? "You are already Pro" : "Upgrade to Pro",
-      highlighted: true,
-      currentPlan: currentPlan,
-      onSelect: () => handlePlanSelect("Pro"),
+      cta: user?.plan === "creator" ? "Manage Plan" : "Upgrade to Creator",
+      popular: true,
     },
   ];
 
   return (
-    <section className="flex items-start justify-center bg-background pt-8 md:pt-12 pb-12">
-      <div className="w-full max-w-6xl px-4 sm:px-6">
-        <div className="space-y-2 sm:space-y-3 text-center max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-foreground">
-            Simple, transparent pricing
+    <section className="relative overflow-hidden pt-16 md:pt-24 pb-4 bg-background">
+      {/* Background Decorator */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl pointer-events-none">
+        <div className="absolute top-[20%] left-[10%] w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute top-[30%] right-[10%] w-96 h-96 bg-blue-500/5 rounded-full blur-3xl" />
+      </div>
+
+      <div className="container relative z-10 mx-auto px-4 md:px-6">
+        {/* Header */}
+        <div className="mx-auto max-w-2xl text-center mb-12">
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Simple, Transparent Pricing
           </h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Pick a plan that fits your usage. Upgrade anytime.
+          <p className="mt-4 text-muted-foreground text-lg">
+            Start for free, upgrade when you need more power. No hidden fees.
           </p>
         </div>
 
-        {/* Billing toggle */}
-        <div className="mx-auto mt-4 sm:mt-6 w-fit rounded-full bg-muted p-1 flex items-center gap-1">
-          {frequencies.map((freq) => (
-            <Tab
-              key={freq}
-              text={freq}
-              selected={selectedFrequency === freq}
-              setSelected={(v) =>
-                setSelectedFrequency(v as (typeof frequencies)[number])
-              }
-              discount={freq === "yearly"}
-            />
-          ))}
+        {/* Pricing Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {tiers.map((tier, index) => {
+            const isCreator = tier.id === "creator";
+            const isCurrentPlan =
+              (tier.id === "free" && user?.plan !== "creator") ||
+              (tier.id === "creator" && user?.plan === "creator");
+
+            return (
+              <motion.div
+                key={tier.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+                className={cn("h-full", isCreator && "md:-mt-4 md:mb-4")} // Lift the pro card slightly
+              >
+                <Card
+                  className={cn(
+                    "h-full flex flex-col relative transition-all duration-300",
+                    isCreator
+                      ? "border-primary/50 shadow-xl shadow-primary/10 bg-card/80 backdrop-blur-sm"
+                      : "border-border bg-card/50 hover:bg-card/80",
+                  )}
+                >
+                  {isCreator && (
+                    <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                      <Badge className="bg-primary text-primary-foreground px-4 py-1 text-sm shadow-lg">
+                        Most Popular
+                      </Badge>
+                    </div>
+                  )}
+
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-xl font-bold">
+                          {tier.name}
+                        </CardTitle>
+                        <CardDescription className="mt-2">
+                          {tier.description}
+                        </CardDescription>
+                      </div>
+                      {isCreator ? (
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                          <Zap className="w-5 h-5 text-primary" />
+                        </div>
+                      ) : (
+                        <div className="p-2 bg-muted rounded-lg">
+                          <ShieldCheck className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                      )}
+                    </div>
+                  </CardHeader>
+
+                  <CardContent className="flex-1">
+                    <div className="mb-6">
+                      <span className="text-4xl font-bold">{tier.price}</span>
+                      {tier.price !== "$0" && (
+                        <span className="text-muted-foreground ml-2">
+                          / month
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="space-y-4">
+                      {tier.features.map((feature) => (
+                        <div key={feature} className="flex items-start gap-3">
+                          <div className="mt-1 p-0.5 rounded-full bg-primary/10 shrink-0">
+                            <Check className="w-3.5 h-3.5 text-primary" />
+                          </div>
+                          <span className="text-sm text-muted-foreground leading-tight">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+
+                  <CardFooter>
+                    <Button
+                      onClick={() => handlePlanSelect(tier.name)}
+                      variant={isCreator ? "default" : "outline"}
+                      className={cn(
+                        "w-full py-6 text-base font-medium transition-all cursor-pointer",
+                        isCreator &&
+                          "shadow-lg shadow-primary/25 hover:shadow-primary/40",
+                      )}
+                      disabled={isCurrentPlan}
+                    >
+                      {isCurrentPlan ? (
+                        <>Current Plan</>
+                      ) : (
+                        <>
+                          {tier.cta} <ArrowRight className="ml-2 w-4 h-4" />
+                        </>
+                      )}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
 
-        {/* Cards */}
-        <div className="grid w-full max-w-6xl mx-auto gap-4 sm:gap-6 mt-6 sm:mt-10 grid-cols-1 sm:grid-cols-2">
-          {tiers.map((tier) => (
-            <PricingCard
-              key={tier.name}
-              tier={{
-                ...tier,
-                price:
-                  tier.name === "creator"
-                    ? { monthly: 3.99, yearly: 2.99 }
-                    : tier.price,
-              }}
-              paymentFrequency={selectedFrequency}
-            />
-          ))}
+        {/* Trust/Footer Text */}
+        <div className="mt-16 text-center">
+          <p className="text-sm text-muted-foreground">
+            Secure payments processed by <strong>Polar</strong>. Cancel anytime.
+          </p>
         </div>
       </div>
     </section>
