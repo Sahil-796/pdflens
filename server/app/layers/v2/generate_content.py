@@ -99,6 +99,16 @@ async def generate_content(content_description: str, formatting_instructions: st
         A --> B;
         ```
         
+        SECTION_BREAK USAGE POLICY:
+        
+        For explanatory or educational PDFs:
+        - Do NOT insert SECTION_BREAK unless explicitly requested.
+        - Allow pagination to be handled naturally by content flow.
+        
+        For technical reports or reference documents:
+       - Use SECTION_BREAK only between major conceptual phases
+          (not between ordinary sections or headings).
+
         * Formatting exists to support comprehension, not aesthetics.
         
         Only include structural or visual elements when they improve clarity.

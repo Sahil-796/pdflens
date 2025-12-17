@@ -30,7 +30,25 @@ async def refine_prompt(user_input: str) -> tuple:
             Describe WHAT the document is about in generalized semantic terms.
             This will be used for retrieval, so expand the meaning beyond surface words.
             Example: “My assignment on cloud” → “cloud computing fundamentals, distributed systems, virtualization, cloud architecture overview”.
+            IMPORTANT SEMANTIC INTERPRETATION RULE:
             
+            When the user asks to "make a PDF on <X>" or "write a document on <X>":
+            
+            - Interpret <X> as the SUBJECT MATTER of the document.
+            - The document must explain, describe, or teach <X> itself.
+            
+            Do NOT reinterpret <X> as:
+            - A tool used to generate PDFs
+            - A workflow, pipeline, or automation mechanism
+            - An application domain unless explicitly stated
+            
+            Only interpret <X> as an instrument or method if the user explicitly uses
+            phrases such as:
+            - "using <X>"
+            - "with <X>"
+            - "via <X>"
+            - "PDF generation using <X>"
+
             ────────────────────────────────────────────
             2. Formatting Instructions  
             Only VISUAL details.  
