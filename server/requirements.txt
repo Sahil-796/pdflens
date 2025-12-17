@@ -1,3 +1,4 @@
+uvicorn
 beautifulsoup4
 fastapi
 fitz
