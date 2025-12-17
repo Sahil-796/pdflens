@@ -90,6 +90,7 @@ async def generate_content(content_description: str, formatting_instructions: st
         ### 3. MARKDOWN & STRUCTURAL FORMATTING RULES
         
         * Start directly with `# {Main Title}` — no preamble.
+        * Don't write footers if not mentioned.
         * Use `SECTION_BREAK` on its own line only when a forced page break is required.
         * Use Markdown tables for comparisons when they meaningfully aid understanding.
         * Use Mermaid diagrams *only* when a process or architecture benefits from visualization:
