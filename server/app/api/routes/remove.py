@@ -4,7 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 from langchain_pinecone import PineconeVectorStore
 from pydantic import BaseModel
-from app.config import index, embeddings, INDEX_NAME
+from app.config import index, cfEmbeddings, INDEX_NAME
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,7 +12,7 @@ import os
 secret = os.getenv("secret")
 
 vector_store = PineconeVectorStore(
-    embedding=embeddings,
+    embedding=cfEmbeddings,
     index=index
 )
 
