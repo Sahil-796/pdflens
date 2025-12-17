@@ -1,15 +1,10 @@
-'use client'
+"use client";
 
-import React from 'react'
-import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { Card, CardContent } from '@/components/ui/card'
-import {
-  Plus,
-  Wrench,
-  User,
-  Edit3
-} from 'lucide-react'
+import React from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Wrench, User, Edit3, LayoutTemplate } from "lucide-react";
 
 const QuickActions = () => {
   const actions = [
@@ -18,34 +13,36 @@ const QuickActions = () => {
       description: "Generate a document with AI",
       icon: Plus,
       href: "/generate",
+      // Make this one distinct as the Primary Action
       color: "bg-primary",
-      iconColor: "text-primary-foreground"
+      iconColor: "text-primary-foreground",
+    },
+    {
+      title: "Templates", // Replaced Account
+      description: "Browse pre-built layouts",
+      icon: LayoutTemplate, // Import from lucide-react
+      href: "/templates",
+      // Use a subtle distinct color or keep uniform
+      color: "bg-orange-500/10",
+      iconColor: "text-orange-500",
     },
     {
       title: "Edit PDF",
       description: "Modify existing PDFs easily",
       icon: Edit3,
       href: "/edit",
-      color: "bg-primary",
-      iconColor: "text-primary-foreground"
+      color: "bg-blue-500/10",
+      iconColor: "text-blue-500",
     },
     {
       title: "Toolbox",
-      description: "Access PDF tools like merge, split & more",
+      description: "Merge, split & compress",
       icon: Wrench,
       href: "/tools",
-      color: "bg-secondary",
-      iconColor: "text-secondary-foreground"
+      color: "bg-purple-500/10",
+      iconColor: "text-purple-500",
     },
-    {
-      title: "Account",
-      description: "Manage your profile and preferences",
-      icon: User,
-      href: "/account",
-      color: "bg-secondary",
-      iconColor: "text-secondary-foreground"
-    },
-  ]
+  ];
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -69,16 +66,23 @@ const QuickActions = () => {
         <div className="w-full max-w-4xl px-3 sm:px-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {actions.map((action, idx) => {
-              const IconComponent = action.icon
+              const IconComponent = action.icon;
               return (
                 <motion.div
                   key={action.title}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1, duration: 0.3, ease: "easeOut" }}
+                  transition={{
+                    delay: idx * 0.1,
+                    duration: 0.3,
+                    ease: "easeOut",
+                  }}
                   whileHover={{ y: -2 }}
                 >
-                  <Link href={action.href} className="block h-[80px] sm:h-[100px]">
+                  <Link
+                    href={action.href}
+                    className="block h-[80px] sm:h-[100px]"
+                  >
                     <Card className="group h-full border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
                       <CardContent className="p-4 sm:p-5 h-full flex items-center gap-4">
                         <div
@@ -100,13 +104,13 @@ const QuickActions = () => {
                     </Card>
                   </Link>
                 </motion.div>
-              )
+              );
             })}
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default QuickActions
+export default QuickActions;
