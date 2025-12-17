@@ -11,6 +11,6 @@ export function usePdfDetail(id: string) {
       return data.pdf;
     },
     // Optional: Poll every 2s if status is 'processing'
-    refetchInterval: (data) => (data?.status === "processing" ? 2000 : false),
+    // refetchInterval: (data) => (data?.status === "processing" ? 2000 : false),
   });
 }
