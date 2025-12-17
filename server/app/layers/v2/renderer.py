@@ -46,8 +46,6 @@ def add_styles(soup: BeautifulSoup, formatting: dict) -> str:
 
 def create_html(content: str, formatting: dict) -> str:
     try:
-        content = content.replace("SECTION_BREAK", "\n\n<div class=\"pg-break\"></div>\n\n")
-        content = content.replace("SECTIONHERE", "\n\n<div class=\"pg-break\"></div>\n\n")
         
         content = process_mermaid_blocks(content)
         markdown = MarkdownIt().enable(['table'])

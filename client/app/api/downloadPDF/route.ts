@@ -11,6 +11,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const parsed = HtmlSchema.safeParse(body);
+
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid request", issues: parsed.error.flatten() },
@@ -68,8 +69,13 @@ export async function POST(req: Request) {
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    await page.setContent(styledHTML, { waitUntil: "networkidle" });
+    // Load HTML
+    await page.setContent(styledHTML, { waitUntil: "load" });
 
+    // 🔑 THIS IS THE CRITICAL LINE
+    await page.emulateMedia({ media: "print" });
+
+    // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
@@ -78,7 +84,7 @@ export async function POST(req: Request) {
 
     await browser.close();
 
-    return new Response(new Uint8Array(pdfBuffer), {
+    return new Response(pdfBuffer, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
