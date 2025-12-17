@@ -57,7 +57,6 @@ export async function POST(req: Request) {
       ? {
           args: chromium.args,
           executablePath: await chromium.executablePath(),
-          headless: chromium.headless,
         }
       : {
           args: [],
