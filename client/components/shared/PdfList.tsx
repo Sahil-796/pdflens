@@ -32,7 +32,7 @@ interface Pdf {
   id: string;
   fileName: string;
   createdAt: string | null;
-  htmlContent: string;
+  htmlContent?: string | null;
 }
 
 interface PdfListProps {
@@ -190,7 +190,7 @@ const PdfList: React.FC<PdfListProps> = ({
                               className="bg-destructive hover:bg-destructive/80"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDelete(pdf.id, pdf.fileName);
+                                handleDelete(pdf.id);
                               }}
                             >
                               Delete

@@ -1,39 +1,40 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import useUser from "@/hooks/useUser"
-import { useRouter } from "next/navigation"
-import { PricingCard, type PricingTier } from "./pricing-card"
-import { Tab } from "./pricing-tab"
-import { toast } from "sonner"
+import * as React from "react";
+import useUser from "@/hooks/useUser";
+import { useRouter } from "next/navigation";
+import { PricingCard, type PricingTier } from "./pricing-card";
+import { Tab } from "./pricing-tab";
+import { toast } from "sonner";
 
 export default function Pricing() {
-  const router = useRouter()
-  const { user } = useUser()
-  const frequencies = ["monthly", "yearly"] as const
-  const [selectedFrequency, setSelectedFrequency] = React.useState<typeof frequencies[number]>("monthly")
+  const router = useRouter();
+  const { user } = useUser();
+  const frequencies = ["monthly", "yearly"] as const;
+  const [selectedFrequency, setSelectedFrequency] =
+    React.useState<(typeof frequencies)[number]>("monthly");
 
   const handlePlanSelect = (planName: string) => {
-    if (!user.id) {
-      router.push('/signup')
-      return
+    if (!user) {
+      router.push("/signup");
+      return;
     }
 
     if (planName === "Pro") {
-      if (user.isPro) {
-        toast.info("You are already Pro.")
-        router.push('/account')
-        return
+      if (user?.isPro) {
+        toast.info("You are already Pro.");
+        router.push("/account");
+        return;
       }
-      router.push('/account/billing')
-      return
+      router.push("/account/billing");
+      return;
     }
 
     // If user is already authenticated and selecting free plan
-    router.push('/dashboard')
-  }
+    router.push("/dashboard");
+  };
 
-  const currentPlan = user.isPro
+  const currentPlan = user?.isPro;
 
   const tiers: PricingTier[] = [
     {
@@ -46,7 +47,7 @@ export default function Pricing() {
         "Edit and download PDFs",
         "Community support",
       ],
-      cta: user.id ? "Access Dashboard" : "Get Started",
+      cta: user ? "Access Dashboard" : "Get Started",
       highlighted: false,
       currentPlan: !currentPlan,
       onSelect: () => handlePlanSelect("Free"),
@@ -68,14 +69,18 @@ export default function Pricing() {
       currentPlan: currentPlan,
       onSelect: () => handlePlanSelect("Pro"),
     },
-  ]
+  ];
 
   return (
     <section className="flex items-start justify-center bg-background pt-8 md:pt-12 pb-12">
       <div className="w-full max-w-6xl px-4 sm:px-6">
         <div className="space-y-2 sm:space-y-3 text-center max-w-2xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-foreground">Simple, transparent pricing</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">Pick a plan that fits your usage. Upgrade anytime.</p>
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-semibold text-foreground">
+            Simple, transparent pricing
+          </h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
+            Pick a plan that fits your usage. Upgrade anytime.
+          </p>
         </div>
 
         {/* Billing toggle */}
@@ -85,7 +90,9 @@ export default function Pricing() {
               key={freq}
               text={freq}
               selected={selectedFrequency === freq}
-              setSelected={(v) => setSelectedFrequency(v as typeof frequencies[number])}
+              setSelected={(v) =>
+                setSelectedFrequency(v as (typeof frequencies)[number])
+              }
               discount={freq === "yearly"}
             />
           ))}
@@ -109,5 +116,5 @@ export default function Pricing() {
         </div>
       </div>
     </section>
-  )
+  );
 }

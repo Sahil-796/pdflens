@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Command } from 'cmdk'
-import { motion, AnimatePresence } from 'framer-motion'
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Command } from "cmdk";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   FileText,
@@ -26,202 +26,205 @@ import {
   DollarSign,
   Layers,
   PanelLeftOpen,
-} from 'lucide-react'
-import { useCommandPalette } from '@/hooks/useCommandPalette'
-import { authClient } from '@/lib/auth-client'
-import { useUserStore } from '@/app/store/useUserStore'
-import useUser from '@/hooks/useUser'
-import { usePdfStore } from '@/app/store/usePdfStore'
-import { useTheme } from 'next-themes'
+} from "lucide-react";
+import { useCommandPalette } from "@/hooks/useCommandPalette";
+import useUser from "@/hooks/useUser";
+import { useTheme } from "next-themes";
+import { useLogout } from "@/hooks/mutations/useLogout";
+import { usePdf } from "@/hooks/usePdf";
 
 interface CommandPaletteProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
-  const { open, setOpen } = useCommandPalette()
-  const [query, setQuery] = useState('')
-  const { theme, setTheme } = useTheme()
-  const router = useRouter()
-  const { clearUser } = useUserStore()
-  const { user } = useUser()
-  const { pdfs, loading, clearPdf } = usePdfStore();
+  const { open, setOpen } = useCommandPalette();
+  const [query, setQuery] = useState("");
+  const { theme, setTheme } = useTheme();
+  const router = useRouter();
+  const { user } = useUser();
+  const { pdfs, loading } = usePdf();
+  const { mutate: logout } = useLogout();
 
   // Keyboard shortcut (Ctrl/Cmd + K)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault()
-        onOpenChange(true)
-      } else if (e.key === 'Escape' && open) {
-        e.preventDefault()
-        onOpenChange(false)
-        setQuery('')
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        onOpenChange(true);
+      } else if (e.key === "Escape" && open) {
+        e.preventDefault();
+        onOpenChange(false);
+        setQuery("");
       }
-    }
+    };
 
     // Add listener immediately after authentication
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [open, onOpenChange, setOpen, user.id]) // Add dependencies
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [open, onOpenChange, setOpen, user]); // Add dependencies
 
   // 🔗 Handle route logic
   const handleSelect = (value: string) => {
-    if (value.startsWith('pdf-')) {
-      const pdfName = value.replace('pdf-', '')
-      const pdf = pdfs.find((p) => p.fileName === pdfName)
-      if (pdf) router.push(`/edit/${pdf.id}`)
-    } else if (value.startsWith('template-')) {
-      const template = value.replace('template-', '')
-      router.push(`/generate?template=${template}`)
-    } else if (value === '/generate' || value === '/edit' || value === '/dashboard') {
-      router.push(value)
+    if (value.startsWith("pdf-")) {
+      const pdfName = value.replace("pdf-", "");
+      const pdf = pdfs.find((p) => p.fileName === pdfName);
+      if (pdf) router.push(`/edit/${pdf.id}`);
+    } else if (value.startsWith("template-")) {
+      const template = value.replace("template-", "");
+      router.push(`/generate?template=${template}`);
+    } else if (
+      value === "/generate" ||
+      value === "/edit" ||
+      value === "/dashboard"
+    ) {
+      router.push(value);
     } else {
-      router.push(value)
+      router.push(value);
     }
 
-    onOpenChange(false)
-    setQuery('')
-  }
+    onOpenChange(false);
+    setQuery("");
+  };
 
   // Template definitions with keywords
   const templates = [
     {
-      name: 'Resume',
-      value: 'Resume',
+      name: "Resume",
+      value: "Resume",
       icon: FileText,
-      keywords: ['cv', 'curriculum vitae', 'job', 'career', 'employment']
+      keywords: ["cv", "curriculum vitae", "job", "career", "employment"],
     },
     {
-      name: 'Business Proposal',
-      value: 'Business-Proposal',
+      name: "Business Proposal",
+      value: "Business-Proposal",
       icon: Briefcase,
-      keywords: ['pitch', 'business plan', 'project', 'client', 'proposal']
+      keywords: ["pitch", "business plan", "project", "client", "proposal"],
     },
     {
-      name: 'Cover Letter',
-      value: 'Cover-Letter',
+      name: "Cover Letter",
+      value: "Cover-Letter",
       icon: Mail,
-      keywords: ['job application', 'introduction', 'hiring', 'employment']
+      keywords: ["job application", "introduction", "hiring", "employment"],
     },
     {
-      name: 'Research Paper',
-      value: 'Research-Paper',
+      name: "Research Paper",
+      value: "Research-Paper",
       icon: BookOpen,
-      keywords: ['academic', 'study', 'thesis', 'paper', 'research']
+      keywords: ["academic", "study", "thesis", "paper", "research"],
     },
     {
-      name: 'Agreement',
-      value: 'Agreement',
+      name: "Agreement",
+      value: "Agreement",
       icon: FileCheck,
-      keywords: ['contract', 'legal', 'terms', 'conditions', 'document']
+      keywords: ["contract", "legal", "terms", "conditions", "document"],
     },
     {
-      name: 'Report',
-      value: 'Report',
+      name: "Report",
+      value: "Report",
       icon: BarChart3,
-      keywords: ['analysis', 'summary', 'findings', 'statistics', 'data']
+      keywords: ["analysis", "summary", "findings", "statistics", "data"],
     },
-  ]
+  ];
 
   const navigationItems = [
     {
-      name: 'Dashboard',
-      value: '/dashboard',
+      name: "Dashboard",
+      value: "/dashboard",
       icon: Home,
-      keywords: ['home', 'main', 'overview', 'start']
+      keywords: ["home", "main", "overview", "start"],
     },
     {
-      name: 'Generate PDF',
-      value: '/generate',
+      name: "Generate PDF",
+      value: "/generate",
       icon: Plus,
-      keywords: ['create', 'new', 'make', 'generate']
+      keywords: ["create", "new", "make", "generate"],
     },
     {
-      name: 'Edit PDF',
-      value: '/edit',
+      name: "Edit PDF",
+      value: "/edit",
       icon: Pen,
-      keywords: ['modify', 'change', 'update', 'edit']
+      keywords: ["modify", "change", "update", "edit"],
     },
     {
-      name: 'Account',
-      value: '/account',
+      name: "Account",
+      value: "/account",
       icon: User,
-      keywords: ['profile', 'settings', 'user', 'personal']
+      keywords: ["profile", "settings", "user", "personal"],
     },
     {
-      name: 'Landing Page',
-      value: '/',
+      name: "Landing Page",
+      value: "/",
       icon: PlaneLanding,
-      keywords: ['home', 'welcome', 'start', 'landing']
+      keywords: ["home", "welcome", "start", "landing"],
     },
     {
-      name: 'Pricing',
-      value: '/pricing',
+      name: "Pricing",
+      value: "/pricing",
       icon: DollarSign,
-      keywords: ['money', 'price', 'rate']
+      keywords: ["money", "price", "rate"],
     },
-  ]
+  ];
 
   const logOutNavigationItems = [
     {
-      name: 'Landing Page',
-      value: '/',
+      name: "Landing Page",
+      value: "/",
       icon: PlaneLanding,
-      keywords: ['home', 'welcome', 'start', 'landing']
+      keywords: ["home", "welcome", "start", "landing"],
     },
     {
-      name: 'Pricing',
-      value: '/pricing',
+      name: "Pricing",
+      value: "/pricing",
       icon: DollarSign,
-      keywords: ['money', 'price', 'rate']
-    }
-  ]
+      keywords: ["money", "price", "rate"],
+    },
+  ];
 
   const tools = [
     {
-      name: 'Word to PDF',
-      value: '/tools/word-to-pdf',
+      name: "Word to PDF",
+      value: "/tools/word-to-pdf",
       icon: FileText,
-      keywords: ['word', 'pdf', 'convert', 'doc', 'docx']
+      keywords: ["word", "pdf", "convert", "doc", "docx"],
     },
     {
-      name: 'PPT to PDF',
-      value: '/tools/ppt-to-pdf',
+      name: "PPT to PDF",
+      value: "/tools/ppt-to-pdf",
       icon: PanelLeftOpen,
-      keywords: ['ppt', 'presentation', 'pdf', 'convert']
+      keywords: ["ppt", "presentation", "pdf", "convert"],
     },
     {
-      name: 'PDF to MD',
-      value: '/tools/pdf-to-md',
+      name: "PDF to MD",
+      value: "/tools/pdf-to-md",
       icon: Code,
-      keywords: ['md', 'convert', 'tools', 'pdf']
+      keywords: ["md", "convert", "tools", "pdf"],
     },
     {
-      name: 'PDF to Word',
-      value: '/tools/pdf-to-word',
+      name: "PDF to Word",
+      value: "/tools/pdf-to-word",
       icon: FileText,
-      keywords: ['word', 'convert', 'tools', 'pdf', 'doc', 'docx']
+      keywords: ["word", "convert", "tools", "pdf", "doc", "docx"],
     },
     {
-      name: 'Merge PDF',
-      value: '/tools/merge-pdf',
+      name: "Merge PDF",
+      value: "/tools/merge-pdf",
       icon: Layers,
-      keywords: ['merge', 'combine', 'pdf', 'join', 'tools']
+      keywords: ["merge", "combine", "pdf", "join", "tools"],
     },
     {
-      name: 'Split PDF',
-      value: '/tools/split-pdf',
+      name: "Split PDF",
+      value: "/tools/split-pdf",
       icon: FileText,
-      keywords: ['split', 'extract', 'pages', 'pdf', 'tools']
+      keywords: ["split", "extract", "pages", "pdf", "tools"],
     },
-  ]
+  ];
 
   // 🔍 Filter PDFs by name (case-insensitive)
   const filteredPdfs = pdfs.filter((pdf) =>
-    pdf.fileName.toLowerCase().includes(query.toLowerCase())
-  )
+    pdf.fileName.toLowerCase().includes(query.toLowerCase()),
+  );
 
   return (
     <AnimatePresence>
@@ -232,8 +235,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-start justify-center bg-background/60 backdrop-blur-sm"
           onClick={() => {
-            onOpenChange(false)
-            setQuery('')
+            onOpenChange(false);
+            setQuery("");
           }}
         >
           <motion.div
@@ -269,70 +272,73 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Empty>
 
                 {/* Navigation */}
-                {
-                  user.id ?
-                    <Command.Group className="mb-4">
-                      <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
-                        Navigation
-                      </div>
-                      {navigationItems.map((item) => (
-                        <Command.Item
-                          key={item.value}
-                          value={item.value}
-                          keywords={item.keywords}
-                          onSelect={() => handleSelect(item.value)}
-                          className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                        >
-                          <item.icon className="mr-2 h-4 w-4" />
-                          <span>{item.name}</span>
-                        </Command.Item>
-                      ))}
-                    </Command.Group>
-                    :
-                    <Command.Group className="mb-4">
-                      <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
-                        Navigation
-                      </div>
-                      {logOutNavigationItems.map((item) => (
-                        <Command.Item
-                          key={item.value}
-                          value={item.value}
-                          keywords={item.keywords}
-                          onSelect={() => handleSelect(item.value)}
-                          className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                        >
-                          <item.icon className="mr-2 h-4 w-4" />
-                          <span>{item.name}</span>
-                        </Command.Item>
-                      ))}
-                    </Command.Group>
-                }
+                {user.id ? (
+                  <Command.Group className="mb-4">
+                    <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                      Navigation
+                    </div>
+                    {navigationItems.map((item) => (
+                      <Command.Item
+                        key={item.value}
+                        value={item.value}
+                        keywords={item.keywords}
+                        onSelect={() => handleSelect(item.value)}
+                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                ) : (
+                  <Command.Group className="mb-4">
+                    <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                      Navigation
+                    </div>
+                    {logOutNavigationItems.map((item) => (
+                      <Command.Item
+                        key={item.value}
+                        value={item.value}
+                        keywords={item.keywords}
+                        onSelect={() => handleSelect(item.value)}
+                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                      >
+                        <item.icon className="mr-2 h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Command.Item>
+                    ))}
+                  </Command.Group>
+                )}
 
                 {/* PDFs */}
                 {loading ? (
                   <div className="flex items-center justify-center gap-2 py-4 text-sm text-muted-foreground">
-                    <Loader2 className='animate-spin' />
+                    <Loader2 className="animate-spin" />
                     Loading PDFs
                   </div>
-                ) : filteredPdfs.length > 0 && (
-                  <Command.Group className="mb-4">
-                    <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
-                      Your PDFs
-                    </div>
-                    {filteredPdfs.slice(0, 10).map((pdf) => (
-                      <Command.Item
-                        key={pdf.id}
-                        value={`pdf-${pdf.fileName}`}
-                        onSelect={() => handleSelect(`pdf-${pdf.fileName}`)}
-                        className="flex h-10 items-center justify-between rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <FileText className="mr-2 h-4 w-4" />
-                          <div className="truncate font-medium">{pdf.fileName}</div>
-                        </div>
-                      </Command.Item>
-                    ))}
-                  </Command.Group>
+                ) : (
+                  filteredPdfs.length > 0 && (
+                    <Command.Group className="mb-4">
+                      <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
+                        Your PDFs
+                      </div>
+                      {filteredPdfs.slice(0, 10).map((pdf) => (
+                        <Command.Item
+                          key={pdf.id}
+                          value={`pdf-${pdf.fileName}`}
+                          onSelect={() => handleSelect(`pdf-${pdf.fileName}`)}
+                          className="flex h-10 items-center justify-between rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                        >
+                          <div className="flex items-center">
+                            <FileText className="mr-2 h-4 w-4" />
+                            <div className="truncate font-medium">
+                              {pdf.fileName}
+                            </div>
+                          </div>
+                        </Command.Item>
+                      ))}
+                    </Command.Group>
+                  )
                 )}
 
                 {/* Tools */}
@@ -355,8 +361,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Group>
 
                 {/* Templates */}
-                {
-                  user.id &&
+                {user.id && (
                   <Command.Group className="mb-4">
                     <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                       Templates
@@ -366,7 +371,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                         key={template.value}
                         value={`template-${template.value}`}
                         keywords={template.keywords}
-                        onSelect={() => handleSelect(`template-${template.value}`)}
+                        onSelect={() =>
+                          handleSelect(`template-${template.value}`)
+                        }
                         className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
                       >
                         <template.icon className="mr-2 h-4 w-4" />
@@ -374,7 +381,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                       </Command.Item>
                     ))}
                   </Command.Group>
-                }
+                )}
 
                 {/* Actions Group */}
                 <Command.Group>
@@ -382,9 +389,11 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     Quick Actions
                   </div>
                   <Command.Item
-                    key='theme'
-                    onSelect={() => setTheme(theme === "dark" ? "light" : "dark")}
-                    keywords={['theme', 'light', 'dark', 'system']}
+                    key="theme"
+                    onSelect={() =>
+                      setTheme(theme === "dark" ? "light" : "dark")
+                    }
+                    keywords={["theme", "light", "dark", "system"]}
                     className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
                   >
                     {theme === "dark" ? (
@@ -394,40 +403,34 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     )}
                     <span>Toggle Theme</span>
                   </Command.Item>
-                  {
-                    user.id ?
-                      <Command.Item
-                        key='signout'
-                        onSelect={async () => {
-                          setOpen(false)
-                          await authClient.signOut()
-                          clearUser()
-                          clearPdf()
-                          setQuery("")
-                          router.push('/')
-                        }}
-                        keywords={['sign out', 'log out', 'exit', 'leave']}
-                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span>Sign Out</span>
-                      </Command.Item>
-                      :
-                      <Command.Item
-                        key='login'
-                        onSelect={async () => {
-                          setOpen(false)
-                          setQuery("")
-                          router.push('/login')
-                        }}
-                        keywords={['sign in', 'log in', 'enter', 'join']}
-                        className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
-                      >
-                        <LogIn className="mr-2 h-4 w-4" />
-                        <span>Log In</span>
-                      </Command.Item>
-                  }
-
+                  {user.id ? (
+                    <Command.Item
+                      key="signout"
+                      onSelect={() => {
+                        setOpen(false);
+                        logout();
+                      }}
+                      keywords={["sign out", "log out", "exit", "leave"]}
+                      className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </Command.Item>
+                  ) : (
+                    <Command.Item
+                      key="login"
+                      onSelect={async () => {
+                        setOpen(false);
+                        setQuery("");
+                        router.push("/login");
+                      }}
+                      keywords={["sign in", "log in", "enter", "join"]}
+                      className="flex h-10 items-center rounded-md px-4 text-sm cursor-pointer hover:bg-accent hover:text-primary aria-selected:bg-accent aria-selected:text-primary transition-colors"
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Log In</span>
+                    </Command.Item>
+                  )}
                 </Command.Group>
               </Command.List>
             </Command>
@@ -435,7 +438,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
 
-export default CommandPalette
+export default CommandPalette;

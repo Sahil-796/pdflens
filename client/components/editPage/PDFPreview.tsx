@@ -1,204 +1,250 @@
-'use client'
+"use client";
 
-import React, { useCallback, useEffect } from 'react'
-import { useEditPdfStore } from '@/app/store/useEditPdfStore'
-import { toast } from 'sonner'
+import React, { useEffect, useCallback, useRef } from "react";
+import { useEditorStore } from "@/store/useEditorStore";
+import { toast } from "sonner";
 
 interface PDFPreviewProps {
-  loading: boolean
-  html: string
-  pdfId: string
-  onTextSelect?: () => void
+  loading: boolean;
+  html?: string;
+  pdfId: string;
+  onTextSelect?: () => void;
 }
 
-const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, html, onTextSelect }) => {
+const PDFPreview: React.FC<PDFPreviewProps> = ({ loading, onTextSelect }) => {
   const {
-    renderedHtml,
-    setRenderedHtml,
-    setSelectedId,
-    setSelectedText,
-    setOriginalHtml,
+    draftHtml,
+    updateDraftHtml,
     selectedId,
+    selectElement,
+    clearSelection,
     aiResponse,
     showAiResponse,
-    setPromptValue,
-    setShowAiResponse,
+    setAiStatus,
     setAiResponse,
-    setStatus,
-    setSaveChange
-  } = useEditPdfStore()
+  } = useEditorStore();
+
+  const previewNodeRef = useRef<HTMLElement | null>(null);
+
+  const cleanAiOutput = (raw: string) => {
+    return raw
+      .replace(/^```html/i, "")
+      .replace(/^```/, "")
+      .replace(/```$/, "")
+      .trim();
+  };
+
+  const handleAccept = useCallback(() => {
+    if (!selectedId || !previewNodeRef.current) return;
+
+    const finalHtml = previewNodeRef.current.outerHTML;
+
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = finalHtml;
+    const cleanEl = tempDiv.firstElementChild;
+    if (cleanEl) {
+      cleanEl.classList.remove("preview-mode", "selected");
+      cleanEl.removeAttribute("style");
+      cleanEl.id = selectedId;
+    }
+
+    const cleanContent = tempDiv.innerHTML;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(draftHtml, "text/html");
+    const originalEl = doc.getElementById(selectedId);
+
+    if (originalEl) {
+      originalEl.outerHTML = cleanContent;
+      updateDraftHtml(doc.documentElement.outerHTML);
+      toast.success("Changes applied");
+    }
+
+    setAiResponse("");
+    setAiStatus("prompt");
+    clearSelection();
+
+    previewNodeRef.current?.remove();
+    previewNodeRef.current = null;
+  }, [
+    selectedId,
+    draftHtml,
+    updateDraftHtml,
+    setAiResponse,
+    setAiStatus,
+    clearSelection,
+  ]);
+
+  const handleReject = useCallback(() => {
+    if (!selectedId) return;
+
+    setAiResponse("");
+    setAiStatus("prompt");
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(draftHtml, "text/html");
+    const el = doc.getElementById(selectedId);
+    if (el) el.classList.remove("selected");
+
+    updateDraftHtml(doc.documentElement.outerHTML);
+  }, [selectedId, draftHtml, updateDraftHtml, setAiResponse, setAiStatus]);
 
   useEffect(() => {
-    if (html) setRenderedHtml(html)
-  }, [html, setRenderedHtml])
+    const previouslySelected = document.querySelectorAll(".selected");
+    previouslySelected.forEach((el) => el.classList.remove("selected"));
 
-  const acceptChanges = useCallback((newContent: string) => {
-    if (!selectedId || !renderedHtml) return
-    const parser = new DOMParser()
-    const doc = parser.parseFromString(renderedHtml, 'text/html')
-    const el = doc.getElementById(selectedId)
-    if (el) el.outerHTML = newContent
-    setRenderedHtml(doc.documentElement.outerHTML)
-    setShowAiResponse(false)
-    setAiResponse('')
-    setStatus('prompt')
-    setPromptValue('')
-    setSaveChange(true)
-  }, [renderedHtml, selectedId, setAiResponse, setPromptValue, setRenderedHtml, setShowAiResponse, setStatus, setSaveChange])
-
-  // Handle AI response display inline
-  useEffect(() => {
-    if (!showAiResponse || !selectedId || !aiResponse) return
-
-    // Use setTimeout to ensure DOM is updated after React render
-    const timer = setTimeout(() => {
-      const el = document.getElementById(selectedId)
-      if (!el) {
-        console.error('Selected element not found:', selectedId)
-        return
+    if (selectedId) {
+      const targetEl = document.getElementById(selectedId);
+      if (targetEl) {
+        targetEl.classList.add("selected");
       }
+    }
+  }, [selectedId, draftHtml]);
 
-      // Check if AI response is already displayed
-      const existingResponse = el.querySelector('.ai-response-container')
-      if (existingResponse) return // Don't recreate if already exists
+  useEffect(() => {
+    if (!showAiResponse || !selectedId || !aiResponse) {
+      if (previewNodeRef.current) {
+        previewNodeRef.current.remove();
+        previewNodeRef.current = null;
+      }
+      const original = document.getElementById(selectedId);
+      if (original) original.style.display = "";
+      return;
+    }
 
-      // Store original content AND classes/id before replacing
-      const originalContent = el.innerHTML
-      const originalClassName = el.className
-      const originalId = el.id
+    const originalEl = document.getElementById(selectedId);
+    if (!originalEl) return;
 
-      // Create AI response display
-      const aiResponseDiv = document.createElement('div')
-      aiResponseDiv.className = 'ai-response-container'
-      aiResponseDiv.innerHTML = `
-        <div class="ai-response-content">
-          <div class="ai-suggestion">
-            <span class="ai-label">AI Suggestion:</span>
-            <span class="ai-text suggestion-text">${aiResponse}</span>
-          </div>
-          <div class="ai-actions">
-            <button class="ai-btn accept-btn" data-action="accept">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-              Accept
-            </button>
-            <button class="ai-btn reject-btn" data-action="reject">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-              Reject
-            </button>
-          </div>
-        </div>
-      `
+    if (previewNodeRef.current && document.contains(previewNodeRef.current))
+      return;
 
-      // Replace content with AI response and remove original classes
-      el.innerHTML = ''
-      el.className = 'ai-response-wrapper' // Replace with neutral class
-      el.removeAttribute('id') // Remove ID to avoid conflicts
-      el.appendChild(aiResponseDiv)
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = cleanAiOutput(aiResponse);
+    const newEl = tempDiv.firstElementChild as HTMLElement;
 
-      // Add event listeners
-      const acceptBtn = el.querySelector('.accept-btn')
-      const rejectBtn = el.querySelector('.reject-btn')
+    if (!newEl) return;
 
-      acceptBtn?.addEventListener('click', (e) => {
-        e.stopPropagation()
-        acceptChanges(aiResponse)
-      })
+    newEl.classList.add("preview-mode");
+    newEl.id = `${selectedId}-preview`;
 
-      rejectBtn?.addEventListener('click', (e) => {
-        e.stopPropagation()
-        // Restore original content, classes, and ID
-        el.innerHTML = originalContent
-        el.className = originalClassName
-        el.id = originalId
-        setShowAiResponse(false)
-        setAiResponse("")
-        setStatus('prompt')
-        setPromptValue("")
-      })
-    }, 0)
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "relative";
+    wrapper.style.display = "block";
 
-    return () => clearTimeout(timer)
-  }, [showAiResponse, selectedId, aiResponse, acceptChanges, setAiResponse, setShowAiResponse, setStatus, setPromptValue])
+    wrapper.appendChild(newEl);
+
+    const toolbar = document.createElement("div");
+    toolbar.className =
+      "ai-action-toolbar absolute z-50 flex gap-2 mt-2 bg-background border border-border shadow-lg rounded-md p-1.5";
+    toolbar.style.bottom = "-45px";
+    toolbar.style.right = "0px";
+    toolbar.style.whiteSpace = "nowrap";
+
+    toolbar.innerHTML = `
+      <button id="btn-accept" class="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 text-xs font-medium rounded transition cursor-pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        Accept
+      </button>
+      <button id="btn-reject" class="flex items-center gap-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 text-xs font-medium rounded transition cursor-pointer">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        Reject
+      </button>
+    `;
+    wrapper.appendChild(toolbar);
+
+    originalEl.insertAdjacentElement("afterend", wrapper);
+    originalEl.style.display = "none";
+
+    previewNodeRef.current = wrapper;
+
+    const acceptBtn = toolbar.querySelector("#btn-accept");
+    const rejectBtn = toolbar.querySelector("#btn-reject");
+
+    const onAccept = (e: Event) => {
+      e.stopPropagation();
+      handleAccept();
+    };
+    const onReject = (e: Event) => {
+      e.stopPropagation();
+      handleReject();
+    };
+
+    acceptBtn?.addEventListener("click", onAccept);
+    rejectBtn?.addEventListener("click", onReject);
+
+    return () => {
+      acceptBtn?.removeEventListener("click", onAccept);
+      rejectBtn?.removeEventListener("click", onReject);
+      if (wrapper && wrapper.parentNode) {
+        wrapper.remove();
+      }
+      if (originalEl) {
+        originalEl.style.display = "";
+      }
+      previewNodeRef.current = null;
+    };
+  }, [showAiResponse, selectedId, aiResponse, handleAccept, handleReject]);
+
+  const handlePdfClick = (e: React.MouseEvent) => {
+    if (showAiResponse) {
+      toast.info("Please Accept or Reject the AI suggestion first.");
+      return;
+    }
+
+    const target = (e.target as HTMLElement).closest(
+      ".selectable",
+    ) as HTMLElement | null;
+
+    if (!target || target.id === "pdf-root" || target.tagName === "BODY")
+      return;
+
+    if (!target.id)
+      target.id = `gen-${Math.random().toString(36).substr(2, 9)}`;
+
+    if (selectedId === target.id) {
+      clearSelection();
+    } else {
+      selectElement(target.id, target.innerText, target.outerHTML);
+      if (onTextSelect) onTextSelect();
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 p-8">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="h-4 bg-muted rounded animate-pulse"
+            style={{ width: `${Math.random() * 40 + 60}%` }}
+          />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="h-full w-full bg-white p-6 overflow-y-auto">
-      {loading ? (
-        <div className="space-y-6">
-          {Array.from({ length: 5 }).map((_, pIndex) => (
-            <div key={pIndex} className="space-y-2">
-              {Array.from({ length: Math.floor(Math.random() * 4) + 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-4 rounded bg-muted animate-pulse"
-                  style={{ width: `${60 + Math.random() * 40}%` }}
-                />
-              ))}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div
-          className="mx-auto w-full text-black"
-          dangerouslySetInnerHTML={{ __html: renderedHtml }}
-          onMouseOver={(e) => {
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) target.classList.add("hovered")
-          }}
-          onMouseOut={(e) => {
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) target.classList.remove("hovered")
-          }}
-          onClick={(e) => {
-            if (aiResponse || showAiResponse) {
-              toast.info("Accept or reject the current changes.")
-              return
-            }
-            const target = (e.target as HTMLElement).closest(".selectable") as HTMLElement | null
-            if (target) {
-              const parser = new DOMParser()
-              const doc = parser.parseFromString(renderedHtml, 'text/html')
+    <div
+      id="pdf-root"
+      className="h-full w-full bg-white p-8 overflow-y-auto shadow-sm text-black"
+      dangerouslySetInnerHTML={{ __html: draftHtml }}
+      onMouseOver={(e) => {
+        if (showAiResponse) return;
+        const target = (e.target as HTMLElement).closest(
+          ".selectable",
+        ) as HTMLElement | null;
+        if (target) target.classList.add("hovered");
+      }}
+      onMouseOut={(e) => {
+        const target = (e.target as HTMLElement).closest(
+          ".selectable",
+        ) as HTMLElement | null;
+        if (target) target.classList.remove("hovered");
+      }}
+      onClick={handlePdfClick}
+      style={{ cursor: showAiResponse ? "default" : "text" }}
+    />
+  );
+};
 
-              // Toggle selection if clicking the same element
-              if (selectedId === target.id) {
-                // Deselect - remove selected class from HTML string
-                const el = doc.getElementById(target.id)
-                if (el) {
-                  el.classList.remove("selected")
-                  setRenderedHtml(doc.documentElement.outerHTML)
-                }
-                setSelectedId('')
-                setSelectedText('')
-                setOriginalHtml('')
-              } else {
-                // Remove selected class from previously selected element
-                if (selectedId) {
-                  const prevEl = doc.getElementById(selectedId)
-                  if (prevEl) prevEl.classList.remove("selected")
-                }
-
-                // Add selected class to new element
-                const el = doc.getElementById(target.id)
-                if (el) {
-                  el.classList.add("selected")
-                  setRenderedHtml(doc.documentElement.outerHTML)
-                  setSelectedId(target.id)
-                  setSelectedText(el.innerText)
-                  setOriginalHtml(el.outerHTML)
-                  // Trigger sidebar open on mobile
-                  onTextSelect?.()
-                }
-              }
-            }
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
-export default PDFPreview
+export default PDFPreview;

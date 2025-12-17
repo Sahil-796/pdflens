@@ -1,12 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useUserStore } from "@/app/store/useUserStore";
-import { useAuthRehydrate } from "@/hooks/useAuthRehydrate";
-import { usePdfStore } from "@/app/store/usePdfStore";
-import { useRouter } from "next/navigation";
 import { TextShimmerWave } from "../motion-primitives/text-shimmer-wave";
 import UploadFiles from "@/components/generatePage/UploadFiles";
 import AIWorking from "@/components/generatePage/AIWorking";
@@ -23,189 +20,92 @@ import {
 import { Badge } from "../ui/badge";
 import { Coins } from "lucide-react";
 import { Button } from "../ui/button";
+import { useGeneratePdf } from "@/hooks/mutations/useGeneratePdf";
+import { useEditorStore } from "@/store/useEditorStore";
+import useUser from "@/hooks/useUser";
+import { TEMPLATE_PROMPTS } from "@/lib/templates";
 
-const templatePrompts: Record<string, string> = {
-  Resume: `
-Create a professional resume with the following details:
-- Name: [Your Name]
-- Email: [Your Email]
-- Phone: [Your Phone Number]
-- Address: [Your Address]
-- Education: [Your College/University, Degree, Year]
-- Skills: [List of Skills]
-- Projects: [Project Name, Description, Technologies]
-- Experience: [Company Name, Role, Duration, Responsibilities]
-- Achievements: [Any awards or certifications]
-- Objective: [Short career objective]
-`,
-  "Business-Proposal": `
-Create a business proposal with placeholders for:
-- Proposal Title: [Proposal Name]
-- Client: [Client Name]
-- Prepared By: [Your Company Name]
-- Executive Summary: [Summary of Proposal]
-- Problem Statement: [Problem Definition]
-- Solution: [Proposed Solution]
-- Pricing: [Pricing Details]
-- Timeline: [Delivery Timeline]
-- Contact: [Contact Information]
-`,
-  "Cover-Letter": `
-Write a professional cover letter with placeholders for:
-- Recipient Name: [Hiring Manager's Name]
-- Company: [Company Name]
-- Position: [Position Title]
-- Applicant Name: [Your Name]
-- Introduction: [Short intro about yourself]
-- Body: [Why you're a great fit, skills, achievements]
-- Closing: [Closing statement + call to action]
-- Signature: [Your Full Name]
-`,
-  "Research-Paper": `
-  Generate a structured research paper with placeholders for:
-- Title: [Paper Title]
-- Author(s): [Author Names]
-- Abstract: [Short Summary]
-- Introduction: [Introduction Content]
-- Methodology: [Method Details]
-- Results: [Findings]
-- Discussion: [Discussion Points]
-- Conclusion: [Concluding Remarks]
-- References: [List of References]
-  `,
-  Agreement: `
-  Draft a legal agreement with placeholders for:
-- Agreement Title: [Agreement Name]
-- Parties Involved: [Party A, Party B]
-- Date: [Date of Agreement]
-- Terms & Conditions: [Key Terms]
-- Payment Details: [Payment Structure]
-- Duration: [Contract Duration]
-- Signatures: [Party A Signature, Party B Signature] 
-  `,
-  Report: `
-  Generate a structured report with placeholders for:
-- Report Title: [Title of Report]
-- Author: [Your Name]
-- Date: [Date of Report]
-- Executive Summary: [Summary of Report]
-- Body: [Main Content Sections]
-- Conclusion: [Final Remarks]
-- Appendices: [Supporting Material] 
-  `,
-};
+const CREDIT_COST_PER_GEN = 4;
 
 const Generate = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  useAuthRehydrate();
+  const router = useRouter();
+
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
-  const [showAIWorking, setShowAIWorking] = useState(false);
   const [limitModalOpen, setLimitModalOpen] = useState(false);
 
-  const { creditsLeft, setUser } = useUserStore();
-  const { fileName, pdfId, setPdf, clearPdf, isContext, addPdf } =
-    usePdfStore();
+  const { user } = useUser();
+  const { activePdfId, fileName, updateFileName, contextFiles, resetEditor } =
+    useEditorStore();
 
-  const template = searchParams.get("template"); // Check for template param
+  const { mutate: generatePdf, isPending } = useGeneratePdf();
 
-  useEffect(() => {
-    clearPdf();
-    // If template exists, pre-fill prompt
-    if (template && templatePrompts[template]) {
-      setInput(templatePrompts[template].trim());
-    }
-  }, [clearPdf, template]);
+  const templateParam = searchParams.get("template");
 
   useEffect(() => {
-    if (success) {
-      router.push(`/edit/${pdfId}`);
-    }
-  }, [success, pdfId, router]);
+    resetEditor();
+  }, [resetEditor]);
 
-  const handleSend = async () => {
+  useEffect(() => {
+    if (templateParam && TEMPLATE_PROMPTS[templateParam]) {
+      const promptText = TEMPLATE_PROMPTS[templateParam].trim();
+      setInput(promptText);
+
+      if (!fileName || fileName === "Untitled Document") {
+        const readableName = templateParam.replace(/-/g, " ") + " Draft";
+        updateFileName(readableName);
+      }
+    }
+  }, [templateParam, updateFileName, fileName]);
+
+  const handleTemplateClick = (key: string) => {
+    router.replace(`/generate?template=${key}`);
+  };
+
+  const handleSend = () => {
     if (!input.trim()) {
       toast.error("Prompt cannot be empty");
       return;
     }
 
-    if (creditsLeft < 4) {
+    const currentCredits = user?.creditsLeft ?? 0;
+    if (currentCredits < CREDIT_COST_PER_GEN) {
       setLimitModalOpen(true);
       return;
     }
 
-    setLoading(true);
-    setShowAIWorking(true);
-
-    try {
-      // V2 ATOMIC API CALL
-      // This handles Creation -> Deduction -> Generation -> Update in one go.
-      // Note: (v2) is a route group and doesn't appear in the URL
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userPrompt: input,
-          fileName: fileName,
-          isContext: isContext,
-        }),
-      });
-
-      if (!res.ok) {
-        // Handle specific errors
-        if (res.status === 429) {
-          setLimitModalOpen(true);
-          return;
-        }
-        throw new Error("PDF Generation failed");
-      }
-
-      const data = await res.json();
-
-      setPdf({
-        htmlContent: data.data,
-        pdfId: data.pdfId,
-      });
-      setUser({ creditsLeft: data.creditsLeft });
-
-      setSuccess(true);
-      toast.success(`"${fileName}" Generated Successfully!`);
-
-      addPdf({
-        id: data.pdfId,
-        fileName,
-        htmlContent: data.data,
-        createdAt: new Date().toISOString(), // Approximated
-      });
-    } catch (err) {
-      console.error("Error in handleSend:", err);
-      toast.error(
-        err instanceof Error
-          ? err.message
-          : "Something went wrong while generating",
-      );
-    } finally {
-      setLoading(false);
-    }
+    generatePdf(
+      {
+        userPrompt: input,
+        fileName: fileName || "Untitled Document",
+        isContext: contextFiles.length > 0,
+        pdfId: activePdfId ?? undefined,
+      },
+      {
+        onError: (error) => {
+          if (
+            error.message.includes("LIMIT") ||
+            error.message.includes("TOKEN")
+          ) {
+            setLimitModalOpen(true);
+          } else {
+            toast.error("Something went wrong with generation");
+          }
+        },
+      },
+    );
   };
 
-  // Show AI Working interface when generating
-  if (showAIWorking) {
-    return (
-      <AIWorking
-        prompt={input}
-        fileName={fileName}
-        status={success ? "success" : loading ? "working" : "error"}
-      />
-    );
+  if (isPending) {
+    return <AIWorking prompt={input} fileName={fileName} status="working" />;
   }
 
   return (
-    <div className="flex-1  flex flex-col lg:flex-row overflow-auto">
+    <div className="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
+      {/* Added h-full and overflow-hidden to outer container for better scroll handling */}
+
       {/* Left Panel */}
-      <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col">
+      <div className="w-full lg:w-3/5 border-b lg:border-b-0 lg:border-r border-border bg-card flex flex-col h-full overflow-y-auto">
         <div className="flex-1 p-4 space-y-6">
           {/* Document Name Input */}
           <div>
@@ -214,113 +114,116 @@ const Generate = () => {
             </div>
             <input
               type="text"
-              value={fileName}
-              onChange={(e) => setPdf({ fileName: e.target.value })}
-              placeholder="Enter filename"
-              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              value={fileName || ""}
+              onChange={(e) => updateFileName(e.target.value)}
+              placeholder="e.g., Q3 Marketing Report" // Better placeholder
+              className="w-full rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all"
             />
-            <p className="text-xs text-muted-foreground mt-0.5">
-              This name will be used for your PDF file
-            </p>
           </div>
 
           {/* Document Description */}
-          <div>
-            <div className="px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5">
-              Describe your document
+          <div className="flex-1 flex flex-col">
+            <div className="px-1.5 sm:px-2 text-sm font-medium text-muted-foreground mb-1.5 flex justify-between">
+              <span>Describe your document</span>
+              {templateParam && (
+                <span
+                  className="text-xs text-primary cursor-pointer hover:underline"
+                  onClick={() => setInput("")}
+                >
+                  Clear Template
+                </span>
+              )}
             </div>
             <textarea
-              id="inputMessage"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Describe what you want to create..."
-              className="w-full h-40 sm:h-52 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="w-full min-h-[200px] flex-1 resize-none rounded-md border border-border bg-background p-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring transition-all leading-relaxed"
             />
-            <p className="text-xs text-muted-foreground -mt-1">
-              Be specific about the content, format, and style you want
-            </p>
           </div>
 
-          {/* Token Display */}
-          <div className="flex items-center gap-4 rounded-md">
-            <Badge variant="secondary" className="text-sm">
-              <Coins className="h-4 w-4" />
-              {creditsLeft} credits remaining
-            </Badge>
-            <Link
-              href="/pricing"
-              className="text-xs font-medium text-primary hover:underline"
+          {/* Token Display & Button */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Badge
+                variant="secondary"
+                className="text-xs font-normal px-3 py-1"
+              >
+                <Coins className="h-3.5 w-3.5 mr-1.5 text-secondary-foreground" />
+                {user?.creditsLeft ?? 0} credits available
+              </Badge>
+              <Link
+                href="/pricing"
+                className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Upgrade Plan
+              </Link>
+            </div>
+
+            <Button
+              onClick={handleSend}
+              disabled={isPending || !input.trim()}
+              className="w-full py-6 text-base shadow-sm"
+              size="lg"
             >
-              Get more credits →
-            </Link>
+              Generate Document
+            </Button>
           </div>
-
-          {/* Generate Button */}
-          <button
-            onClick={handleSend}
-            disabled={loading || !input.trim()}
-            className="w-full bg-primary text-primary-foreground rounded-md py-3 px-4 font-medium hover:bg-primary/90 transition  cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <TextShimmerWave duration={1}>Generating...</TextShimmerWave>
-              </div>
-            ) : (
-              `Generate Document`
-            )}
-          </button>
         </div>
 
         {/* File Upload Section */}
-        <div className="px-4 pb-4 sm:px-6">
+        <div className="px-4 pb-4 sm:px-6 border-t border-border/50 pt-4">
           <UploadFiles />
         </div>
       </div>
 
       {/* Right Panel */}
-      <div className="flex-1 flex flex-col p-4 sm:p-6 space-y-8">
+      <div className="w-full lg:w-2/5 flex flex-col p-4 sm:p-6 space-y-8 bg-muted/10 overflow-y-auto h-full">
         {/* Tips */}
-        <div className="space-y-4">
-          <h4 className="font-medium mb-3">Tips for better results:</h4>
-          <ul className="space-y-3 text-sm">
+        <div className="space-y-4 p-4 rounded-xl bg-card border border-border/50 shadow-sm">
+          <h4 className="font-semibold text-sm">PRO Tips</h4>
+          <ul className="space-y-2.5 text-sm text-muted-foreground">
             <li className="flex items-start gap-2">
-              <span className="text-primary">•</span>Be specific about the
-              document type and purpose
+              <span className="text-primary text-lg leading-none">•</span>
+              <span>
+                <strong>Context matters:</strong> Uploading a previous PDF
+                allows the AI to mimic your style.
+              </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-primary">•</span>Include key details like
-              names, dates, and requirements
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary">•</span>Upload reference files for
-              better context
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-primary">•</span>Use clear, descriptive
-              language
+              <span className="text-primary text-lg leading-none">•</span>
+              <span>
+                <strong>Be specific:</strong> Mention "Tables", "Bullet points",
+                or specific standard clauses.
+              </span>
             </li>
           </ul>
         </div>
 
         {/* Available Templates */}
         <div className="space-y-4">
-          <h4 className="font-medium mb-3">Available Templates:</h4>
+          <h4 className="font-medium text-sm px-1">Quick Templates</h4>
           <div className="grid grid-cols-2 gap-3">
-            {Object.keys(templatePrompts).map((templateName) => (
-              <Button
-                key={templateName}
-                variant="outline"
-                onClick={() => setInput(templatePrompts[templateName].trim())}
-                className="cursor-pointer"
-              >
-                {templateName}
-              </Button>
-            ))}
+            {Object.keys(TEMPLATE_PROMPTS).map((key) => {
+              const isActive = templateParam === key;
+              return (
+                <Button
+                  key={key}
+                  variant={isActive ? "default" : "outline"}
+                  onClick={() => handleTemplateClick(key)}
+                  className={`
+                    justify-start text-xs sm:text-sm h-auto py-3 px-4
+                    ${isActive ? "border-primary" : "hover:border-primary/50"}
+                  `}
+                >
+                  {key.replace(/-/g, " ")}
+                </Button>
+              );
+            })}
           </div>
         </div>
       </div>
 
-      {/* Improved Alert Dialog */}
       <AlertDialog open={limitModalOpen} onOpenChange={setLimitModalOpen}>
         <AlertDialogContent className="bg-linear-to-br from-card to-background border-border w-[92%] sm:w-[480px] rounded-2xl shadow-xl">
           <AlertDialogHeader className="space-y-2">
@@ -329,28 +232,21 @@ const Generate = () => {
                 <span className="text-primary text-xl">!</span>
               </div>
             </div>
+
             <AlertDialogTitle className="text-center text-lg font-semibold text-foreground">
               Daily Token Limit Reached
             </AlertDialogTitle>
+
             <AlertDialogDescription className="text-center text-sm text-muted-foreground">
-              You’ve used up your{" "}
-              <span className="font-medium text-foreground">
-                20 daily credits
-              </span>
-              . Upgrade to{" "}
-              <span className="font-medium text-primary">Premium</span> to
-              unlock
-              <span className="font-medium text-foreground">
-                {" "}
-                100 credits per day
-              </span>{" "}
-              and more benefits.
+              You’ve used up your daily credits. Upgrade to Premium for more.
             </AlertDialogDescription>
           </AlertDialogHeader>
+
           <AlertDialogFooter className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-4">
             <AlertDialogCancel className="border-border w-full sm:w-auto">
               Close
             </AlertDialogCancel>
+
             <Link href="/pricing" className="w-full sm:w-auto">
               <AlertDialogAction className="w-full bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition cursor-pointer">
                 View Pricing

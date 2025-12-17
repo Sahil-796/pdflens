@@ -15,88 +15,57 @@ export async function POST(req: Request) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid request", issues: parsed.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const { html } = parsed.data;
 
     const styledHTML = `
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <style>
-      @page {
-        size: A4;
-        margin: 0.8in;
-      }
+      <html>
+        <head>
+          <style>
+            @page { 
+              size: A4; 
+              margin: 0.8in; 
+            }
+            body { font-family: sans-serif; }
+            .pg-break { 
+              display: block; 
+              page-break-before: always; 
+              break-before: page; 
+              height: 0; 
+              margin: 0; 
+              padding: 0; 
+            }
+            @media print {
+              h1, h2, h3, h4, h5, h6 { page-break-after: avoid; }
+              h2, h3, h4, h5, h6 { page-break-before: avoid; }
+            }
+          </style>
+        </head>
+        <body>${html}</body>
+      </html>
+    `;
 
-      body {
-        font-family: Helvetica, Arial, sans-serif;
-        font-size: 12pt;
-        line-height: 1.65;
-        color: black;
-        background: white;
-      }
+    const isProduction = process.env.NODE_ENV === "production";
 
-      @media print {
+    const localExecutablePath =
+      "/Applications/Helium.app/Contents/MacOS/Helium";
 
-        /* Headings should never be orphaned */
-        h1, h2, h3, h4, h5, h6 {
-          page-break-after: avoid;
-          break-after: avoid;
+    // If running locally, we skip the special serverless args
+    const launchOptions = isProduction
+      ? {
+          args: chromium.args,
+          executablePath: await chromium.executablePath(),
         }
+      : {
+          args: [],
+          executablePath: localExecutablePath,
+          headless: true,
+        };
 
-        h1 + p,
-        h2 + p,
-        h3 + p,
-        h4 + p,
-        h5 + p,
-        h6 + p {
-          page-break-before: avoid;
-          break-before: avoid;
-        }
-
-        /* Never split these blocks */
-        table,
-        pre,
-        code,
-        blockquote,
-        figure,
-        img,
-        svg {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        /* Lists should stay together */
-        ul, ol {
-          page-break-inside: avoid;
-          break-inside: avoid;
-        }
-
-        /* Avoid tiny leftovers */
-        p {
-          orphans: 3;
-          widows: 3;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    ${html}
-  </body>
-</html>
-`;
-
-    // Launch Chromium (Playwright)
-    const browser = await playwright.launch({
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
-      headless: true,
-    });
-
+    const browser = await playwright.launch(launchOptions);
     const context = await browser.newContext();
     const page = await context.newPage();
 
@@ -115,7 +84,7 @@ export async function POST(req: Request) {
 
     await browser.close();
 
-    return new Response(pdfBuffer, {
+    return new Response(pdfBuffer as any, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
@@ -126,7 +95,7 @@ export async function POST(req: Request) {
     console.error("PDF generation error:", err);
     return NextResponse.json(
       { error: "Failed to generate PDF" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

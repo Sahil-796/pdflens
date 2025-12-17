@@ -1,42 +1,42 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ArrowRight, CheckCircle2 } from "lucide-react"
-import NumberFlow from "@number-flow/react"
+import * as React from "react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
+import NumberFlow from "@number-flow/react";
 
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 export interface PricingTier {
-  name: string
-  price: Record<string, number | string>
-  description: string
-  features: string[]
-  cta: string
-  highlighted?: boolean
-  currentPlan: boolean
-  onSelect?: () => void
-  disabled?: boolean
+  name: string;
+  price: Record<string, number | string>;
+  description: string;
+  features: string[];
+  cta: string;
+  highlighted?: boolean;
+  currentPlan: boolean;
+  onSelect?: () => void;
+  disabled?: boolean;
 }
 
 interface PricingCardProps {
-  tier: PricingTier
-  paymentFrequency: string
+  tier: PricingTier;
+  paymentFrequency: string;
 }
 
 export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
-  const price = tier.price[paymentFrequency]
-  const isHighlighted = tier.highlighted
+  const price = tier.price[paymentFrequency];
+  const isHighlighted = tier.highlighted;
 
   return (
     <Card
       className={cn(
         "relative flex flex-col gap-8 overflow-hidden p-6",
         !isHighlighted
-          ? "bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 text-foreground border border-primary/20"
-          : "bg-card text-foreground ring-3 ring-primary"
+          ? "bg-linear-to-br from-primary/15 via-primary/10 to-primary/5 text-foreground border border-primary/20"
+          : "bg-card text-foreground ring-3 ring-primary",
       )}
     >
       {isHighlighted && <></>}
@@ -84,7 +84,7 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
               key={index}
               className={cn(
                 "flex items-center gap-2 text-sm font-medium",
-                isHighlighted ? "text-foreground" : "text-muted-foreground"
+                isHighlighted ? "text-foreground" : "text-muted-foreground",
               )}
             >
               <CheckCircle2 className="h-4 w-4" />
@@ -96,15 +96,12 @@ export function PricingCard({ tier, paymentFrequency }: PricingCardProps) {
 
       <Button
         variant={isHighlighted ? "default" : "default"}
-        className={cn(
-          "w-full cursor-pointer",
-        )}
+        className={cn("w-full cursor-pointer")}
         onClick={tier.onSelect}
       >
         {tier.cta}
         <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
     </Card>
-  )
+  );
 }
-

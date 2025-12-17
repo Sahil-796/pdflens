@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   ArrowLeftRight,
   BetweenVerticalEnd,
   Home,
   Pen,
   Plus,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/bars/nav-main"
-import { NavProjects } from "@/components/bars/nav-projects"
-import { NavUser } from "@/components/bars/nav-user"
+import { NavMain } from "@/components/bars/nav-main";
+import { NavProjects } from "@/components/bars/nav-projects";
+import { NavUser } from "@/components/bars/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -22,51 +22,49 @@ import {
   SidebarMenuItem,
   SidebarRail,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { useAuthRehydrate } from "@/hooks/useAuthRehydrate"
-import SearchBar from "../dashboardPage/SearchBar"
-import { cn } from "@/lib/utils"
-import useUser from "@/hooks/useUser"
-import { Button } from "../ui/button"
-import Link from "next/link"
-import { Spinner } from "../ui/spinner"
-import { Logo } from "../Logo"
-import { useUserStore } from "@/app/store/useUserStore"
-import { usePathname } from "next/navigation"
+} from "@/components/ui/sidebar";
+import SearchBar from "../dashboardPage/SearchBar";
+import { cn } from "@/lib/utils";
+import useUser from "@/hooks/useUser";
+import { Button } from "../ui/button";
+import Link from "next/link";
+import { Spinner } from "../ui/spinner";
+import { Logo } from "../Logo";
+import { usePathname } from "next/navigation";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  useAuthRehydrate()
-  const { user, loading } = useUser()
-  const { state } = useSidebar();
-  const { creditsLeft } = useUserStore()
-  const pathname = usePathname()
+  const { user, loading } = useUser();
+  const { state, isMobile } = useSidebar();
+  const pathname = usePathname();
+
+  const isCollapsed = state === "collapsed" && !isMobile;
 
   const data = {
     user: {
-      name: user.name || 'Loading',
-      email: user.email || 'Loading',
-      avatar: user.avatar || '',
-      isPro: user.isPro,
-      creditsLeft
+      name: user?.name || "User",
+      email: user?.email || "",
+      avatar: user?.avatar || "",
+      isPro: user?.isPro,
+      creditsLeft: user?.creditsLeft,
     },
     main: [
       {
         title: "Dashboard",
-        url: '/dashboard',
+        url: "/dashboard",
         icon: Home,
-        isActive: pathname === '/dashboard',
+        isActive: pathname === "/dashboard",
       },
       {
-        title: 'Generate',
-        url: '/generate',
+        title: "Generate",
+        url: "/generate",
         icon: Plus,
-        isActive: pathname === '/generate',
+        isActive: pathname === "/generate",
       },
       {
-        title: 'Edit',
-        url: '/edit',
+        title: "Edit",
+        url: "/edit",
         icon: Pen,
-        isActive: pathname === '/edit',
+        isActive: pathname === "/edit",
       },
     ],
     projects: [
@@ -75,25 +73,47 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "",
         icon: ArrowLeftRight,
         items: [
-          { title: "Word to PDF", url: "/tools/word-to-pdf", isActive: pathname === '/tools/word-to-pdf' },
-          { title: "PPT to PDF", url: "/tools/ppt-to-pdf", isActive: pathname === '/tools/ppt-to-pdf' },
-          { title: "PDF to Word", url: "/tools/pdf-to-word", isActive: pathname === '/tools/pdf-to-word' },
-          { title: "PDF to MD", url: "/tools/pdf-to-md", isActive: pathname === '/tools/pdf-to-md' },
-        ]
+          {
+            title: "Word to PDF",
+            url: "/tools/word-to-pdf",
+            isActive: pathname === "/tools/word-to-pdf",
+          },
+          {
+            title: "PPT to PDF",
+            url: "/tools/ppt-to-pdf",
+            isActive: pathname === "/tools/ppt-to-pdf",
+          },
+          {
+            title: "PDF to Word",
+            url: "/tools/pdf-to-word",
+            isActive: pathname === "/tools/pdf-to-word",
+          },
+          {
+            title: "PDF to MD",
+            url: "/tools/pdf-to-md",
+            isActive: pathname === "/tools/pdf-to-md",
+          },
+        ],
       },
       {
         name: "PDF Tools",
         url: "",
         icon: BetweenVerticalEnd,
         items: [
-          { title: "Merge PDF", url: "/tools/merge-pdf", isActive: pathname === '/tools/merge-pdf' },
-          { title: "Split PDF", url: "/tools/split-pdf", isActive: pathname === '/tools/split-pdf' },
-        ]
+          {
+            title: "Merge PDF",
+            url: "/tools/merge-pdf",
+            isActive: pathname === "/tools/merge-pdf",
+          },
+          {
+            title: "Split PDF",
+            url: "/tools/split-pdf",
+            isActive: pathname === "/tools/split-pdf",
+          },
+        ],
       },
-    ]
-  }
-
-  const isCollapsed = state === "collapsed";
+    ],
+  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -105,7 +125,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className={cn(
                 "group/header relative",
                 "hover:bg-sidebar-accent transition-all duration-200",
-                isCollapsed ? "justify-center px-2" : "px-3"
+                isCollapsed ? "justify-center px-2" : "px-3",
               )}
               tooltip={isCollapsed ? "Zendra" : undefined}
             >
@@ -139,5 +159,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

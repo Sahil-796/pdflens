@@ -40,7 +40,7 @@ export const Logo = ({
       <div
         className={cn(
           "flex items-center justify-center rounded-full",
-          "bg-gradient-to-br from-primary to-primary/80",
+          "bg-linear-to-br from-primary to-primary/80",
           "text-primary-foreground shadow-sm transition-all duration-200",
           "hover:shadow-md",
           sizeClasses.box,

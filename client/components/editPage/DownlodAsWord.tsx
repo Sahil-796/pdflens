@@ -1,64 +1,82 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Download } from "lucide-react";
-import { usePdfStore } from "@/app/store/usePdfStore";
-import { toast } from 'sonner'
-import { useEditPdfStore } from "@/app/store/useEditPdfStore";
+
+import { useState } from "react";
+import { Download, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "../ui/button";
+import { useEditorStore } from "@/store/useEditorStore";
 
 const DownloadAsWord = () => {
   const [loading, setLoading] = useState(false);
-
-  const { fileName, htmlContent } = usePdfStore();
-  const { renderedHtml, setRenderedHtml } = useEditPdfStore();
-
-  useEffect(() => {
-    if (htmlContent) setRenderedHtml(htmlContent);
-  }, [htmlContent, setRenderedHtml]);
+  const { fileName, draftHtml } = useEditorStore();
 
   async function handleDownload() {
-    if (!renderedHtml) return;
+    if (!draftHtml) return;
 
     setLoading(true);
     try {
-      const wrapper = document.createElement("div");
-      wrapper.style.padding = "16px";
-      wrapper.innerHTML = renderedHtml;
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(draftHtml, "text/html");
 
-      // 1️⃣ Send HTML → PDF
-      const res = await fetch("/api/downloadPDF", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ html: wrapper.outerHTML }),
+      doc.querySelector(".selected")?.classList.remove("selected");
+      doc
+        .querySelectorAll(".preview-mode")
+        .forEach((el) => el.classList.remove("preview-mode"));
+      doc
+        .querySelectorAll(".ai-response-container")
+        .forEach((el) => el.remove());
+      doc.querySelectorAll(".ai-action-toolbar").forEach((el) => el.remove());
+
+      doc.querySelectorAll("*").forEach((el) => {
+        if (el instanceof HTMLElement) {
+          el.style.fontSize = "";
+          el.style.margin = "";
+          el.style.lineHeight = "";
+        }
       });
 
-      if (!res.ok) throw new Error("Failed to convert to PDF");
+      const cleanContent = doc.body.innerHTML;
 
-      const pdfBlob = await res.blob();
+      const pdfRes = await fetch("/api/downloadPDF", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html: cleanContent }),
+      });
 
-      // 2️⃣ Send PDF → DOCX
+      if (!pdfRes.ok) {
+        const errData = await pdfRes.json().catch(() => ({}));
+        throw new Error(
+          errData.details || "Failed to generate intermediate PDF",
+        );
+      }
+
+      const pdfBlob = await pdfRes.blob();
+
       const formData = new FormData();
       formData.append("file", pdfBlob, "document.pdf");
 
-      const finalRes = await fetch(`/api/tools/pdf-to-docx`, {
+      const docxRes = await fetch(`/api/tools/pdf-to-docx`, {
         method: "POST",
         body: formData,
       });
 
-      if (!finalRes.ok) throw new Error("Failed to convert to DOCX");
+      if (!docxRes.ok) throw new Error("Failed to convert to DOCX");
 
-      const docxBlob = await finalRes.blob();
+      const docxBlob = await docxRes.blob();
       const url = URL.createObjectURL(docxBlob);
 
-      // 3️⃣ Trigger download
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${fileName || "documentFromPDFLens"}.docx`;
+      a.download = `${fileName || "document"}.docx`;
+      document.body.appendChild(a);
       a.click();
+      a.remove();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error(err.message);
-      toast.error("Failed to download file.");
+
+      toast.success("Word Document Downloaded");
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err.message || "Failed to download Word file.");
     } finally {
       setLoading(false);
     }
@@ -69,14 +87,13 @@ const DownloadAsWord = () => {
       size="lg"
       onClick={handleDownload}
       disabled={loading}
-      className="hover:scale-103 cursor-pointer text-foreground/80 bg-blue-500/70 hover:bg-blue-500 hover:text-foreground"
+      className="hover:scale-105 transition-transform cursor-pointer bg-blue-600/90 hover:bg-blue-600 text-white"
     >
-      <Download
-        className={`
-      w-4 h-4 shrink-0
-      ${loading ? 'animate-bounce' : ''}
-    `}
-      />
+      {loading ? (
+        <Loader2 className="w-4 h-4 animate-spin" />
+      ) : (
+        <Download className="w-4 h-4" />
+      )}
       As Word
     </Button>
   );
