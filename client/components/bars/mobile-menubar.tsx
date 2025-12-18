@@ -156,7 +156,7 @@ const MobileMenubar: React.FC<MobileMenubarProps> = ({
                     </div>
                     {user.isCreator && (
                       <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                        PRO
+                        Creator
                       </span>
                     )}
                   </div>

@@ -1,6 +1,15 @@
 "use client";
 
-import { Loader2, LogOut, User, Coins, Search, Menu, Plus } from "lucide-react";
+import {
+  Loader2,
+  LogOut,
+  User,
+  Coins,
+  Search,
+  Menu,
+  Plus,
+  Settings,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -211,11 +220,10 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="hidden md:flex items-center gap-3">
-                {/* CTA: New PDF */}
                 <Button
                   asChild
                   size="sm"
-                  className="hidden md:flex rounded-full bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 shadow-none"
+                  className="hidden md:flex rounded-xl bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 shadow-none"
                 >
                   <Link href="/generate" className="flex items-center gap-2">
                     <Plus className="w-3.5 h-3.5" />
@@ -278,9 +286,7 @@ export default function Navbar() {
                         href="/account"
                         className="flex items-center gap-2 px-2 py-1.5 text-sm rounded-md hover:bg-muted transition-colors"
                       >
-                        <div className="w-4 h-4 flex items-center justify-center">
-                          <div className="w-1.5 h-1.5 bg-muted-foreground rounded-full" />
-                        </div>{" "}
+                        <Settings className="w-4 h-4 text-muted-foreground" />{" "}
                         Settings
                       </Link>
                       <div className="flex items-center justify-between px-2 py-1.5 text-sm">
