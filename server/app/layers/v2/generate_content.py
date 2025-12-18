@@ -162,13 +162,12 @@ async def generate_content(content_description: str, formatting_instructions: st
            - Vertical spacing
            
            body {
-             font-size: 12pt;
              line-height: 1.65;
            }
            
-           h1 { font-size: 22pt; }
-           h2 { font-size: 16pt; }
-           h3 { font-size: 13.5pt; }
+           h1 { font-size: 26pt; }
+           h2 { font-size: 12pt; }
+           h3 { font-size: 16pt; }
 
         3. Paragraph rhythm:
            - Use line-height between 1.6 and 1.7.
