@@ -11,10 +11,11 @@ HF_API_KEY = os.getenv("HF_TOKEN")
 
 # HuggingFace Hosted Inference Client
 client = InferenceClient(
+    provider="together",
     api_key=HF_API_KEY,
 )
 
-MODEL_ID = "Qwen/Qwen2-7B-Instruct"
+MODEL_ID = "Qwen/Qwen2.5-7B-Instruct"
 
 
 async def refine_prompt(user_input: str) -> tuple:
@@ -53,6 +54,7 @@ async def refine_prompt(user_input: str) -> tuple:
             2. Formatting Instructions  
             Only VISUAL details.  
             Colors, fonts, alignments, spacing, theme, styles, margins.
+            Explicitly dont mention colors for headings or parahraphs but if told by user then mention it clearly
             Do NOT include structural instructions like lists, tables, sections, order, or hierarchy.
             
             ────────────────────────────────────────────
@@ -92,7 +94,7 @@ async def refine_prompt(user_input: str) -> tuple:
         ]
 
         response = client.chat.completions.create(
-            model=MODEL_ID,
+            model="Qwen/Qwen2.5-7B-Instruct",
             messages=messages,
             max_tokens=1024,
             temperature=0.2,

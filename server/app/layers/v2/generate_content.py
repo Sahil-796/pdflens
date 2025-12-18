@@ -90,6 +90,7 @@ async def generate_content(content_description: str, formatting_instructions: st
         ### 3. MARKDOWN & STRUCTURAL FORMATTING RULES
         
         * Start directly with `# {Main Title}` — no preamble.
+        * Don't write footers if not mentioned.
         * Use `SECTION_BREAK` on its own line only when a forced page break is required.
         * Use Markdown tables for comparisons when they meaningfully aid understanding.
         * Use Mermaid diagrams *only* when a process or architecture benefits from visualization:
@@ -126,6 +127,7 @@ async def generate_content(content_description: str, formatting_instructions: st
         - Keys must be plain tag names like "body", "h1", "p", "blockquote", "ul", "li",
           or positional variants like "p-3", "h2-1".
         - All values must be valid CSS properties (camelCase is invalid).
+        - Don't use images
         
         BACKGROUND USAGE (STRICT):
         
@@ -152,12 +154,21 @@ async def generate_content(content_description: str, formatting_instructions: st
         
         2. Heading hierarchy:
            - h1 largest, h2 smaller, h3 smaller still.
+           - Don't use colors until requested or told so.
            - Provide generous spacing above and below headings.
            Heading hierarchy must be expressed through:
            - Font size
            - Font weight
            - Vertical spacing
            
+           body {
+             line-height: 1.65;
+           }
+           
+           h1 { font-size: 26pt; }
+           h2 { font-size: 12pt; }
+           h3 { font-size: 16pt; }
+
         3. Paragraph rhythm:
            - Use line-height between 1.6 and 1.7.
            - Maintain around 1em bottom margin between paragraphs.
