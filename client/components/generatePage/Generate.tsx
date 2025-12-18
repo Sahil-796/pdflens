@@ -238,7 +238,7 @@ const Generate = () => {
             </AlertDialogTitle>
 
             <AlertDialogDescription className="text-center text-sm text-muted-foreground">
-              You’ve used up your daily credits. Upgrade to Premium for more.
+              You’ve used up your daily credits. Upgrade to Creator for more.
             </AlertDialogDescription>
           </AlertDialogHeader>
 

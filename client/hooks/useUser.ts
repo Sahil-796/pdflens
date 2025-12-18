@@ -52,7 +52,7 @@ export default function useUser() {
     user: user
       ? {
           ...user,
-          isPro: user.plan === "premium",
+          isCreator: user.plan === "creator",
           isAuthenticated: !!user.id,
           userProvider: user.providerId,
         }

@@ -272,7 +272,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Empty>
 
                 {/* Navigation */}
-                {user.id ? (
+                {user ? (
                   <Command.Group className="mb-4">
                     <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                       Navigation
@@ -361,7 +361,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                 </Command.Group>
 
                 {/* Templates */}
-                {user.id && (
+                {user && (
                   <Command.Group className="mb-4">
                     <div className="px-2 pb-2 text-xs font-medium text-muted-foreground tracking-wide">
                       Templates
@@ -403,7 +403,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ onOpenChange }) => {
                     )}
                     <span>Toggle Theme</span>
                   </Command.Item>
-                  {user.id ? (
+                  {user ? (
                     <Command.Item
                       key="signout"
                       onSelect={() => {

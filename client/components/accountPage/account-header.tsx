@@ -48,7 +48,7 @@ const AccountHeader = () => {
             <Coins className="w-4 h-4 text-primary" />
             {user.creditsLeft} credits left
           </Badge>
-          {!user.isPro && (
+          {!user.isCreator && (
             <Link
               href="/pricing"
               className=" cursor-pointer flex items-center gap-2 text-xs text-primary hover:underline"
