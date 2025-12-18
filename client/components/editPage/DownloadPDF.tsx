@@ -50,7 +50,7 @@ const DownloadPDF = () => {
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "Server failed to generate PDF");
+        throw new Error(errorData.error || "Server failed to download PDF");
       }
 
       const blob = await res.blob();
