@@ -60,7 +60,7 @@ export async function POST(req: Request) {
           args: chromium.args,
           // executablePath: await chromium.executablePath(),
           executablePath: await chromium.executablePath(
-            "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar",
+            "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.x64.tar",
           ),
           headless: true,
         }
@@ -94,9 +94,9 @@ export async function POST(req: Request) {
       },
     });
   } catch (err) {
-    console.error("PDF generation error:", err);
+    console.error("PDF download error:", err);
     return NextResponse.json(
-      { error: "Failed to generate PDF" },
+      { error: "Failed to download PDF" },
       { status: 500 },
     );
   }

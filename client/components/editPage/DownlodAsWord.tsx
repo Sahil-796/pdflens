@@ -45,9 +45,7 @@ const DownloadAsWord = () => {
 
       if (!pdfRes.ok) {
         const errData = await pdfRes.json().catch(() => ({}));
-        throw new Error(
-          errData.details || "Failed to generate intermediate PDF",
-        );
+        throw new Error(errData.details || "Failed to download PDF");
       }
 
       const pdfBlob = await pdfRes.blob();
