@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
 import { chromium as playwright } from "playwright-core";
 import { z } from "zod";
 
@@ -53,11 +53,16 @@ export async function POST(req: Request) {
     const localExecutablePath =
       "/Applications/Helium.app/Contents/MacOS/Helium";
 
-    // If running locally, we skip the special serverless args
+    chromium.setGraphicsMode = false;
+
     const launchOptions = isProduction
       ? {
           args: chromium.args,
-          executablePath: await chromium.executablePath(),
+          // executablePath: await chromium.executablePath(),
+          executablePath: await chromium.executablePath(
+            "https://github.com/Sparticuz/chromium/releases/download/v143.0.0/chromium-v143.0.0-pack.tar",
+          ),
+          headless: true,
         }
       : {
           args: [],
@@ -69,13 +74,10 @@ export async function POST(req: Request) {
     const context = await browser.newContext();
     const page = await context.newPage();
 
-    // Load HTML
     await page.setContent(styledHTML, { waitUntil: "load" });
 
-    // 🔑 THIS IS THE CRITICAL LINE
     await page.emulateMedia({ media: "print" });
 
-    // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,

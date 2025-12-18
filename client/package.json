@@ -28,7 +28,7 @@
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^1.0.1",
     "@react-email/render": "^2.0.0",
-    "@sparticuz/chromium": "^143.0.0",
+    "@sparticuz/chromium-min": "^143.0.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.88.0",
     "@tanstack/react-query": "^5.90.12",
