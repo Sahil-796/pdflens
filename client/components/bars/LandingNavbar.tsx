@@ -131,68 +131,66 @@ export default function Navbar() {
           )}
         >
           {/* Left: Logo */}
-          <div className="flex items-center gap-6">
-            <Link
-              href="/"
-              className={cn(
-                "shrink-0 justify-center hover:opacity-80 transition-opacity",
-              )}
-            >
-              <Logo showSubtitle={true} showText={true} size="sm" />
-            </Link>
+          <Link
+            href="/"
+            className={cn(
+              "shrink-0 justify-center hover:opacity-80 transition-opacity",
+            )}
+          >
+            <Logo showSubtitle={true} showText={true} size="sm" />
+          </Link>
 
-            {/* Desktop Navigation */}
-            <NavigationMenu viewport={false} className="hidden md:flex">
-              <NavigationMenuList className="gap-1">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    {link.submenu ? (
-                      <>
-                        <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-muted/50 data-[state=open]:bg-muted/50 h-8 px-3">
-                          {link.label}
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent className="z-50 p-2">
-                          <ul
-                            className={cn(
-                              link.type === "description"
-                                ? "min-w-[280px]"
-                                : "min-w-48",
-                            )}
-                          >
-                            {link.items?.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                <Link
-                                  href={item.href}
-                                  className="block rounded-md p-3 hover:bg-muted transition-colors outline-none focus:bg-muted"
-                                >
-                                  <div className="text-sm font-medium leading-none mb-1">
-                                    {item.label}
-                                  </div>
-                                  <p className="line-clamp-2 text-xs text-muted-foreground leading-snug">
-                                    {item.description}
-                                  </p>
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <Link
-                        href={link.href}
-                        className={cn(
-                          "text-sm font-medium px-3 py-2 rounded-md transition-colors hover:bg-muted/50",
-                          "text-muted-foreground hover:text-foreground",
-                        )}
-                      >
+          {/* Desktop Navigation */}
+          <NavigationMenu viewport={false} className="hidden md:flex">
+            <NavigationMenuList className="gap-1">
+              {navigationLinks.map((link, index) => (
+                <NavigationMenuItem key={index}>
+                  {link.submenu ? (
+                    <>
+                      <NavigationMenuTrigger className="text-sm font-medium bg-transparent hover:bg-muted/50 data-[state=open]:bg-muted/50 h-8 px-3">
                         {link.label}
-                      </Link>
-                    )}
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
-          </div>
+                      </NavigationMenuTrigger>
+                      <NavigationMenuContent className="z-50 p-2">
+                        <ul
+                          className={cn(
+                            link.type === "description"
+                              ? "min-w-[280px]"
+                              : "min-w-48",
+                          )}
+                        >
+                          {link.items?.map((item, itemIndex) => (
+                            <li key={itemIndex}>
+                              <Link
+                                href={item.href}
+                                className="block rounded-md p-3 hover:bg-muted transition-colors outline-none focus:bg-muted"
+                              >
+                                <div className="text-sm font-medium leading-none mb-1">
+                                  {item.label}
+                                </div>
+                                <p className="line-clamp-2 text-xs text-muted-foreground leading-snug">
+                                  {item.description}
+                                </p>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </NavigationMenuContent>
+                    </>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "text-sm font-medium px-3 py-2 rounded-md transition-colors hover:bg-muted/50",
+                        "hover:text-primary",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  )}
+                </NavigationMenuItem>
+              ))}
+            </NavigationMenuList>
+          </NavigationMenu>
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2">
