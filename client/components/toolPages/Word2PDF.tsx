@@ -31,8 +31,7 @@ const Word2PDF = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useUser();
 
-  // Logic: 20 files for Pro, 5 for Free
-  const MAX_FILES = user?.isPro ? 20 : 5;
+  const MAX_FILES = user?.isCreator ? 20 : 5;
   const MAX_SIZE_MB = 10;
 
   const handleFileValidation = (newFiles: File[]) => {

@@ -40,13 +40,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const isCollapsed = state === "collapsed" && !isMobile;
 
   const data = {
-    user: {
-      name: user?.name || "User",
-      email: user?.email || "",
-      avatar: user?.avatar || "",
-      isPro: user?.isPro,
-      creditsLeft: user?.creditsLeft,
-    },
+    user: user,
     main: [
       {
         title: "Dashboard",

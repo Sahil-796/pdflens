@@ -42,7 +42,7 @@ const SplitPDF = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useUser();
 
-  const MAX_FILES = user?.isPro ? 20 : 5;
+  const MAX_FILES = user?.isCreator ? 20 : 5;
   const MAX_SIZE_MB = 10;
 
   const handleFileValidation = (newFiles: File[]) => {

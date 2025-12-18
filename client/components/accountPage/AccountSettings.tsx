@@ -1,80 +1,115 @@
-'use client'
+"use client";
 
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CreditCard, Lock, Settings, User } from "lucide-react"
-import AccountHeader from "./account-header"
-import ProfileTab from "./profile-tab"
-import SecurityTab from "./security-tab"
-import BillingTab from "./billing-tab"
-import AccountTab from "./account-tab"
-import useUser from "@/hooks/useUser"
-import LumaSpin from "../21st/LumaSpin"
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CreditCard, Lock, Settings, User, Sparkles } from "lucide-react";
+import ProfileTab from "./profile-tab";
+import SecurityTab from "./security-tab";
+import BillingTab from "./billing-tab";
+import AccountTab from "./account-tab";
+import useUser from "@/hooks/useUser";
+import LumaSpin from "../21st/LumaSpin";
+import { Separator } from "@/components/ui/separator";
 
 const AccountSettings = () => {
-
-  const { loading } = useUser()
+  const { loading, user } = useUser();
 
   if (loading) {
     return (
       <div className="h-full w-full flex items-center justify-center">
         <LumaSpin />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="flex-1 w-full max-w-4xl mx-auto my-auto p-6">
-      <Card className="border-border bg-card">
-        <CardHeader className="space-y-2">
-          <AccountHeader />
-        </CardHeader>
+    <div className="container max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Account</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage your profile, subscription, and preferences.
+        </p>
+      </div>
 
-        <CardContent>
-          <Tabs defaultValue="profile" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger value="profile" className="flex items-center gap-2">
-                <User className="w-4 h-4" />
-                <span className="hidden sm:inline">Profile</span>
-              </TabsTrigger>
-              <TabsTrigger value="security" className="flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                <span className="hidden sm:inline">Security</span>
-              </TabsTrigger>
-              <TabsTrigger value="billing" className="flex items-center gap-2">
-                <CreditCard className="w-4 h-4" />
-                <span className="hidden sm:inline">Billing</span>
-              </TabsTrigger>
-              <TabsTrigger value="account" className="flex items-center gap-2">
-                <Settings className="w-4 h-4" />
-                <span className="hidden sm:inline">Account</span>
-              </TabsTrigger>
-            </TabsList>
+      <Tabs defaultValue="profile" className="flex flex-col lg:flex-row gap-8">
+        {/* Sidebar Navigation */}
+        <aside className="lg:w-64 shrink-0">
+          <TabsList className="flex flex-col h-auto w-full bg-transparent p-0 space-y-1">
+            <TabItem value="profile" icon={User} label="Profile" />
+            <TabItem value="billing" icon={CreditCard} label="Billing & Plan" />
+            {user?.userProvider === "credential" && (
+              <TabItem value="security" icon={Lock} label="Security" />
+            )}
+            <TabItem value="account" icon={Settings} label="General" />
+          </TabsList>
+        </aside>
 
-            {/* Profile Tab */}
-            <TabsContent value="profile" className="space-y-6">
-              <ProfileTab />
-            </TabsContent>
+        {/* Main Content Area */}
+        <div className="flex-1 lg:max-w-2xl">
+          <TabsContent value="profile" className="mt-0 space-y-6">
+            <SectionTitle
+              title="Profile"
+              description="This is how others will see you on the site."
+            />
+            <Separator />
+            <ProfileTab />
+          </TabsContent>
 
-            <TabsContent value="security" className="space-y-6">
-              <SecurityTab />
-            </TabsContent>
+          <TabsContent value="billing" className="mt-0 space-y-6">
+            <SectionTitle
+              title="Billing"
+              description="Manage your subscription and credit usage."
+            />
+            <Separator />
+            <BillingTab />
+          </TabsContent>
 
+          <TabsContent value="security" className="mt-0 space-y-6">
+            <SectionTitle
+              title="Security"
+              description="Update your password and security settings."
+            />
+            <Separator />
+            <SecurityTab />
+          </TabsContent>
 
-            {/* Billing Tab */}
-            <TabsContent value="billing" className="space-y-6">
-              <BillingTab />
-            </TabsContent>
-
-            {/* Account Tab */}
-            <TabsContent value="account" className="space-y-6">
-              <AccountTab />
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+          <TabsContent value="account" className="mt-0 space-y-6">
+            <SectionTitle
+              title="General"
+              description="Manage account deletion and data."
+            />
+            <Separator />
+            <AccountTab />
+          </TabsContent>
+        </div>
+      </Tabs>
     </div>
-  )
-}
+  );
+};
 
-export default AccountSettings
+// Helper Components
+const TabItem = ({ value, icon: Icon, label }: any) => (
+  <TabsTrigger
+    value={value}
+    className="w-full justify-start gap-3 px-3 py-2.5 text-sm font-medium rounded-md data-[state=active]:bg-primary/10 data-[state=active]:text-primary hover:bg-muted/50 transition-colors"
+  >
+    <Icon className="w-4 h-4" />
+    {label}
+  </TabsTrigger>
+);
+
+const SectionTitle = ({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) => (
+  <div>
+    <h2 className="text-xl font-semibold">{title}</h2>
+    <p className="text-sm text-muted-foreground">{description}</p>
+  </div>
+);
+
+export default AccountSettings;

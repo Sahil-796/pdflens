@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const DAILY_ALLOWANCE: Record<string, number> = {
   free: 20,
-  premium: 100,
+  creator: 100,
 };
 
 const HISTORY_REASONS: Record<string, string> = {
