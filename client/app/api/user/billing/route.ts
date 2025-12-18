@@ -58,8 +58,11 @@ export async function DELETE(req: Request) {
   }
 
   try {
-    await polar.subscriptions.cancel({
+    await polar.subscriptions.update({
       id: session.user.polarSubscriptionId,
+      subscriptionUpdate: {
+        cancelAtPeriodEnd: true,
+      },
     });
     return NextResponse.json({ success: true });
   } catch (error) {
