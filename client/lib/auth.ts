@@ -6,6 +6,7 @@ import { schema } from "@/db/schema";
 import { nextCookies } from "better-auth/next-js";
 import { Resend } from "resend";
 import EmailVerification from "@/components/emails/verify-email";
+import { polarPlugin } from "./auth/plugins/polar";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -60,6 +61,5 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24 * 7,
     updateAge: 60 * 60 * 24,
   },
-  plugins: [nextCookies()],
+  plugins: [nextCookies(), polarPlugin()],
 });
-
