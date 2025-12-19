@@ -1,4 +1,4 @@
-import { type LucideIcon } from "lucide-react"
+import { type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -6,27 +6,26 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Button } from "../ui/button"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/sidebar";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function NavMain({
   items,
 }: {
   items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
+    title: string;
+    url: string;
+    icon?: LucideIcon;
+    isActive?: boolean;
     items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+      title: string;
+      url: string;
+    }[];
+  }[];
 }) {
-
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <SidebarGroup className="-mt-4">
@@ -34,15 +33,13 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton
-              asChild
-              tooltip={item.title}
-            >
+            <SidebarMenuButton asChild tooltip={item.title}>
               <Button
                 variant={item.isActive ? "default" : "ghost"}
                 className={cn(
                   "w-full justify-start",
-                  item.isActive && "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                  item.isActive &&
+                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
                 )}
                 onClick={() => router.push(item.url)}
               >
@@ -54,5 +51,5 @@ export function NavMain({
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

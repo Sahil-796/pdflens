@@ -14,7 +14,7 @@ export const polarPlugin = () => {
           creditsLeft: {
             type: "number",
             required: false,
-            defaultValue: 0,
+            defaultValue: 20,
           },
           polarSubscriptionId: {
             type: "string",
