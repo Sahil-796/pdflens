@@ -1,6 +1,6 @@
 uvicorn
 fastapi
-fitz
+
 huggingface-hub
 
 langchain-core
@@ -11,13 +11,17 @@ langchain-cloudflare
 
 pinecone
 
-pdf2docx
-pydantic
+pymupdf==1.26.4
 pymupdf4llm
+pdf2docx==0.5.6
+
+pydantic
+
 python-dotenv
 markdown-it-py
-pydantic
 bs4
 python-multipart
 sentry-sdk
 pypdf
+cerebras-cloud-sdk
+langchain-google-genai
