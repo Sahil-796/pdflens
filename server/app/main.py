@@ -35,7 +35,11 @@ app.add_middleware(
 def base():
     return {"message": "Hello developer!"}
 
-
+@app.head("/")
+def head(): return "hello"
 app.include_router(ai_router)
 app.include_router(edit_router)
 app.include_router(remove_router)
+app.include_router(upload_router)
+app.include_router(edit_pdf_router)
+app.include_router(conversion_router)
