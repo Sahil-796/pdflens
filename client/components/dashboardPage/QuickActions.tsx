@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Plus, Wrench, User, Edit3, LayoutTemplate } from "lucide-react";
+import { Plus, Wrench, Edit3, LayoutTemplate } from "lucide-react";
 
 const QuickActions = () => {
   const actions = [
@@ -13,16 +13,14 @@ const QuickActions = () => {
       description: "Generate a document with AI",
       icon: Plus,
       href: "/generate",
-      // Make this one distinct as the Primary Action
       color: "bg-primary",
       iconColor: "text-primary-foreground",
     },
     {
-      title: "Templates", // Replaced Account
+      title: "Templates",
       description: "Browse pre-built layouts",
-      icon: LayoutTemplate, // Import from lucide-react
+      icon: LayoutTemplate,
       href: "/templates",
-      // Use a subtle distinct color or keep uniform
       color: "bg-orange-500/10",
       iconColor: "text-orange-500",
     },
@@ -79,10 +77,7 @@ const QuickActions = () => {
                   }}
                   whileHover={{ y: -2 }}
                 >
-                  <Link
-                    href={action.href}
-                    className="block h-[80px] sm:h-[100px]"
-                  >
+                  <Link href={action.href} className="block h-20 sm:h-[100px]">
                     <Card className="group h-full border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
                       <CardContent className="p-4 sm:p-5 h-full flex items-center gap-4">
                         <div
