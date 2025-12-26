@@ -28,23 +28,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePdf } from "@/hooks/usePdf";
 import { toast } from "sonner";
 
-interface Pdf {
-  id: string;
-  fileName: string;
-  createdAt: string | null;
-  htmlContent?: string | null;
-}
-
-interface PdfListProps {
-  limit?: number;
-  showDelete?: boolean;
-  showViewMore?: boolean;
-  emptyTitle?: string;
-  emptyDescription?: string;
-  emptyActionText?: string;
-  emptyActionPath?: string;
-  className?: string;
-}
+import { Pdf, PdfListProps } from "@/types/pdf";
 
 const PdfList: React.FC<PdfListProps> = ({
   limit = 8,
@@ -142,13 +126,13 @@ const PdfList: React.FC<PdfListProps> = ({
                         <span>
                           {pdf.createdAt
                             ? new Date(pdf.createdAt).toLocaleDateString(
-                                undefined,
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )
+                              undefined,
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric",
+                              },
+                            )
                             : "N/A"}
                         </span>
                       </div>

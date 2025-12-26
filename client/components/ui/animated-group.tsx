@@ -3,29 +3,7 @@ import { ReactNode } from 'react';
 import { motion, Variants } from 'motion/react';
 import React from 'react';
 
-export type PresetType =
-  | 'fade'
-  | 'slide'
-  | 'scale'
-  | 'blur'
-  | 'blur-slide'
-  | 'zoom'
-  | 'flip'
-  | 'bounce'
-  | 'rotate'
-  | 'swing';
-
-export type AnimatedGroupProps = {
-  children: ReactNode;
-  className?: string;
-  variants?: {
-    container?: Variants;
-    item?: Variants;
-  };
-  preset?: PresetType;
-  as?: React.ElementType;
-  asChild?: React.ElementType;
-};
+import { AnimatedGroupPreset as PresetType, AnimatedGroupProps } from '@/types/components';
 
 const defaultContainerVariants: Variants = {
   visible: {
