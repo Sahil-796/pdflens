@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { Check, Zap, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import useUser from "@/hooks/useUser";
 import { Button } from "@/components/ui/button";

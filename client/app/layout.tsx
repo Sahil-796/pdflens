@@ -3,7 +3,6 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { CommandPaletteProvider } from "@/components/providers/CommandPaletteProvider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import Providers from "@/components/providers/Providers";
@@ -117,7 +116,7 @@ export default function RootLayout({
     image: "https://zendrapdf.app/icon.png",
   };
 
-  const queryClient = new QueryClient();
+
 
   return (
     <html lang="en" suppressHydrationWarning>
