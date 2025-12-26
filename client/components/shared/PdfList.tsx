@@ -22,29 +22,14 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { FileText, Trash2, Calendar, Plus } from "lucide-react";
+import { FileText, Trash2, Calendar, Plus, Clock } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePdf } from "@/hooks/usePdf";
 import { toast } from "sonner";
 
-interface Pdf {
-  id: string;
-  fileName: string;
-  createdAt: string | null;
-  htmlContent?: string | null;
-}
-
-interface PdfListProps {
-  limit?: number;
-  showDelete?: boolean;
-  showViewMore?: boolean;
-  emptyTitle?: string;
-  emptyDescription?: string;
-  emptyActionText?: string;
-  emptyActionPath?: string;
-  className?: string;
-}
+import { Pdf, PdfListProps } from "@/types/pdf";
 
 const PdfList: React.FC<PdfListProps> = ({
   limit = 8,
@@ -137,69 +122,63 @@ const PdfList: React.FC<PdfListProps> = ({
                       <h3 className="font-semibold text-sm text-foreground line-clamp-2 leading-tight group-hover:text-primary transition-colors">
                         {pdf.fileName}
                       </h3>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
-                        <span>
-                          {pdf.createdAt
-                            ? new Date(pdf.createdAt).toLocaleDateString(
-                                undefined,
-                                {
-                                  day: "2-digit",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )
-                            : "N/A"}
-                        </span>
-                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>
+                        {pdf.createdAt
+                          ? formatDistanceToNow(new Date(pdf.createdAt), {
+                            addSuffix: true,
+                          })
+                          : "Just now"}
+                      </span>
+                    </div>
                     </div>
                   </div>
 
                   <div className="flex justify-end">
                     {showDelete && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            className="h-7 w-7 text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all duration-200"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </AlertDialogTrigger>
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="h-8 w-8 -mr-2 -mt-2 text-muted-foreground/60 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all duration-200"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
 
-                        <AlertDialogContent
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete PDF</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete{" "}
-                              <strong>{pdf.fileName}</strong>? This action
-                              cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              Cancel
-                            </AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-destructive hover:bg-destructive/80"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(pdf.id);
-                              }}
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete PDF</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete{" "}
+                                <strong>{pdf.fileName}</strong>? This action
+                                cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>
+                                Cancel
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-destructive hover:bg-destructive/80"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDelete(pdf.id);
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     )}
                   </div>
+
+                    
                 </CardContent>
               </Card>
             </motion.div>

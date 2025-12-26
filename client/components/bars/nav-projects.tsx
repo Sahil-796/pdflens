@@ -64,17 +64,13 @@ export function NavProjects({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <Button
-                          variant={subItem.isActive ? "secondary" : "ghost"}
-                          className={cn(
-                            "w-full justify-start cursor-pointer",
-                            subItem.isActive && "bg-secondary text-secondary-foreground hover:bg-secondary hover:text-secondary-foreground"
-                          )}
-                          onClick={() => router.push(subItem.url)}
-                        >
-                          {subItem.title}
-                        </Button>
+                      <SidebarMenuSubButton
+                        asChild
+                        isActive={subItem.isActive}
+                        onClick={() => router.push(subItem.url)}
+                        className="cursor-pointer data-[active=true]:bg-primary/5 data-[active=true]:text-primary transition-colors"
+                      >
+                        <span>{subItem.title}</span>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   ))}

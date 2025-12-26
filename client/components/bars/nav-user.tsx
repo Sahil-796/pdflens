@@ -39,26 +39,28 @@ export function NavUser({
   return (
     <SidebarMenu>
       <SidebarMenuItem className="group-data-[collapsible=icon]:hidden pb-1">
-        <div className="mx-2 flex flex-col gap-2 rounded-lg bg-background/50 p-3 shadow-sm transition-all">
-          <div className="flex items-center justify-center gap-2">
-            <span className="flex items-center gap-1.5 text-secondary-foreground text-xs font-medium">
-              <Coins className="h-3.5 w-3.5" />
-              <span className="text-sm font-bold">
-                {user.creditsLeft.toLocaleString()}
-              </span>
-              Credits Left
+        <div className="mx-2 flex flex-col gap-2 rounded-xl bg-sidebar-accent/30 border border-sidebar-border/50 p-3 mb-2">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+              <div className="p-1 rounded-md bg-yellow-500/10 text-yellow-600">
+                <Coins className="h-3 w-3" />
+              </div>
+              Credits
+            </span>
+            <span className="text-sm font-bold text-foreground">
+              {user.creditsLeft.toLocaleString()}
             </span>
           </div>
 
           {!user.isCreator && (
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
-              className="cursor-pointer"
+              className="w-full h-7 text-xs bg-sidebar hover:bg-sidebar-accent border-sidebar-border/50 shadow-sm cursor-pointer"
               onClick={() => router.push("/pricing")}
             >
-              Get More Credits
-              <ArrowRight className="mr-1.5 h-3 w-3" />
+              Get More
+              <ArrowRight className="ml-1.5 h-3 w-3 opacity-60" />
             </Button>
           )}
         </div>

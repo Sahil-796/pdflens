@@ -9,13 +9,7 @@ import {
 } from "@/components/ui/table";
 import useUser from "@/hooks/useUser";
 
-export type CreditHistory = {
-  id: string;
-  user_id: string;
-  amount: number;
-  reason: string;
-  created_at: Date;
-};
+import { CreditHistory } from "@/types/user";
 
 const CreditsTable = () => {
   const { user } = useUser();

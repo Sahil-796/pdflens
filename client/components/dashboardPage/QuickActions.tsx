@@ -15,6 +15,7 @@ const QuickActions = () => {
       href: "/generate",
       color: "bg-primary",
       iconColor: "text-primary-foreground",
+      hoverBg: "hover:bg-primary/5",
     },
     {
       title: "Templates",
@@ -23,6 +24,7 @@ const QuickActions = () => {
       href: "/templates",
       color: "bg-orange-500/10",
       iconColor: "text-orange-500",
+      hoverBg: "hover:bg-orange-500/5",
     },
     {
       title: "Edit PDF",
@@ -31,6 +33,7 @@ const QuickActions = () => {
       href: "/edit",
       color: "bg-blue-500/10",
       iconColor: "text-blue-500",
+      hoverBg: "hover:bg-blue-500/5",
     },
     {
       title: "Toolbox",
@@ -39,6 +42,7 @@ const QuickActions = () => {
       href: "/tools",
       color: "bg-purple-500/10",
       iconColor: "text-purple-500",
+      hoverBg: "hover:bg-purple-500/5",
     },
   ];
 
@@ -78,7 +82,7 @@ const QuickActions = () => {
                   whileHover={{ y: -2 }}
                 >
                   <Link href={action.href} className="block h-20 sm:h-[100px]">
-                    <Card className="group h-full border border-border bg-card hover:bg-muted/50 hover:border-primary/20 transition-all duration-200 cursor-pointer">
+                    <Card className={`group h-full border border-border bg-card ${action.hoverBg} hover:border-primary/20 transition-all duration-200 cursor-pointer`}>
                       <CardContent className="p-4 sm:p-5 h-full flex items-center gap-4">
                         <div
                           className={`p-2 sm:p-3 rounded-lg ${action.color} group-hover:scale-110 transition-transform`}

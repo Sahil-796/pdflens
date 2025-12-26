@@ -12,8 +12,8 @@ const Recents: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
             >
-                <h2 className="text-xl font-semibold text-foreground">Recent PDFs</h2>
-                <p className="text-sm text-muted-foreground mt-1">Your recently created and edited documents</p>
+                <h2 className="text-xl font-semibold text-foreground tracking-tight">Recent PDFs</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">Your recently created and edited documents</p>
             </motion.div>
 
             <PdfList

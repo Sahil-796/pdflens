@@ -33,19 +33,17 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton asChild tooltip={item.title}>
-              <Button
-                variant={item.isActive ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start",
-                  item.isActive &&
-                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
-                )}
-                onClick={() => router.push(item.url)}
-              >
+            <SidebarMenuButton
+              asChild
+              tooltip={item.title}
+              isActive={item.isActive}
+              onClick={() => router.push(item.url)}
+              className="data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-medium transition-all duration-200"
+            >
+              <button>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
-              </Button>
+              </button>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
