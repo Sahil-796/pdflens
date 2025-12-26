@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Check, Sparkles, Zap, ArrowRight, ShieldCheck } from "lucide-react";
+import { Check, Zap, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import useUser from "@/hooks/useUser";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ export default function Pricing() {
   const router = useRouter();
   const { user } = useUser();
 
+  console.log(user);
+
   const handlePlanSelect = (planName: string) => {
     if (!user) {
       router.push("/signup");
@@ -29,7 +31,7 @@ export default function Pricing() {
     }
 
     if (planName === "Creator") {
-      if (user?.plan === "creator") {
+      if (user.isCreator) {
         toast.info("You are already on the Creator plan!");
         router.push("/account");
         return;
@@ -40,9 +42,6 @@ export default function Pricing() {
       window.location.href = checkoutUrl;
       return;
     }
-
-    // 3. Handle Free Plan Selection
-    router.push("/dashboard");
   };
 
   const tiers = [

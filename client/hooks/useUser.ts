@@ -2,12 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import { userKeys } from "@/lib/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 
-interface DetailsProps {
-  plan: string;
-  emailVerified: boolean;
-  creditsLeft: number;
-  providerId: string;
-}
+import { UserDetails } from "@/types/user";
 
 export default function useUser() {
   const { data: user, isLoading: loading } = useQuery({
@@ -27,7 +22,7 @@ export default function useUser() {
         ? await creditHistoryRes.json()
         : [];
 
-      let details: Partial<DetailsProps> = {};
+      let details: Partial<UserDetails> = {};
 
       if (detailsRes.ok) {
         details = await detailsRes.json();
@@ -51,11 +46,11 @@ export default function useUser() {
   return {
     user: user
       ? {
-          ...user,
-          isCreator: user.plan === "creator",
-          isAuthenticated: !!user.id,
-          userProvider: user.providerId,
-        }
+        ...user,
+        isCreator: user.plan === "creator",
+        isAuthenticated: !!user.id,
+        userProvider: user.providerId,
+      }
       : null,
     loading,
   };

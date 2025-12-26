@@ -3,19 +3,7 @@ import { type JSX } from 'react';
 import { motion, Transition } from 'motion/react';
 import { cn } from '@/lib/utils';
 
-export type TextShimmerWaveProps = {
-  children: string;
-  as?: React.ElementType;
-  className?: string;
-  duration?: number;
-  zDistance?: number;
-  xDistance?: number;
-  yDistance?: number;
-  spread?: number;
-  scaleDistance?: number;
-  rotateYDistance?: number;
-  transition?: Transition;
-};
+import { TextShimmerWaveProps } from '@/types/components';
 
 export function TextShimmerWave({
   children,
