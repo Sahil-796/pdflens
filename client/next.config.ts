@@ -15,7 +15,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      bodySizeLimit: "100mb",
+      bodySizeLimit: "30mb",
     },
   },
   serverExternalPackages: ["@sparticuz/chromium", "playwright-core"],

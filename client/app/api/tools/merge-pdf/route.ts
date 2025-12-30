@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const res = await fetch(`${PYTHON_URL}/tools/merge_pdfs`, {
       method: "POST",
       headers: {
-        secret1: (process.env.SECRET1 || process.env.secret) as string,
+        secret1: process.env.secret as string,
       },
       body: formData,
     });
